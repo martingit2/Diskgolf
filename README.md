@@ -34,4 +34,4 @@ Applikasjonen vil tilby funksjonalitet som:
 - **31.01.2025**: Innlevering av arbeidskrav 3
 - **25.04.2025**: Endelig innlevering av applikasjon og rapport
 
-## Dette README-dokumentet vil bli oppdatert underveis i prosjektet ettersom vi gjør fremgang og nye funksjoner utvikles.
+ **Dette README-dokumentet vil bli oppdatert underveis i prosjektet ettersom vi gjør fremgang og nye funksjoner utvikles.**
