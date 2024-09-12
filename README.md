@@ -19,13 +19,12 @@ Applikasjonen vil tilby funksjonalitet som:
 - **Poengkort** for spillere som registrerer sine resultater underveis.
 - **Brukerkontoer** for å lagre resultater, statistikker og anmeldelser.
 
-Dette prosjektet teller for **60%** av karakteren, og presentasjon og muntlig eksamen teller **40%**.
 
 ## Teknologi
 
-- **Frontend**: React.js
-- **Backend**: Express.js (Node.js)
-- **Database**: MySQL eller PostgreSQL
+- **Frontend**: TBD
+- **Backend**: TBD
+- **Database**: TBD
 
 ## Viktige Datoer
 
@@ -34,3 +33,5 @@ Dette prosjektet teller for **60%** av karakteren, og presentasjon og muntlig ek
 - **30.11.2024**: Innlevering av arbeidskrav 2
 - **31.01.2025**: Innlevering av arbeidskrav 3
 - **25.04.2025**: Endelig innlevering av applikasjon og rapport
+
+## Dette README-dokumentet vil bli oppdatert underveis i prosjektet ettersom vi gjør fremgang og nye funksjoner utvikles.
