@@ -8,7 +8,6 @@ Dette er prosjektet til gruppe 11 i emnet **APP-2000** ved **Universitetet i Sø
 - **Maria Sofie Ulvheim**
 - **Martin Andreas Pettersen**
 - **Mina Vamnes Nyhagen**
-- **Thamara Jeyarajh**
 - **Said Hussain Khawajazad**
 
 ## Beskrivelse
