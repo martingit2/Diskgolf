@@ -9,16 +9,16 @@
 ![Feilinformasjon](Feilinfo@2x.png)
 
 ### Navigasjonslinje (Homebar)
-![Navigasjonslinje](docs/figma/Homebar@2x.png)
+![Navigasjonslinje](Homebar@2x.png)
 
 ### Innlogging
-![Innlogging](docs/figma/Login@2x.png)
+![Innlogging](Login@2x.png)
 
 ### Sidepanel
-![Sidepanel](docs/figma/SideBar@2x.png)
+![Sidepanel](SideBar@2x.png)
 
 ### Rediger Profil
-![Rediger Profil](docs/figma/redigerprofil.png)
+![Rediger Profil](redigerprofil.png)
 ---
 
 **Merk:** Disse prototypene er laget med Figma og eksportert for å visualisere applikasjonens brukergrensesnitt.
