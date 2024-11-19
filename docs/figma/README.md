@@ -3,22 +3,23 @@
 ## Brukergrensesnittprototyper
 
 ### Dashboard
-![Dashboard](Dashboard@2x.png)
+<img src="Dashboard@2x.png" alt="Dashboard" width="400">
 
 ### Feilinformasjon
-![Feilinformasjon](Feilinfo@2x.png)
+<img src="Feilinfo@2x.png" alt="Feilinformasjon" width="400">
 
 ### Navigasjonslinje (Homebar)
-![Navigasjonslinje](Homebar@2x.png)
+<img src="Homebar@2x.png" alt="Navigasjonslinje" width="400">
 
 ### Innlogging
-![Innlogging](Login@2x.png)
+<img src="Login@2x.png" alt="Innlogging" width="400">
 
 ### Sidepanel
-![Sidepanel](SideBar@2x.png)
+<img src="SideBar@2x.png" alt="Sidepanel" width="400">
 
 ### Rediger Profil
-![Rediger Profil](redigerprofil.png)
+<img src="redigerprofil.png" alt="Rediger Profil" width="400">
+
 ---
 
 **Merk:** Disse prototypene er laget med Figma og eksportert for å visualisere applikasjonens brukergrensesnitt.
