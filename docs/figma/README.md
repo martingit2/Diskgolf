@@ -1,4 +1,4 @@
-# Discgolf Webapplikasjon - APP2000_G11_25
+# Discgolf Webapplikasjon - Utkast prototype
 
 ## Brukergrensesnittprototyper
 
