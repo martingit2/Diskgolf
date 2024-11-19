@@ -33,4 +33,17 @@ Applikasjonen vil tilby funksjonalitet som:
 - **31.01.2025**: Innlevering av arbeidskrav 3
 - **25.04.2025**: Endelig innlevering av applikasjon og rapport
 
+## Filstruktur
+```plaintext
+APP2000_G11_25/
+├── docs/
+│   └── Project_WBS_Plan.docx   # Prosjektplan og WBS-diagram
+├── src/
+│   ├── frontend/               # Kode for frontend
+│   └── backend/                # Kode for backend
+├── data/                       # Datafiler og statiske ressurser
+│   └── [datafiler her]
+└── README.md                   # Prosjektdokumentasjon
+```
+
  **Dette README-dokumentet vil bli oppdatert underveis i prosjektet ettersom vi gjør fremgang og nye funksjoner utvikles.**
