@@ -8,7 +8,7 @@
 ### Feilinformasjon
 <img src="Feilinfo@2x.png" alt="Feilinformasjon" width="400">
 
-### Navigasjonslinje (Homebar)
+### KART
 <img src="homebar.png" alt="Navigasjonslinje" width="400">
 
 ### Innlogging
