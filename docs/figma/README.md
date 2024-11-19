@@ -9,7 +9,7 @@
 <img src="Feilinfo@2x.png" alt="Feilinformasjon" width="400">
 
 ### Navigasjonslinje (Homebar)
-<img src="Homebar@2x.png" alt="Navigasjonslinje" width="400">
+<img src="Homebar" alt="Navigasjonslinje" width="400">
 
 ### Innlogging
 <img src="Login@2x.png" alt="Innlogging" width="400">
