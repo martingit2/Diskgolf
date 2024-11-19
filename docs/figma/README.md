@@ -3,10 +3,10 @@
 ## Brukergrensesnittprototyper
 
 ### Dashboard
-![Dashboard](docs/figma/Dashboard@2x.png)
+![Dashboard](Dashboard@2x.png)
 
 ### Feilinformasjon
-![Feilinformasjon](docs/figma/Feilinfo@2x.png)
+![Feilinformasjon](Feilinfo@2x.png)
 
 ### Navigasjonslinje (Homebar)
 ![Navigasjonslinje](docs/figma/Homebar@2x.png)
