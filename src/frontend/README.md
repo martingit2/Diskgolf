@@ -9,6 +9,7 @@ Denne mappen inneholder frontend-koden for prosjektet **APP2000_G11_25**. Fronte
 - **Pakkehåndtering:** TBD
 
 ## Mappestruktur
+```plaintext
 src/
 │
 ├── components/      # Gjenbrukbare komponenter (f.eks. navigasjonsmeny, footer).
