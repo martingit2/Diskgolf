@@ -6,7 +6,6 @@ Denne mappen inneholder all dokumentasjon knyttet til prosjektet **APP2000_G11_2
 ## Innhold i dokumentasjonsmappen
 ```plaintext
 documentation/
-
 ├── WBS.md             # Work Breakdown Structure (WBS) for prosjektet.
 ├── risikoanalyse.md   # Risikoer identifisert i prosjektet og foreslåtte mottiltak.
 ├── sprint-plan.md     # Sprintplan og tidslinje for milepæler.
