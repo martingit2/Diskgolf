@@ -10,7 +10,7 @@ Denne mappen inneholder backend-koden for prosjektet **APP2000_G11_25**. Backend
 - **Pakkehåndtering:** npm / yarn.
 
 ## Mappestruktur
-
+```plaintext
 src/
 │
 ├── models/          # Datamodeller (f.eks. bruker, bane, turnering).
