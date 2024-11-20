@@ -36,14 +36,13 @@ Applikasjonen vil tilby funksjonalitet som:
 ## Filstruktur
 ```plaintext
 APP2000_G11_25/
-├── docs/
-│   └── Project_WBS_Plan.docx   # Prosjektplan og WBS-diagram
-├── src/
-│   ├── frontend/               # Kode for frontend
-│   └── backend/                # Kode for backend
-├── data/                       # Datafiler og statiske ressurser
-│   └── [datafiler her]
-└── README.md                   # Prosjektdokumentasjon
-```
+├── docs/                            # Dokumentasjon og ressurser
+│   ├── Project_WBS_Plan.docx        # Prosjektplan og WBS-diagram
+│   └── Figma/                       # Figma-design og prototyper
+├── src/                             # Kildekode
+│   ├── frontend/                    # Frontend-kode
+│   └── backend/                     # Backend-kode
+├── data/                            # Data og statiske ressurser
+├── README.md                        # Prosjektdokumentasjon
 
  **Dette README-dokumentet vil bli oppdatert underveis i prosjektet ettersom vi gjør fremgang og nye funksjoner utvikles.**
