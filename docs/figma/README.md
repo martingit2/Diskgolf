@@ -21,7 +21,7 @@
 <img src="redigerprofil.png" alt="Rediger Profil" width="400">
 
 ### Alle Wireframes i Figma
-<img src="FigmaSnapshot" alt="Snapshot" width="400">
+<img src="FigmaSnapshot.png" alt="Snapshot" width="400">
 
 
 ---
