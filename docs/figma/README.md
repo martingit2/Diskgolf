@@ -15,7 +15,7 @@
 <img src="Login@2x.png" alt="Innlogging" width="400">
 
 ### Sidepanel
-<img src="SideBar@2x.png" alt="Sidepanel" width="400" height="300">
+<img src="SideBar@2x.png" alt="Sidepanel" width="400">
 
 ### Rediger Profil
 <img src="redigerprofil.png" alt="Rediger Profil" width="400"> 
