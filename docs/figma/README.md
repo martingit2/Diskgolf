@@ -2,6 +2,8 @@
 
 ## Brukergrensesnittprototyper
 
+**Klikk på bildene for å åpne dem i full størrelse.**
+
 ### Dashboard
 <img src="Dashboard@2x.png" alt="Dashboard" width="400">
 
