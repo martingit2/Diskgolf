@@ -44,5 +44,6 @@ APP2000_G11_25/
 │   └── backend/                     # Backend-kode
 ├── data/                            # Data og statiske ressurser
 ├── README.md                        # Prosjektdokumentasjon
+```
 
  **Dette README-dokumentet vil bli oppdatert underveis i prosjektet ettersom vi gjør fremgang og nye funksjoner utvikles.**
