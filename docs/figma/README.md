@@ -18,7 +18,7 @@
 <img src="SideBar@2x.png" alt="Sidepanel" width="400">
 
 ### Rediger Profil
-<img src="redigerprofil.png" alt="Rediger Profil" width="400">
+<img src="redigerprofil.png" alt="Rediger Profil" width="400" height="400"> 
 
 ### Alle wireframes i Figma
 <img src="FigmaSnapshot.png" alt="Snapshot" width="400">
