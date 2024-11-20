@@ -20,6 +20,10 @@
 ### Rediger Profil
 <img src="redigerprofil.png" alt="Rediger Profil" width="400">
 
+### Alle Wireframes i Figma
+<img src="FigmaSnapshot" alt="Snapshot" width="400">
+
+
 ---
 
 **Merk:** Disse prototypene er laget med Figma og eksportert for å visualisere applikasjonens brukergrensesnitt.
