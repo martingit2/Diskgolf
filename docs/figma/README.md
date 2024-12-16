@@ -17,7 +17,13 @@
 <img src="Login@2x.png" alt="Innlogging" width="400">
 
 ### Rediger Profil
-<img src="redigerprofil.png" alt="Rediger Profil" width="400"> 
+<img src="redigerprofil.png" alt="Rediger Profil" width="400">
+
+### Kart
+<img src="iphone_kart_1.png" alt="Kart" width="400"> 
+
+### Kart 2
+<img src="iphone_kart_2.png" alt="Kart" width="400"> 
 
 ### Alle wireframes i Figma
 <img src="FigmaSnapshot.png" alt="Snapshot" width="400">
