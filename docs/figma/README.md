@@ -25,6 +25,10 @@
 ### Kart 2
 <img src="iphone_kart_2.png" alt="Kart" width="400"> 
 
+### Kart 3
+<img src="iphone1.png" alt="Kart" width="400"> 
+
+
 ### Alle wireframes i Figma
 <img src="FigmaSnapshot.png" alt="Snapshot" width="400">
 
