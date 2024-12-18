@@ -1,9 +1,17 @@
+
+/* Denne må oppdateres for å fungere alt står nå bare i Header.tsx
+ * Vi ønsker å bruke disse pga de er gjenbrukbare komponenter og gjør det mer oversiktlig å lese kode
+ * om vi ser i Header.tsx er det veldig langt derfor bruker vi mindre komponenter for å gjøre ting lettere å forstå og utvikle
+ * men disse er ikke oppdatert per nå, så de ligger her. Men dette må fikses.
+ */
+
+
 "use client";
 
 import { Popover, Transition } from "@headlessui/react";
 import { Fragment } from "react";
 import { ChevronDownIcon } from "@heroicons/react/20/solid";
-import { navLinks, cta } from "@/components/NavLinks";
+import { cta, navLinks } from "./NavLinks";
 
 function DesktopNav() {
   return (

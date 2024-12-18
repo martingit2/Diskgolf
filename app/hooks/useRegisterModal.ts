@@ -11,7 +11,7 @@ interface RegisterModalStore {
 }
 
 const useRegisterModal = create<RegisterModalStore>((set) => ({
-   isOpen: false,
+   isOpen: false, // settes denne til true vil det vises modal hver gang du refresher
    onOpen: () => set({ isOpen: true }),
    onClose: () => set({ isOpen: false }),
 }));
