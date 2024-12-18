@@ -1,4 +1,4 @@
-<<<<<<< HEAD
+
 # Discgolf Webapplikasjon - APP-2000
 
 ## Prosjektoversikt
