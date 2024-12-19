@@ -7,8 +7,7 @@ import { Button } from "@/components/ui/button";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Calendar } from "@/components/ui/calendar";
-import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import { Popover, PopoverTrigger } from "@/components/ui/popover";
 import { format } from "date-fns";
 import { useState } from "react";
 
@@ -26,7 +25,7 @@ export const formSchema = z.object({
 });
 
 function SearchForm() {
-  const [dates, setDates] = useState<{ from?: Date; to?: Date }>(); // Lokal state for datoer
+  const [dates] = useState<{ from?: Date; to?: Date }>(); // Fjernet setDates
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -137,17 +136,7 @@ function SearchForm() {
                         )}
                       </Button>
                     </PopoverTrigger>
-                    <PopoverContent 
-                    className="w-auto p-0 z-[1000] relative"
-                    style={{ zIndex: 1000 }} /* Sikrer at kalenderen vises foran */
-                    >
-                    <Calendar
-                    mode="range"
-                    selected={dates}
-                    onSelect={(range) => setDates(range)}
-                    disabled={(date) => date < new Date()}
-                    />
-                    </PopoverContent>
+
                   </Popover>
                 </FormControl>
                 <FormMessage />

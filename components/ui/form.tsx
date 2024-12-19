@@ -1,5 +1,7 @@
 "use client"
 
+/* alt som ligger under components ui -> Er fra Shadcn-ui komponenter hentet fra Shadcn */
+
 import * as React from "react"
 import * as LabelPrimitive from "@radix-ui/react-label"
 import { Slot } from "@radix-ui/react-slot"

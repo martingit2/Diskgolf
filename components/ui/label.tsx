@@ -1,5 +1,8 @@
 "use client"
 
+/* alt som ligger under components ui -> Er fra Shadcn-ui komponenter hentet fra Shadcn */
+
+
 import * as React from "react"
 import * as LabelPrimitive from "@radix-ui/react-label"
 import { cva, type VariantProps } from "class-variance-authority"

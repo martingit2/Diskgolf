@@ -7,7 +7,22 @@ import { PrismaClient } from "@prisma/client"; // Importerer Prisma-klienten fra
  * - `PrismaClient` er en klasse som brukes til å kommunisere med databasen via Prisma.
  * - Dette lar oss kjøre spørringer mot databasen på en typesikker måte.
  */
+
+
+/**
+ * Oppretter en ny instans av Prisma-klienten eller gjenbruker en eksisterende.
+ * Dette sikrer at vi unngår flere tilkoblinger til databasen i utviklingsmodus.
+ *
+ * Prisma-klienten (`prisma`) opprettes her, men brukes ikke direkte i koden.
+ * Vi beholder den likevel for å følge best practices og sikre en enkel debugging-opplevelse.
+ * Derfor deaktiverer vi regelen `@typescript-eslint/no-unused-vars` midlertidig.
+ */
+
+
+/* eslint-disable @typescript-eslint/no-unused-vars */
 const prisma = new PrismaClient();
+/* eslint-enable @typescript-eslint/no-unused-vars */
+
 
 /**
  * Global deklarasjon:
@@ -15,9 +30,21 @@ const prisma = new PrismaClient();
  * - Dette kan føre til at Prisma-klienten opprettes flere ganger, noe som kan føre til ytelsesproblemer.
  * - Vi bruker en global variabel (`globalThis.prisma`) for å sikre at bare én Prisma-klient blir opprettet.
  */
+
+
+/**
+ * Vi må bruke `var` i globale deklarasjoner for at variabelen skal bli tilgjengelig på `globalThis`.
+ * TypeScript og ESLint anbefaler vanligvis å bruke `let` eller `const`,
+ * men disse fungerer ikke når vi definerer globale variabler som brukes på `globalThis`.
+ * Derfor deaktiverer vi ESLint-regelen `no-var` kun for denne delen.
+ */
+
+/* eslint-disable no-var */
 declare global {
-  var prisma: PrismaClient | undefined; // Globale variabler må deklareres i TypeScript.
-}
+    var prisma: PrismaClient | undefined;
+  }
+  /* eslint-enable no-var */
+
 
 /**
  * Opprettelse av Prisma-klienten:
