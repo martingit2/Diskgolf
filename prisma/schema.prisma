@@ -1,0 +1,109 @@
+// Dette er Prisma-schema-filen for DiscGolf-applikasjonen
+// Lær mer om Prisma-skjemaer: https://pris.ly/d/prisma-schema
+
+// Generatoren definerer Prisma-klienten, som brukes for å samhandle med databasen
+generator client {
+  provider = "prisma-client-js"
+}
+
+// Datasourcen definerer tilkoblingen til databasen
+datasource db {
+  provider = "mongodb"
+  url      = env("DATABASE_URL") // Tilkoblingsstreng lagret i .env-filen
+}
+
+// Bruker-modell
+// Representerer en bruker i applikasjonen, som en spiller eller arrangør
+model User {
+  id             String   @id @default(auto()) @map("_id") @db.ObjectId // Unik identifikator
+  name           String?  // Brukerens fulle navn
+  email          String?  @unique // E-postadresse, må være unik
+  emailVerified  DateTime? // Når e-posten ble verifisert
+  image          String?  // URL til profilbilde
+  hashedPassword String?  // Kryptert passord
+  createdAt      DateTime @default(now()) // Tidsstempel for opprettelse
+  updatedAt      DateTime @updatedAt // Automatisk oppdatert tidsstempel
+  favoriteCourses String[] @db.ObjectId // Liste over ID-er til favorittbaner
+
+  // Relasjoner
+  accounts       Account[] // Brukerens tilknyttede kontoer for autentisering
+  rounds         Round[]   // Runder spilt av brukeren
+  reviews        Review[]  // Anmeldelser sendt inn av brukeren
+}
+
+// Konto-modell
+// For å håndtere tilknyttede kontoer som Google, GitHub, etc.
+model Account {
+  id                 String   @id @default(auto()) @map("_id") @db.ObjectId // Unik identifikator
+  userId             String   @db.ObjectId // Referanse til brukeren
+  type               String   // Typen konto (f.eks. "oauth")
+  provider           String   // Navn på leverandør (f.eks. "google")
+  providerAccountId  String   // Kontonummer fra leverandør
+  refresh_token      String?  @db.String // OAuth refresh token
+  access_token       String?  @db.String // OAuth access token
+  expires_at         Int?     // Utløpstid for token
+  token_type         String?  // Token-type
+  scope              String?  // OAuth-omfang
+  id_token           String?  @db.String // ID-token
+  session_state      String?  // Tilstand for økten
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade) // Relasjon til brukeren
+
+  @@unique([provider, providerAccountId])
+}
+
+// Bane-modell
+// Representerer en disc golf-bane
+model Course {
+  id          String   @id @default(auto()) @map("_id") @db.ObjectId // Unik identifikator
+  name        String   // Navn på banen
+  location    String   // Lokasjon for banen
+  description String?  // Beskrivelse av banen
+  par         Int      // Par-verdi for hele banen
+  createdAt   DateTime @default(now()) // Tidsstempel for når banen ble lagt til
+  updatedAt   DateTime @updatedAt // Automatisk oppdatert tidsstempel
+
+  // Relasjoner
+  holes       Hole[]   // Liste over hull på banen
+  reviews     Review[] // Anmeldelser for banen
+  rounds      Round[]  // Relasjon til runder spilt på denne banen
+}
+
+// Hull-modell
+// Representerer et individuelt hull på en disc golf-bane
+model Hole {
+  id         String   @id @default(auto()) @map("_id") @db.ObjectId // Unik identifikator
+  courseId   String   @db.ObjectId // Referanse til banen
+  number     Int      // Hullnummer (f.eks. 1, 2, 3)
+  par        Int      // Par-verdi for hullet
+  distance   Int?     // Avstand til kurven i meter
+
+  course Course @relation(fields: [courseId], references: [id], onDelete: Cascade) // Relasjon til banen
+}
+
+// Runde-modell
+// Representerer en runde disc golf spilt av en bruker
+model Round {
+  id          String   @id @default(auto()) @map("_id") @db.ObjectId // Unik identifikator
+  userId      String   @db.ObjectId // Referanse til brukeren
+  courseId    String   @db.ObjectId // Referanse til banen
+  score       Int      // Total score for runden
+  createdAt   DateTime @default(now()) // Tidsstempel for når runden ble registrert
+
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade) // Relasjon til brukeren
+  course Course @relation(fields: [courseId], references: [id], onDelete: Cascade) // Relasjon til banen
+}
+
+// Anmeldelse-modell
+// Representerer en brukeranmeldelse for en bane
+model Review {
+  id          String   @id @default(auto()) @map("_id") @db.ObjectId // Unik identifikator
+  userId      String   @db.ObjectId // Referanse til brukeren
+  courseId    String   @db.ObjectId // Referanse til banen
+  rating      Int      // Vurdering på en skala fra 1 til 5
+  comment     String?  // Valgfri kommentar
+  createdAt   DateTime @default(now()) // Tidsstempel for når anmeldelsen ble sendt inn
+
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade) // Relasjon til brukeren
+  course Course @relation(fields: [courseId], references: [id], onDelete: Cascade) // Relasjon til banen
+}

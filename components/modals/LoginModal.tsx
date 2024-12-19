@@ -10,7 +10,7 @@ import Modal from "./Modal"; // Gjenbrukbar Modal-komponent.
 import Input from "@/components/inputs/Input"; // Gjenbrukbar Input-komponent.
 import { FaGithub } from "react-icons/fa"; // Ikon for GitHub fra react-icons.
 
-const RegisterModal = () => {
+const LoginModal = () => {
   // Hooks for å kontrollere modalens visningstilstand.
   const registerModal = useRegisterModal(); // Kontroll for registreringsmodalen.
   const loginModal = useLoginModal(); // Kontroll for innloggingsmodalen.
@@ -176,10 +176,10 @@ const RegisterModal = () => {
   return (
     <Modal
       disabled={isLoading} // Deaktiverer handlinger mens modalen laster.
-      isOpen={registerModal.isOpen} // Styrer om modalen vises.
+      isOpen={loginModal.isOpen} // Styrer om modalen vises.
       title="Opprett bruker" // Tittel på modalen.
       actionLabel="Fortsett" // Tekst på hovedknappen.
-      onClose={registerModal.onClose} // Callback for å lukke modalen.
+      onClose={loginModal.onClose} // Callback for å lukke modalen.
       onSubmit={handleSubmit(onSubmit)} // Håndterer innsending av skjema.
       body={bodyContent} // Modalens hovedinnhold.
       footer={footerContent} // Modalens bunninnhold.
@@ -187,4 +187,4 @@ const RegisterModal = () => {
   );
 };
 
-export default RegisterModal;
+export default LoginModal;

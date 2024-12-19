@@ -37,7 +37,7 @@ const Input: React.FC<InputProps> = ({
         type={type} // Setter typen input (f.eks. "text", "email").
         className={`peer w-full p-4 pt-6 font-light bg-white border-2 rounded-md outline-none transition disabled:opacity-70 disabled:cursor-not-allowed pl-4 ${
           errors[id]
-            ? "bg-greyblue focus:border-bg-greyblue" // Feilstil hvis det er valideringsfeil.
+            ? "bg-white border-rose-500 focus:border-rose-500" // Feilstil hvis det er valideringsfeil.
             : "border-neutral-300 focus:border-neutral-800" // Normal stil.
         }`}
       />
@@ -51,6 +51,13 @@ const Input: React.FC<InputProps> = ({
       >
         {label} {/* Viser etiketten */}
       </label>
+
+      {/* Feilmelding */}
+      {errors[id] && (
+        <p className="text-sm text-rose-500 mt-1">
+          {errors[id]?.message?.toString()} {/* Viser feilmeldingen */}
+        </p>
+      )}
     </div>
   );
 };
