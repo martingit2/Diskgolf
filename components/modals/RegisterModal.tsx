@@ -1,20 +1,29 @@
-"use client";
+"use client"; // Indikerer at denne komponenten skal rendres på klientsiden.
 
-import axios from "axios";
-import { useState } from "react";
-import { FieldValues, SubmitHandler, useForm } from "react-hook-form";
-import useRegisterModal from "@/app/hooks/useRegisterModal";
-import useLoginModal from "@/app/hooks/useLoginModal";
-import { toast } from "react-toastify";
-import "react-toastify/dist/ReactToastify.css";
-import Modal from "./Modal";
+import axios from "axios"; // Axios brukes for å sende HTTP-forespørsler til backend.
+import { useState } from "react"; // React Hook for å administrere tilstand.
+import { FieldValues, SubmitHandler, useForm } from "react-hook-form"; // Verktøy for å håndtere skjemaer.
+import useRegisterModal from "@/app/hooks/useRegisterModal"; // Egendefinert hook for registreringsmodalen.
+import useLoginModal from "@/app/hooks/useLoginModal"; // Egendefinert hook for innloggingsmodalen.
+import { toast } from "react-hot-toast"; // For å vise notifikasjoner.
+import Modal from "./Modal"; // Gjenbrukbar Modal-komponent.
+import Input from "@/components/inputs/Input"; // Gjenbrukbar Input-komponent.
+import { FaGithub } from "react-icons/fa"; // Ikon for GitHub fra react-icons.
 
 const RegisterModal = () => {
-  const registerModal = useRegisterModal();
-  const loginModal = useLoginModal();
+  // Hooks for å kontrollere modalens visningstilstand.
+  const registerModal = useRegisterModal(); // Kontroll for registreringsmodalen.
+  const loginModal = useLoginModal(); // Kontroll for innloggingsmodalen.
 
+  // Lokal state for å indikere om en handling pågår (brukes for å deaktivere knapper).
   const [isLoading, setIsLoading] = useState(false);
 
+  /**
+   * React Hook Form:
+   * - `register`: Binder input-felter til skjemaet.
+   * - `handleSubmit`: Håndterer skjemaets innsending.
+   * - `formState.errors`: Holder oversikt over valideringsfeil.
+   */
   const {
     register,
     handleSubmit,
@@ -27,90 +36,100 @@ const RegisterModal = () => {
     },
   });
 
+  /**
+   * Funksjon for å håndtere innsending av skjemaet.
+   * - Sender data til backend via Axios.
+   * - Viser en suksessmelding hvis registreringen er vellykket.
+   * - Åpner innloggingsmodalen etterpå.
+   */
   const onSubmit: SubmitHandler<FieldValues> = (data) => {
-    setIsLoading(true);
+    setIsLoading(true); // Indikerer at en handling pågår.
 
     axios
-      .post("/api/register", data)
+      .post("/api/register", data) // Sender data til backend.
       .then(() => {
-        registerModal.onClose();
-        loginModal.onOpen();
-        toast.success("Du har registrert deg!");
+        registerModal.onClose(); // Lukker registreringsmodalen.
+        loginModal.onOpen(); // Åpner innloggingsmodalen.
+        toast.success("Du har registrert deg!"); // Viser suksessmelding.
       })
       .catch(() => {
-        toast.error("Noe gikk galt. Prøv igjen.");
+        toast.error("Noe gikk galt. Prøv igjen."); // Viser feilmelding ved feil.
       })
       .finally(() => {
-        setIsLoading(false);
+        setIsLoading(false); // Tilbakestiller loading-tilstanden.
       });
   };
 
+  /**
+   * Innholdet i modalens hoveddel (body):
+   * - Input-felter for navn, e-post og passord.
+   * - Knapper for å registrere med Google og GitHub.
+   */
   const bodyContent = (
     <div className="flex flex-col gap-4">
       {/* Navn */}
-      <div>
-        <label htmlFor="name" className="block text-sm font-medium text-gray-700">
-          Navn
-        </label>
-        <input
-          id="name"
-          {...register("name", { required: "Navn er påkrevd" })}
-          disabled={isLoading}
-          className={`mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm ${
-            errors.name ? "border-red-500 focus:border-red-500" : ""
-          }`}
-        />
-        {errors.name && (
-          <p className="mt-1 text-sm text-red-500">
-            {String(errors.name.message)}
-          </p>
-        )}
-      </div>
+      <Input
+        id="name"
+        label="Navn"
+        type="text"
+        disabled={isLoading} // Deaktiveres under lasting.
+        register={register}
+        errors={errors}
+        required
+      />
 
       {/* E-post */}
-      <div>
-        <label htmlFor="email" className="block text-sm font-medium text-gray-700">
-          E-post
-        </label>
-        <input
-          id="email"
-          type="email"
-          {...register("email", { required: "E-post er påkrevd" })}
-          disabled={isLoading}
-          className={`mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm ${
-            errors.email ? "border-red-500 focus:border-red-500" : ""
-          }`}
-        />
-        {errors.email && (
-          <p className="mt-1 text-sm text-red-500">
-            {String(errors.email.message)}
-          </p>
-        )}
-      </div>
+      <Input
+        id="email"
+        label="E-post"
+        type="email"
+        disabled={isLoading}
+        register={register}
+        errors={errors}
+        required
+      />
 
       {/* Passord */}
-      <div>
-        <label htmlFor="password" className="block text-sm font-medium text-gray-700">
-          Passord
-        </label>
-        <input
-          id="password"
-          type="password"
-          {...register("password", { required: "Passord er påkrevd" })}
-          disabled={isLoading}
-          className={`mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm ${
-            errors.password ? "border-red-500 focus:border-red-500" : ""
-          }`}
+      <Input
+        id="password"
+        label="Passord"
+        type="password"
+        disabled={isLoading}
+        register={register}
+        errors={errors}
+        required
+      />
+
+      {/* Google-knapp */}
+      <button
+        onClick={() => console.log("Registrer med Google")}
+        className="flex items-center justify-center gap-2 bg-black hover:bg-green-700 text-white py-2 px-4 rounded-lg transition disabled:opacity-70 disabled:cursor-not-allowed"
+      >
+        {/* Bruker SVG-ikonet fra public-mappen */}
+        <img
+          src="/google.svg"
+          alt="Google Icon"
+          className="w-5 h-5"
         />
-        {errors.password && (
-          <p className="mt-1 text-sm text-red-500">
-            {String(errors.password.message)}
-          </p>
-        )}
-      </div>
+        Registrer deg med din Google-konto
+      </button>
+
+      {/* GitHub-knapp */}
+      <button
+        onClick={() => console.log("Registrer med GitHub")}
+        disabled={isLoading}
+        className="flex items-center justify-center gap-2 bg-black hover:bg-green-700 text-white py-2 px-4 rounded-lg transition disabled:opacity-70 disabled:cursor-not-allowed"
+      >
+        <FaGithub size={18} />
+        Registrer deg med din GitHub-konto
+      </button>
     </div>
   );
 
+  /**
+   * Innholdet i modalens footer:
+   * - Lenke til innloggingsmodalen hvis brukeren allerede har en konto.
+   */
   const footerContent = (
     <div className="text-center mt-4 text-sm text-gray-500">
       Har du allerede en bruker?{" "}
@@ -126,16 +145,19 @@ const RegisterModal = () => {
     </div>
   );
 
+  /**
+   * Returnerer modal-komponenten med riktig innhold og handlinger.
+   */
   return (
     <Modal
-      disabled={isLoading}
-      isOpen={registerModal.isOpen}
-      title="Registrer"
-      actionLabel="Fortsett"
-      onClose={registerModal.onClose}
-      onSubmit={handleSubmit(onSubmit)}
-      body={bodyContent} // Legger til body-innholdet
-      footer={footerContent} // Legger til footer-innholdet
+      disabled={isLoading} // Deaktiverer handlinger mens modalen laster.
+      isOpen={registerModal.isOpen} // Styrer om modalen vises.
+      title="Opprett bruker" // Tittel på modalen.
+      actionLabel="Fortsett" // Tekst på hovedknappen.
+      onClose={registerModal.onClose} // Callback for å lukke modalen.
+      onSubmit={handleSubmit(onSubmit)} // Håndterer innsending av skjema.
+      body={bodyContent} // Modalens hovedinnhold.
+      footer={footerContent} // Modalens bunninnhold.
     />
   );
 };
