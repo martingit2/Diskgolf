@@ -34,6 +34,6 @@ export async function POST(request: Request) {
     },
   });
 
-  // Returnerer den opprettede brukeren som en JSON-respons
+  // Returnerer den opprettede brukeren som en JSON-respons test
   return NextResponse.json(user);
 }
