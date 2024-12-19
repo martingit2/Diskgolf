@@ -32,7 +32,7 @@ export default function Home() {
         <div className="mt-10">
           <h1 className="text-2xl font-bold mb-4 text-center">Utforsk DiscGolf-baner på kartet</h1>
           <div className="w-full h-[500px]">
-            <Map center={[59.9139, 10.7522]} /> {/* Oslo som eksempel */}
+            <Map /> {/* Kartet vises uten eksplisitt center-prop */}
           </div>
         </div>
       </section>
