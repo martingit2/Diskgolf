@@ -11,7 +11,7 @@ import CredentialsProvider from "next-auth/providers/credentials"; // Egendefine
 import GithubProvider from "next-auth/providers/github"; // Github OAuth
 import GoogleProvider from "next-auth/providers/google"; // Google OAuth
 import { PrismaAdapter } from "@next-auth/prisma-adapter"; // Prisma-adapter for å bruke Prisma med NextAuth
-import prisma from "@/lib/prismadb"; // Importerer Prisma-klienten
+import prisma from "@/app/lib/prismadb"; // Importerer Prisma-klienten
 
 // Konfigurasjon for NextAuth
 export const authOptions: AuthOptions = {

@@ -3,7 +3,7 @@ import * as React from "react"
 
 /* alt som ligger under components ui -> Er fra Shadcn-ui komponenter hentet fra Shadcn */
 
-import { cn } from "@/lib/utils"
+import { cn } from "@/app/lib/utils"
 
 const Input = React.forwardRef<HTMLInputElement, React.ComponentProps<"input">>(
   ({ className, type, ...props }, ref) => {

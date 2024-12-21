@@ -2,7 +2,7 @@
 import bcrypt from "bcrypt";
 
 // Importerer Prisma-klienten fra den sentraliserte Prisma-konfigurasjonen
-import prisma from "@/lib/prismadb";
+import prisma from "@/app/lib/prismadb";
 
 // Importerer `NextResponse` for å sende tilbake JSON-respons i Next.js API-routes
 import { NextResponse } from "next/server";
