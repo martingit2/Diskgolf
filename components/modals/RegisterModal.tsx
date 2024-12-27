@@ -24,6 +24,8 @@ const RegisterModal = () => {
    * - `handleSubmit`: Håndterer skjemaets innsending.
    * - `formState.errors`: Holder oversikt over valideringsfeil.
    */
+
+  
   const {
     register,
     handleSubmit,

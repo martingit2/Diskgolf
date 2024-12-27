@@ -1,5 +1,8 @@
+
+import { LoginButton } from "@/components/auth/login-button";
 import Map from "@/components/Map";
 import SearchForm from "@/components/SearchForm";
+import { Button } from "@/components/ui/button";
 
 export default function Home() {
   return (
@@ -34,6 +37,15 @@ export default function Home() {
           <div className="w-full h-[500px]">
             <Map /> {/* Kartet vises uten eksplisitt center-prop */}
           </div>
+        </div>
+        <div className="mt-10 mb-4 text-center">
+        <LoginButton asChild>
+          <Button variant="secondary" size="lg">
+            Test
+
+          </Button>
+
+        </LoginButton>
         </div>
       </section>
     </main>

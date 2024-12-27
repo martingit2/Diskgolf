@@ -5,9 +5,22 @@ import Image from "next/image";
 import Link from "next/link";
 import { useState, Fragment } from "react";
 import { Dialog, Disclosure, Popover, Transition } from "@headlessui/react";
-import { ChevronDownIcon, SunIcon, EnvelopeIcon, StarIcon, ExclamationTriangleIcon, MagnifyingGlassCircleIcon } from "@heroicons/react/20/solid";
+import {
+  ChevronDownIcon,
+  SunIcon,
+  EnvelopeIcon,
+  StarIcon,
+  ExclamationTriangleIcon,
+  MagnifyingGlassCircleIcon,
+} from "@heroicons/react/20/solid";
 import { cn } from "@/app/lib/utils";
 import UserDropdown from "./UserDropDown";
+
+
+type User = {
+  name: string;
+  email: string;
+};
 
 const navLinks = [
   {
@@ -35,14 +48,14 @@ const cta = [
   { name: "Kontakt oss", href: "#", icon: EnvelopeIcon },
 ];
 
-function Header() {
+function Header({ currentUser }: { currentUser: User | null }) {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   return (
-    <header className='bg-[#000311]'>
+    <header className="bg-[#000311]">
       <nav
-        className='mx-auto flex max-w-7xl items-center justify-between p-6 lg:px-8'
-        aria-label='Global'
+        className="mx-auto flex max-w-7xl items-center justify-between p-6 lg:px-8"
+        aria-label="Global"
       >
         <div className="flex lg:flex-1 gap-x-8">
           <span className="font-sans text-3xl font-bold bg-gradient-to-r from-green-600 via-green-300 to-green-600 text-transparent bg-clip-text">
@@ -132,7 +145,6 @@ function Header() {
               </Popover.Panel>
             </Transition>
           </Popover>
-
           <a href="#" className="text-sm font-semibold leading-6 text-white">
             Nyheter
           </a>
@@ -148,8 +160,7 @@ function Header() {
         </Popover.Group>
 
         <div className="hidden lg:flex lg:flex-1 lg:justify-end">
-          {/* Integrasjon av UserDropdown-komponenten */}
-          <UserDropdown isMobile={false} />
+          <UserDropdown isMobile={false} currentUser={currentUser} />
         </div>
       </nav>
 
@@ -164,10 +175,12 @@ function Header() {
           <div className="flex items-center justify-between">
             <a href="#" className="-m-1.5 p-1.5">
               <span className="sr-only">DiscGolf</span>
-              <img
+              <Image
                 className="h-8 w-auto"
                 src="/logogreen.png"
-                alt=""
+                alt="Logo"
+                width={32}
+                height={32}
               />
             </a>
             <button
@@ -230,14 +243,13 @@ function Header() {
                 </a>
                 <a
                   href="#"
-                  className="-mx-3 block rounded-lg px-3                 py-2 text-base font-semibold leading-7 text-white hover:bg-blue-800"
+                  className="-mx-3 block rounded-lg px-3 py-2 text-base font-semibold leading-7 text-white hover:bg-blue-800"
                 >
                   Kontakt oss
                 </a>
               </div>
               <div className="py-6">
-                {/* Bruker Dropdown for Logg Inn / Opprett Bruker */}
-                <UserDropdown isMobile={true} />
+                <UserDropdown isMobile={true} currentUser={currentUser} />
               </div>
             </div>
           </div>
@@ -245,5 +257,6 @@ function Header() {
       </Dialog>
     </header>
   );
-}
+};
+
 export default Header;

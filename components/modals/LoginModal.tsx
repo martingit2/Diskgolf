@@ -35,13 +35,13 @@ const LoginModal = () => {
 
     signIn("credentials", {
       ...data,
-      redirect: false,
+      redirect: false, // Håndterer redirect manuelt
     }).then((callback) => {
       setIsLoading(false);
 
       if (callback?.ok) {
         toast.success("Du er logget inn!");
-        router.refresh();
+        router.push("/"); // Redirect til forsiden
         loginModal.onClose();
       }
 

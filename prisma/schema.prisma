@@ -7,6 +7,11 @@ datasource db {
   url               = env("DATABASE_URL")
   directUrl         = env("DIRECT_URL")
 }
+enum UserRole {
+  ADMIN
+  USER
+  CLUB_LEADER
+}
 
 model User {
   id             String   @id @default(uuid()) // Unik identifikator
@@ -18,10 +23,14 @@ model User {
   createdAt      DateTime @default(now()) // Tidsstempel for opprettelse
   updatedAt      DateTime @updatedAt // Automatisk oppdatert tidsstempel
   favoriteCourses String[] // Liste over ID-er til favorittbaner
+  role  UserRole @default(USER)
 
   accounts Account[]
   rounds   Round[]
   reviews  Review[]
+
+  isTwoFactorEnable Boolean @default(false)
+  twoFactorConfirmation TwoFactorConfirmation?
 }
 
 model Account {
@@ -88,4 +97,35 @@ model Review {
 
   user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
   course Course @relation(fields: [courseId], references: [id], onDelete: Cascade)
+}
+
+model VerificationToken {
+  id String @id @default(cuid())
+  email String
+  token String @unique
+  expires DateTime
+  @@unique([email, token])
+}
+
+model PasswordResetToken {
+  id String @id @default(cuid())
+  email String
+  token String @unique
+  expires DateTime
+  @@unique([email, token])
+}
+
+model TwoFactorToken {
+  id String @id @default(cuid())
+  email String
+  token String @unique
+  expires DateTime
+  @@unique([email, token])
+}
+
+model TwoFactorConfirmation {
+  id String @id @default(cuid())
+  userId String
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  @@unique([userId])
 }

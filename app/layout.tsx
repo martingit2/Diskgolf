@@ -4,7 +4,9 @@ import Header from "@/components/Header";
 import RegisterModal from "@/components/modals/RegisterModal";
 import ToasterProvider from "./providers/ToasterProvider";
 import LoginModal from "@/components/modals/LoginModal";
-import getCurrentUser from "./actions/getCurrentUser";
+import { auth } from "@/auth";
+import { SessionProvider } from "next-auth/react";
+// import getCurrentUser from "./actions/getCurrentUser"; // Kommentar hvis du ikke vil bruke det nå
 
 export const metadata: Metadata = {
   title: "DiscGolf",
@@ -16,18 +18,22 @@ export default async function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  const currentUser = await getCurrentUser(); // Henter innlogget bruker
+  // const currentUser = await getCurrentUser(); // Kommentar for å deaktivere nå
+
+  const session = await auth()
 
   return (
+    <SessionProvider session={session}>
     <html lang="en">
       <body>
         {/* Header */}
         <ToasterProvider />
-        <Header currentUser={currentUser} /> {/* Sender currentUser som prop */}
+        <Header currentUser={null} /> {/* Sender null som prop midlertidig */}
         <LoginModal />
         <RegisterModal />
         {children}
       </body>
     </html>
+    </SessionProvider>
   );
 }
