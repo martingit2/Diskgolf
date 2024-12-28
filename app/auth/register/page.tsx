@@ -1,7 +1,6 @@
-"use client"
+"use client";
 
 
-import RegisterForm from "@/components/auth/register-form";
 import { useRouter } from "next/navigation";
 
 const RegisterPage = () => {
@@ -9,11 +8,13 @@ const RegisterPage = () => {
 
   return (
     <div className="mt-8">
-      <RegisterForm
-        onAlreadyHaveAccount={() => router.push("/auth/login")}
-      />
+      <div>
+        Placeholder for RegisterForm
+        <button onClick={() => router.push("/auth/login")}>Login</button>
+      </div>
     </div>
   );
 };
 
 export default RegisterPage;
+
