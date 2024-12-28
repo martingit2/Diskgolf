@@ -14,14 +14,14 @@ import { FormSuccess } from "../form-success";
 import { register } from "@/app/actions/register";
 import { useTransition } from "react";
 
+interface RegisterFormProps {
+  onAlreadyHaveAccount: () => void;
+}
 
-const RegisterForm = () => {
-
-    const [error, setError] = useState <string | undefined>("");
-    const [success, setSuccess] = useState <string | undefined>("")
-
-    const [isPending, startTransition] = useTransition();
-
+const RegisterForm = ({ onAlreadyHaveAccount }: RegisterFormProps) => {
+  const [error, setError] = useState<string | undefined>(undefined);
+  const [success, setSuccess] = useState<string | undefined>(undefined);
+  const [isPending, startTransition] = useTransition();
 
   const form = useForm<z.infer<typeof RegisterSchema>>({
     resolver: zodResolver(RegisterSchema),
@@ -32,26 +32,24 @@ const RegisterForm = () => {
     },
   });
 
-  const onSubmit = (values: z.infer<typeof RegisterSchema>) => {
+  const onSubmit = async (values: z.infer<typeof RegisterSchema>) => {
+    setError("");
+    setSuccess(undefined);
 
-    setError("")
-    setSuccess("")
-    startTransition (() => {
-    register(values)
-    .then((data) => {
-      console.log(data); // Sjekk hva som returneres fra serveren
-        setError(data.error)
-        setSuccess(data.success)
-    })
+    startTransition(() => {
+      register(values).then((data) => {
+        setError(data.error);
+        setSuccess(data.success);
+      });
     });
-
-  }
+  };
 
   return (
     <CardWrapper
       headerLabel="Opprett ny bruker"
       backButtonLabel="Har du allerede konto?"
-      backButtonHref="/auth/login"
+      backButtonHref="#"
+      onBackButtonClick={onAlreadyHaveAccount}
       showSocial
     >
       <Form {...form}>
@@ -70,12 +68,6 @@ const RegisterForm = () => {
                       placeholder="Ola Nordmann"
                     />
                   </FormControl>
-                  {/* Feilmelding direkte */}
-                  {form.formState.errors.email && (
-                    <p className="text-red-500 text-sm">
-                      {form.formState.errors.email.message}
-                    </p>
-                  )}
                 </FormItem>
               )}
             />
@@ -93,12 +85,6 @@ const RegisterForm = () => {
                       type="email"
                     />
                   </FormControl>
-                  {/* Feilmelding direkte */}
-                  {form.formState.errors.email && (
-                    <p className="text-red-500 text-sm">
-                      {form.formState.errors.email.message}
-                    </p>
-                  )}
                 </FormItem>
               )}
             />
@@ -116,12 +102,6 @@ const RegisterForm = () => {
                       type="password"
                     />
                   </FormControl>
-                  {/* Feilmelding direkte */}
-                  {form.formState.errors.password && (
-                    <p className="text-red-500 text-sm">
-                      {form.formState.errors.password.message}
-                    </p>
-                  )}
                 </FormItem>
               )}
             />

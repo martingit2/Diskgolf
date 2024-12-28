@@ -1,23 +1,29 @@
 "use client";
 
+import { signOut } from "next-auth/react";
 import { logout } from "@/app/actions/logout";
-
-
 
 interface LogoutButtonProps {
   children?: React.ReactNode;
-};
+}
 
-export const LogoutButton = ({
-  children
-}: LogoutButtonProps) => {
-  const onClick = () => {
-    logout();
+export const LogoutButton = ({ children }: LogoutButtonProps) => {
+  const onClick = async () => {
+    try {
+      await logout(); // Kall server-handling hvis nødvendig
+      await signOut({ callbackUrl: "/" }); // Logg ut og redirect
+    } catch (error) {
+      console.error("Feil ved utlogging:", error);
+    }
   };
 
   return (
-    <span onClick={onClick} className="cursor-pointer">
-      {children}
+    <span
+      onClick={onClick}
+      className="cursor-pointer text-red-600"
+      style={{ cursor: "pointer" }} // Sørger for at pekehånden vises
+    >
+      {children || "Logg ut"}
     </span>
   );
 };

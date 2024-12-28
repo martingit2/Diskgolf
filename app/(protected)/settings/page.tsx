@@ -3,7 +3,7 @@
 import * as z from "zod";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useTransition, useState } from "react";
+import { useState, useEffect } from "react";
 import { useSession } from "next-auth/react";
 
 import { Switch } from "@/components/ui/switch";
@@ -32,54 +32,79 @@ import { Input } from "@/components/ui/input";
 import { FormError } from "@/components/form-error";
 import { FormSuccess } from "@/components/form-success";
 import { UserRole } from "@prisma/client";
-import { useCurrentUser } from "@/app/hooks/use-current-user";
 import { settings } from "@/app/actions/settings";
 
-const SettingsPage = () => {
-  const user = useCurrentUser();
+type User = {
+  id: string;
+  name: string;
+  email: string;
+  role: UserRole;
+  isTwoFactorEnable?: boolean;
+  isOAuth?: boolean;
+};
 
+const SettingsPage = () => {
+  const { data: session } = useSession();
+  const [user, setUser] = useState<User | null>(null);
   const [error, setError] = useState<string | undefined>();
   const [success, setSuccess] = useState<string | undefined>();
-  const { update } = useSession();
-  const [isPending, startTransition] = useTransition();
+
+  useEffect(() => {
+    if (session?.user) {
+      setUser({
+        id: session.user.id || "",
+        name: session.user.name || "",
+        email: session.user.email || "",
+        role: (session.user.role as UserRole) || UserRole.USER,
+        isTwoFactorEnable: session.user.isTwoFactorEnable,
+        isOAuth: session.user.isOAuth,
+      });
+    }
+  }, [session]);
 
   const form = useForm<z.infer<typeof SettingsSchema>>({
     resolver: zodResolver(SettingsSchema),
     defaultValues: {
       password: undefined,
       newPassword: undefined,
-      name: user?.name || undefined,
-      email: user?.email || undefined,
-      role: user?.role || undefined,
-      isTwoFactorEnabled: user?.isTwoFactorEnable || undefined,
+      name: user?.name || "",
+      email: user?.email || "",
+      role: user?.role || UserRole.USER,
+      isTwoFactorEnabled: user?.isTwoFactorEnable || false,
     },
   });
 
-  const onSubmit = (values: z.infer<typeof SettingsSchema>) => {
-    console.log("Sender verdier til backend:", values); // Debugging
+  useEffect(() => {
+    if (user) {
+      form.reset({
+        name: user.name,
+        email: user.email,
+        role: user.role,
+        isTwoFactorEnabled: user.isTwoFactorEnable || false,
+      });
+    }
+  }, [user, form]);
+
+  const onSubmit = async (values: z.infer<typeof SettingsSchema>) => {
     setError("");
     setSuccess("");
 
-    startTransition(() => {
-      settings(values)
-        .then((data) => {
-          if (data.error) {
-            console.error("Feil fra backend:", data.error); // Debugging
-            setError(data.error);
-          }
-
-          if (data.success) {
-            console.log("Suksess fra backend:", data.success); // Debugging
-            update();
-            setSuccess(data.success);
-          }
-        })
-        .catch((err) => {
-          console.error("Feil ved innsending:", err);
-          setError("Noe gikk galt!");
-        });
-    });
+    try {
+      const data = await settings(values);
+      if (data.error) {
+        setError(data.error);
+      } else {
+        setUser({ ...user!, ...values, id: user!.id });
+        setSuccess(data.success);
+      }
+    } catch {
+      setError("Noe gikk galt!");
+    }
   };
+
+  if (!user) {
+    return <div>Laster inn brukerdata...</div>;
+  }
 
   return (
     <Card className="w-[600px]">
@@ -100,7 +125,6 @@ const SettingsPage = () => {
                       <Input
                         {...field}
                         placeholder="Ola Nordmann"
-                        disabled={isPending}
                       />
                     </FormControl>
                     <FormMessage />
@@ -120,7 +144,6 @@ const SettingsPage = () => {
                             {...field}
                             placeholder="ola.nordmann@eksempel.no"
                             type="email"
-                            disabled={isPending}
                           />
                         </FormControl>
                         <FormMessage />
@@ -138,7 +161,6 @@ const SettingsPage = () => {
                             {...field}
                             placeholder="******"
                             type="password"
-                            disabled={isPending}
                           />
                         </FormControl>
                         <FormMessage />
@@ -156,7 +178,6 @@ const SettingsPage = () => {
                             {...field}
                             placeholder="******"
                             type="password"
-                            disabled={isPending}
                           />
                         </FormControl>
                         <FormMessage />
@@ -172,7 +193,6 @@ const SettingsPage = () => {
                   <FormItem>
                     <FormLabel>Rolle</FormLabel>
                     <Select
-                      disabled={isPending}
                       onValueChange={field.onChange}
                       defaultValue={field.value}
                     >
@@ -205,7 +225,6 @@ const SettingsPage = () => {
                       </div>
                       <FormControl>
                         <Switch
-                          disabled={isPending}
                           checked={field.value}
                           onCheckedChange={field.onChange}
                         />
@@ -217,7 +236,7 @@ const SettingsPage = () => {
             </div>
             <FormError message={error} />
             <FormSuccess message={success} />
-            <Button disabled={isPending} type="submit">
+            <Button type="submit">
               Lagre
             </Button>
           </form>

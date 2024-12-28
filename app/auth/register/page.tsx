@@ -1,13 +1,19 @@
+"use client"
 
-import RegisterForm from '@/components/auth/register-form'
-import React from 'react'
+
+import RegisterForm from "@/components/auth/register-form";
+import { useRouter } from "next/navigation";
 
 const RegisterPage = () => {
-  return (
-    <div className='mt-8'>
-    <RegisterForm />
-    </div>
-  )
-}
+  const router = useRouter();
 
-export default RegisterPage
+  return (
+    <div className="mt-8">
+      <RegisterForm
+        onAlreadyHaveAccount={() => router.push("/auth/login")}
+      />
+    </div>
+  );
+};
+
+export default RegisterPage;

@@ -1,10 +1,10 @@
 'use client';
 
-import { Bars3Icon, XMarkIcon } from "@heroicons/react/24/outline";
-import Image from "next/image";
-import Link from "next/link";
-import { useState, Fragment } from "react";
-import { Dialog, Disclosure, Popover, Transition } from "@headlessui/react";
+import { Bars3Icon, XMarkIcon } from '@heroicons/react/24/outline';
+import Image from 'next/image';
+import Link from 'next/link';
+import { useState, Fragment } from 'react';
+import { Dialog, Disclosure, Popover, Transition } from '@headlessui/react';
 import {
   ChevronDownIcon,
   SunIcon,
@@ -12,63 +12,55 @@ import {
   StarIcon,
   ExclamationTriangleIcon,
   MagnifyingGlassCircleIcon,
-} from "@heroicons/react/20/solid";
-import { cn } from "@/app/lib/utils";
-import UserDropdown from "./UserDropDown";
-
-
-type User = {
-  name: string;
-  email: string;
-};
+} from '@heroicons/react/20/solid';
+import { cn } from '@/app/lib/utils';
+import UserDropdown from './UserDropDown';
+import { useSession } from 'next-auth/react';
+import { User } from '@/app/types';
 
 const navLinks = [
   {
-    name: "Finn bane",
-    description: "Søk etter tilgjengelige baner i nærheten.",
-    href: "#",
+    name: 'Finn bane',
+    description: 'Søk etter tilgjengelige baner i nærheten.',
+    href: '#',
     icon: MagnifyingGlassCircleIcon,
   },
   {
-    name: "Mest populære",
-    description: "De mest populære banene.",
-    href: "#",
+    name: 'Mest populære',
+    description: 'De mest populære banene.',
+    href: '#',
     icon: StarIcon,
   },
   {
-    name: "Rapporter feil på bane",
-    description: "Gi beskjed om ødelagte kurver, manglende skilt eller andre feil.",
-    href: "#",
+    name: 'Rapporter feil på bane',
+    description: 'Gi beskjed om ødelagte kurver, manglende skilt eller andre feil.',
+    href: '#',
     icon: ExclamationTriangleIcon,
   },
 ];
 
 const cta = [
-  { name: "Vis vær", href: "#", icon: SunIcon },
-  { name: "Kontakt oss", href: "#", icon: EnvelopeIcon },
+  { name: 'Vis vær', href: '#', icon: SunIcon },
+  { name: 'Kontakt oss', href: '#', icon: EnvelopeIcon },
 ];
 
-function Header({ currentUser }: { currentUser: User | null }) {
+function Header() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+
+  // Bruker NextAuth for å hente brukerdata
+  const { data: session } = useSession();
+  const currentUser = session?.user as User | null;
 
   return (
     <header className="bg-[#000311]">
-      <nav
-        className="mx-auto flex max-w-7xl items-center justify-between p-6 lg:px-8"
-        aria-label="Global"
-      >
+      <nav className="mx-auto flex max-w-7xl items-center justify-between p-6 lg:px-8" aria-label="Global">
         <div className="flex lg:flex-1 gap-x-8">
           <span className="font-sans text-3xl font-bold bg-gradient-to-r from-green-600 via-green-300 to-green-600 text-transparent bg-clip-text">
             DiscGolf
           </span>
           <Link href="/" className="-m-1.5 p-1.5">
             <span className="sr-only">Discgolf</span>
-            <Image
-              src="/lightgreen.png"
-              alt="Logo"
-              width={48}
-              height={48}
-            />
+            <Image src="/lightgreen.png" alt="Logo" width={48} height={48} />
           </Link>
         </div>
         <div className="flex lg:hidden">
@@ -85,10 +77,7 @@ function Header({ currentUser }: { currentUser: User | null }) {
           <Popover className="relative">
             <Popover.Button className="flex items-center gap-x-1 text-sm font-semibold leading-6 text-white">
               Baner
-              <ChevronDownIcon
-                className="h-5 w-5 flex-none text-white"
-                aria-hidden="true"
-              />
+              <ChevronDownIcon className="h-5 w-5 flex-none text-white" aria-hidden="true" />
             </Popover.Button>
             <Transition
               as={Fragment}
@@ -113,16 +102,11 @@ function Header({ currentUser }: { currentUser: User | null }) {
                         />
                       </div>
                       <div className="flex-auto">
-                        <a
-                          href={item.href}
-                          className="block font-semibold text-[#013B94]"
-                        >
+                        <a href={item.href} className="block font-semibold text-[#013B94]">
                           {item.name}
                           <span className="absolute inset-0" />
                         </a>
-                        <p className="mt-1 text-[#013B94]">
-                          {item.description}
-                        </p>
+                        <p className="mt-1 text-[#013B94]">{item.description}</p>
                       </div>
                     </div>
                   ))}
@@ -134,10 +118,7 @@ function Header({ currentUser }: { currentUser: User | null }) {
                       href={item.href}
                       className="flex items-center justify-center gap-x-2.5 p-3 text-sm font-semibold leading-6 text-[#013B94] hover:bg-gray-100"
                     >
-                      <item.icon
-                        className="h-5 w-5 flex-none text-[#013B94]"
-                        aria-hidden="true"
-                      />
+                      <item.icon className="h-5 w-5 flex-none text-[#013B94]" aria-hidden="true" />
                       {item.name}
                     </a>
                   ))}
@@ -164,24 +145,13 @@ function Header({ currentUser }: { currentUser: User | null }) {
         </div>
       </nav>
 
-      <Dialog
-        as="div"
-        className="lg:hidden"
-        open={mobileMenuOpen}
-        onClose={setMobileMenuOpen}
-      >
+      <Dialog as="div" className="lg:hidden" open={mobileMenuOpen} onClose={setMobileMenuOpen}>
         <div className="fixed inset-0 z-10" />
         <Dialog.Panel className="fixed inset-y-0 right-0 z-10 w-full overflow-y-auto bg-[var(--headerColor)] px-6 py-6 sm:max-w-sm sm:ring-1 sm:ring-gray-900/10">
           <div className="flex items-center justify-between">
             <a href="#" className="-m-1.5 p-1.5">
               <span className="sr-only">DiscGolf</span>
-              <Image
-                className="h-8 w-auto"
-                src="/logogreen.png"
-                alt="Logo"
-                width={32}
-                height={32}
-              />
+              <Image className="h-8 w-auto" src="/logogreen.png" alt="Logo" width={32} height={32} />
             </a>
             <button
               type="button"
@@ -201,10 +171,7 @@ function Header({ currentUser }: { currentUser: User | null }) {
                       <Disclosure.Button className="flex w-full items-center justify-between rounded-lg py-2 pl-3 pr-3.5 text-base font-semibold leading-7 text-white hover:bg-blue-800">
                         Baner
                         <ChevronDownIcon
-                          className={cn(
-                            open ? "rotate-180" : "",
-                            "h-5 w-5 flex-none"
-                          )}
+                          className={cn(open ? 'rotate-180' : '', 'h-5 w-5 flex-none')}
                           aria-hidden="true"
                         />
                       </Disclosure.Button>
@@ -257,6 +224,6 @@ function Header({ currentUser }: { currentUser: User | null }) {
       </Dialog>
     </header>
   );
-};
+}
 
 export default Header;

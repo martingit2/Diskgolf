@@ -11,138 +11,116 @@ import { CardWrapper } from "./card-wrapper";
 import { Button } from "../ui/button";
 import { FormError } from "../form-error";
 import { FormSuccess } from "../form-success";
-import { login } from "@/app/actions/login";
-import { useTransition } from "react";
-import { useSearchParams } from "next/navigation";
-import Link from "next/link";
+import { signIn } from "next-auth/react";
 
-const LoginForm = () => {
-  const searchParams = useSearchParams();
-  const callbackUrl = searchParams.get("callbackUrl") ?? undefined;
-  const urlError = searchParams.get("error") === "OAuthAccountNotLinked"
-    ? "E-post er allerede i bruk!"
-    : "";
+interface LoginFormProps {
+  onForgotPassword: () => void;
+  onRegister: () => void;
+  onLoginSuccess?: () => void;
+}
 
-  const [showTwoFactor, setShowTwoFactor] = useState(false);
-  const [error, setError] = useState<string | undefined>("");
-  const [success, setSuccess] = useState<string | undefined>("");
-  const [isPending, startTransition] = useTransition();
+const LoginForm = ({ onForgotPassword, onRegister, onLoginSuccess }: LoginFormProps) => {
+  const [error, setError] = useState<string | undefined>(undefined);
+  const [success, setSuccess] = useState<string | undefined>(undefined);
+  const [isPending, setIsPending] = useState(false);
 
   const form = useForm<z.infer<typeof LoginSchema>>({
     resolver: zodResolver(LoginSchema),
     defaultValues: {
       email: "",
       password: "",
-      code: "", // Sørg for at `code` starter som tom streng
+      code: "",
     },
   });
 
-  const onSubmit = (values: z.infer<typeof LoginSchema>) => {
+  const onSubmit = async (values: z.infer<typeof LoginSchema>) => {
     setError("");
-    setSuccess("");
+    setSuccess(undefined);
+    setIsPending(true);
 
-    startTransition(() => {
-      login(values, callbackUrl)
-        .then((data) => {
-          if (data?.error) {
-            form.resetField("password"); // Nullstill passordfeltet ved feil
-            setError(data.error);
-          }
+    try {
+      // Kall signIn direkte i klientkomponenten
+      const result = await signIn("credentials", {
+        email: values.email,
+        password: values.password,
+        redirect: false,
+      });
 
-          if (data?.success) {
-            form.reset();
-            setSuccess(data.success);
-          }
+      if (result?.error) {
+        setError("E-post eller passord er feil!");
+        return;
+      }
 
-          if (data?.twoFactor) {
-            console.log("Tofaktor kreves. Setter `showTwoFactor` til true.");
-            setShowTwoFactor(true);
-            form.resetField("code"); // Nullstiller `code`-feltet før tofaktor vises
-          }
-        })
-        .catch(() => setError("Noe gikk galt"));
-    });
+      setSuccess("Innlogging vellykket!");
+      if (onLoginSuccess) {
+        onLoginSuccess();
+      }
+    } catch (err) {
+      console.error("Innloggingsfeil:", err);
+      setError("Noe gikk galt under innloggingen.");
+    } finally {
+      setIsPending(false);
+    }
   };
 
   return (
     <CardWrapper
       headerLabel="Velkommen tilbake"
       backButtonLabel="Har du ikke konto?"
-      backButtonHref="/auth/register"
-      showSocial
+      backButtonHref="/"
+      onBackButtonClick={onRegister}
     >
       <Form {...form}>
         <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
           <div className="space-y-4">
-            {showTwoFactor ? (
-              <FormField
-                control={form.control}
-                name="code"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Skriv inn din 2-FA Kode</FormLabel>
-                    <FormControl>
-                      <Input
-                        {...field}
-                        disabled={isPending}
-                        placeholder="123456"
-                        type="text"
-                      />
-                    </FormControl>
-                  </FormItem>
-                )}
-              />
-            ) : (
-              <>
-                <FormField
-                  control={form.control}
-                  name="email"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>E-post</FormLabel>
-                      <FormControl>
-                        <Input
-                          {...field}
-                          disabled={isPending}
-                          placeholder="ola@nordmann.no"
-                          type="email"
-                        />
-                      </FormControl>
-                    </FormItem>
-                  )}
-                />
-                <FormField
-                  control={form.control}
-                  name="password"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Passord</FormLabel>
-                      <FormControl>
-                        <Input
-                          {...field}
-                          disabled={isPending}
-                          placeholder="********"
-                          type="password"
-                        />
-                      </FormControl>
-                      <Button
-                        size="sm"
-                        variant="link"
-                        asChild
-                        className="px-0 font-medium text-gray-800 hover:text-black hover:underline"
-                      >
-                        <Link href="/auth/reset">Glemt passord?</Link>
-                      </Button>
-                    </FormItem>
-                  )}
-                />
-              </>
-            )}
+            <FormField
+              control={form.control}
+              name="email"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>E-post</FormLabel>
+                  <FormControl>
+                    <Input
+                      {...field}
+                      disabled={isPending}
+                      placeholder="ola@nordmann.no"
+                      type="email"
+                    />
+                  </FormControl>
+                </FormItem>
+              )}
+            />
+            <FormField
+              control={form.control}
+              name="password"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Passord</FormLabel>
+                  <FormControl>
+                    <Input
+                      {...field}
+                      disabled={isPending}
+                      placeholder="********"
+                      type="password"
+                    />
+                  </FormControl>
+                  <Button
+                    size="sm"
+                    variant="link"
+                    onClick={onForgotPassword}
+                    className="px-0 font-medium text-gray-800 hover:text-black hover:underline"
+                    type="button"
+                  >
+                    Glemt passord?
+                  </Button>
+                </FormItem>
+              )}
+            />
           </div>
-          <FormError message={error || urlError} />
+          <FormError message={error} />
           <FormSuccess message={success} />
           <Button disabled={isPending} type="submit" className="w-full">
-            {showTwoFactor ? "Bekreft" : "Logg inn"}
+            Logg inn
           </Button>
         </form>
       </Form>

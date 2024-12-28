@@ -13,7 +13,7 @@ export const NewVerificationForm = () => {
   const [success, setSuccess] = useState<string | undefined>();
 
   const searchParams = useSearchParams();
-  const token = searchParams.get("token");
+  const token = searchParams?.get("token") ?? ""; // Fallback til en tom streng hvis searchParams er null
 
   const onSubmit = useCallback(() => {
     if (success || error) return;
@@ -29,7 +29,7 @@ export const NewVerificationForm = () => {
         setError(data.error);
       })
       .catch(() => {
-        setError("Noe gikk galt!");
+        setError("Noe gikk galt");
       });
   }, [token, success, error]);
 

@@ -10,13 +10,13 @@ import { DEFAULT_LOGIN_REDIRECT } from "@/routes";
 
 export const Social = () => {
   const searchParams = useSearchParams();
-  const callbackUrl = searchParams.get("callbackUrl");
+  const callbackUrl = searchParams?.get("callbackUrl") || DEFAULT_LOGIN_REDIRECT; // Fallback hvis searchParams er null
 
   const onClick = (provider: "google" | "github") => {
     signIn(provider, {
-      callbackUrl: callbackUrl || DEFAULT_LOGIN_REDIRECT,
+      callbackUrl,
     });
-  }
+  };
 
   return (
     <div className="flex items-center w-full gap-x-2">

@@ -5,8 +5,7 @@ import RegisterModal from "@/components/modals/RegisterModal";
 import ToasterProvider from "./providers/ToasterProvider";
 import LoginModal from "@/components/modals/LoginModal";
 import { auth } from "@/auth";
-import { SessionProvider } from "next-auth/react";
-// import getCurrentUser from "./actions/getCurrentUser"; // Kommentar hvis du ikke vil bruke det nå
+import SessionWrapper from "./providers/SessionWrapper";
 
 export const metadata: Metadata = {
   title: "DiscGolf",
@@ -15,25 +14,28 @@ export const metadata: Metadata = {
 
 export default async function RootLayout({
   children,
-}: Readonly<{
+}: {
   children: React.ReactNode;
-}>) {
-  // const currentUser = await getCurrentUser(); // Kommentar for å deaktivere nå
+}) {
+  let session = null;
 
-  const session = await auth()
+  try {
+    session = await auth(); // Hent sesjonen
+  } catch (error) {
+    console.error("Feil ved henting av sesjon:", error);
+  }
 
   return (
-    <SessionProvider session={session}>
     <html lang="en">
       <body>
-        {/* Header */}
         <ToasterProvider />
-        <Header currentUser={null} /> {/* Sender null som prop midlertidig */}
-        <LoginModal />
-        <RegisterModal />
-        {children}
+        <SessionWrapper session={session}>
+          <Header />
+          <LoginModal />
+          <RegisterModal />
+          {children}
+        </SessionWrapper>
       </body>
     </html>
-    </SessionProvider>
   );
 }

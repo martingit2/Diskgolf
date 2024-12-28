@@ -21,6 +21,16 @@ export const LoginButton = ({
     router.push("/auth/login");
   };
 
+  const handleForgotPassword = () => {
+    console.log("Navigerer til glemt passord");
+    router.push("/auth/reset");
+  };
+
+  const handleRegister = () => {
+    console.log("Navigerer til registrering");
+    router.push("/auth/register");
+  };
+
   if (mode === "modal") {
     return (
       <Dialog>
@@ -29,7 +39,10 @@ export const LoginButton = ({
         </DialogTrigger>
         <DialogContent className="p-0 w-auto bg-transparent border-none">
           <DialogTitle className="sr-only">Logg inn</DialogTitle>
-          <LoginForm />
+          <LoginForm
+            onForgotPassword={handleForgotPassword}
+            onRegister={handleRegister}
+          />
         </DialogContent>
       </Dialog>
     );

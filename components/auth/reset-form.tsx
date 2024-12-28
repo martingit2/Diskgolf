@@ -13,15 +13,19 @@ import {
   FormField,
   FormItem,
   FormLabel,
-  FormMessage,  
+  FormMessage,
 } from "@/components/ui/form";
-import { CardWrapper } from "@/components/auth/card-wrapper"
+import { CardWrapper } from "@/components/auth/card-wrapper";
 import { Button } from "@/components/ui/button";
 import { FormError } from "@/components/form-error";
 import { FormSuccess } from "@/components/form-success";
-import { reset } from "@/app/actions/reset"; 
+import { reset } from "@/app/actions/reset";
 
-export const ResetForm = () => {
+interface ResetFormProps {
+  onBackToLogin: () => void; // Riktig definert funksjon
+}
+
+export const ResetForm = ({ onBackToLogin }: ResetFormProps) => {
   const [error, setError] = useState<string | undefined>("");
   const [success, setSuccess] = useState<string | undefined>("");
   const [isPending, startTransition] = useTransition();
@@ -38,28 +42,26 @@ export const ResetForm = () => {
     setSuccess("");
 
     startTransition(() => {
-      reset(values)
-        .then((data) => {
-          setError(data?.error);
-          setSuccess(data?.success);
-        });
+      reset(values).then((data) => {
+        setError(data?.error);
+        setSuccess(data?.success);
+      });
     });
   };
 
   return (
-    <div className="flex justify-center mt-20">
-
     <CardWrapper
       headerLabel="Glemt passord?"
       backButtonLabel="Tilbake til innlogging"
-      backButtonHref="/auth/login"
+      backButtonHref="#"
+      onBackButtonClick={(e) => {
+        e.preventDefault();
+        if (onBackToLogin) onBackToLogin(); // Kaller funksjonen riktig
+      }}
+      showSocial={false}
     >
       <Form {...form}>
-        
-        <form 
-          onSubmit={form.handleSubmit(onSubmit)}
-          className="space-y-6"
-        >
+        <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
           <div className="space-y-4">
             <FormField
               control={form.control}
@@ -80,19 +82,13 @@ export const ResetForm = () => {
               )}
             />
           </div>
-          
           <FormError message={error} />
           <FormSuccess message={success} />
-          <Button
-            disabled={isPending}
-            type="submit"
-            className="w-full"
-          >
+          <Button disabled={isPending} type="submit" className="w-full">
             Send tilbakestillings e-post
           </Button>
         </form>
       </Form>
     </CardWrapper>
-    </div>
   );
 };

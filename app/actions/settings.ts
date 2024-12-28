@@ -1,8 +1,7 @@
 "use server";
 
 import * as z from "zod";
-import bcrypt from "bcrypt";
-
+import bcrypt from "bcryptjs";
 import { SettingsSchema } from "@/schemas";
 import { getUserByEmail, getUserById } from "@/data/user";
 import { currentUser } from "../lib/auth";
@@ -22,12 +21,11 @@ export const settings = async (values: z.infer<typeof SettingsSchema>) => {
   console.log("Bruker:", user);
 
   const dbUser = await getUserById(user.id);
-
   if (!dbUser) {
     return { error: "Uautorisert" };
   }
 
-  // Sjekk om verdiene er gyldige
+  // Sjekk og fjern ugyldige felter for OAuth-brukere
   if (user.isOAuth) {
     values.email = undefined;
     values.password = undefined;
@@ -35,6 +33,7 @@ export const settings = async (values: z.infer<typeof SettingsSchema>) => {
     values.isTwoFactorEnabled = undefined;
   }
 
+  // Håndter e-postoppdatering
   if (values.email && values.email !== dbUser.email) {
     const existingUser = await getUserByEmail(values.email);
 
@@ -48,6 +47,7 @@ export const settings = async (values: z.infer<typeof SettingsSchema>) => {
     return { success: "Verifikasjons-e-post sendt!" };
   }
 
+  // Håndter passordoppdatering
   if (values.password && values.newPassword && dbUser.hashedPassword) {
     const passwordsMatch = await bcrypt.compare(
       values.password,
@@ -63,21 +63,24 @@ export const settings = async (values: z.infer<typeof SettingsSchema>) => {
     values.newPassword = undefined;
   }
 
-  // Håndter tofaktor-autentisering og bytt til riktig felt
+  // Kartlegg felter for databasen
   const updatedData = {
     ...values,
-    isTwoFactorEnable: values.isTwoFactorEnabled, // Kartlegger til riktig felt
+    isTwoFactorEnable: values.isTwoFactorEnabled, // Mapper felt
   };
-  delete updatedData.isTwoFactorEnabled; // Fjern det ikke-eksisterende feltet
+  delete updatedData.isTwoFactorEnabled; // Fjern det som ikke finnes i databasen
 
   // Oppdater bruker i databasen
-  const updatedUser = await client.user.update({
-    where: { id: dbUser.id },
-    data: updatedData,
-  });
+  try {
+    const updatedUser = await client.user.update({
+      where: { id: dbUser.id },
+      data: updatedData,
+    });
 
-  if (!updatedUser) {
-    return { error: "Kunne ikke oppdatere brukeren!" };
+    console.log("Bruker oppdatert i databasen:", updatedUser);
+  } catch (error) {
+    console.error("Feil under oppdatering av bruker:", error);
+    return { error: "Kunne ikke oppdatere brukeren. Prøv igjen senere." };
   }
 
   return { success: "Innstillinger oppdatert!" };

@@ -6,11 +6,13 @@ import { useEffect } from "react";
 
 function SignInPage() {
   const searchParams = useSearchParams();
-  const callbackUrl = searchParams.get("callbackUrl") || "/";
+  const callbackUrl = searchParams?.get("callbackUrl") || "/"; // Fallback hvis searchParams er null
 
   useEffect(() => {
-    // Direkte videresending til NextAuth
-    signIn(undefined, { callbackUrl });
+    if (callbackUrl) {
+      // Direkte videresending til NextAuth
+      signIn(undefined, { callbackUrl });
+    }
   }, [callbackUrl]);
 
   return (

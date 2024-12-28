@@ -14,7 +14,7 @@ import {
   FormField,
   FormItem,
   FormLabel,
-  FormMessage,  
+  FormMessage,
 } from "@/components/ui/form";
 import { CardWrapper } from "@/components/auth/card-wrapper";
 import { Button } from "@/components/ui/button";
@@ -24,7 +24,7 @@ import { newPassword } from "@/app/actions/new-password";
 
 export const NewPasswordForm = () => {
   const searchParams = useSearchParams();
-  const token = searchParams.get("token");
+  const token = searchParams?.get("token") ?? ""; // Fallback til en tom streng hvis searchParams er null
 
   const [error, setError] = useState<string | undefined>("");
   const [success, setSuccess] = useState<string | undefined>("");
@@ -42,58 +42,50 @@ export const NewPasswordForm = () => {
     setSuccess("");
 
     startTransition(() => {
-      newPassword(values, token)
-        .then((data) => {
-          setError(data?.error);
-          setSuccess(data?.success);
-        });
+      newPassword(values, token).then((data) => {
+        setError(data?.error);
+        setSuccess(data?.success);
+      });
     });
   };
 
   return (
     <div className="flex justify-center mt-20">
-    <CardWrapper
-      headerLabel="Skriv inn et nytt passord"
-      backButtonLabel="Tilbake til innlogging"
-      backButtonHref="/auth/login"
-    >
-      <Form {...form}>
-        <form 
-          onSubmit={form.handleSubmit(onSubmit)}
-          className="space-y-6"
-        >
-          <div className="space-y-4">
-            <FormField
-              control={form.control}
-              name="password"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Passord</FormLabel>
-                  <FormControl>
-                    <Input
-                      {...field}
-                      disabled={isPending}
-                      placeholder="******"
-                      type="password"
-                    />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-          </div>
-          <FormError message={error} />
-          <FormSuccess message={success} />
-          <Button
-            disabled={isPending}
-            type="submit"
-            className="w-full"
-          >
-            Tilbakestill passord
-          </Button>
-        </form>
-      </Form>
-    </CardWrapper>
+      <CardWrapper
+        headerLabel="Skriv inn et nytt passord"
+        backButtonLabel="Tilbake til innlogging"
+        backButtonHref="/auth/login"
+      >
+        <Form {...form}>
+          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
+            <div className="space-y-4">
+              <FormField
+                control={form.control}
+                name="password"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Passord</FormLabel>
+                    <FormControl>
+                      <Input
+                        {...field}
+                        disabled={isPending}
+                        placeholder="******"
+                        type="password"
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+            </div>
+            <FormError message={error} />
+            <FormSuccess message={success} />
+            <Button disabled={isPending} type="submit" className="w-full">
+              Tilbakestill passord
+            </Button>
+          </form>
+        </Form>
+      </CardWrapper>
     </div>
   );
 };

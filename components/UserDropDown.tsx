@@ -1,8 +1,4 @@
 "use client";
-/**  Burde sikkert fikse denne bedre, var vanskelig å få til å funke er sikkert en enklere måte
-* Vi bruker feks ikke dashboard akkurat nå men vettafan om vi skal bruke det senere.
-* Lar det bare stå per nå, så ser vi senere hva vi gjør med dette.
-*/
 
 import {
   Dialog,
@@ -11,20 +7,17 @@ import {
 } from "@/components/ui/dialog";
 import {
   PlusCircleIcon,
-  UserIcon,
   ChevronDownIcon,
   ArrowRightIcon,
 } from "@heroicons/react/20/solid";
 import { cn } from "@/app/lib/utils";
 import LoginForm from "@/components/auth/login-form";
 import RegisterForm from "@/components/auth/register-form";
-import { useRouter } from "next/navigation";
+import { ResetForm } from "@/components/auth/reset-form";
 import { useState, useRef, useEffect } from "react";
-
-type User = {
-  name: string;
-  email: string;
-};
+import { useRouter } from "next/navigation";
+import { User } from "@/app/types";
+import Image from "next/image";
 
 function UserDropdown({
   isMobile,
@@ -34,31 +27,24 @@ function UserDropdown({
   currentUser: User | null;
 }) {
   const router = useRouter();
-
   const dropdownRef = useRef<HTMLDivElement>(null);
 
   const [dialogState, setDialogState] = useState<{
-    login: boolean;
-    register: boolean;
+    open: boolean;
+    type: "login" | "register" | "reset-password";
   }>({
-    login: false,
-    register: false,
+    open: false,
+    type: "login",
   });
 
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
 
-  const openDialog = (dialog: "login" | "register") => {
-    setDialogState((prev) => ({
-      ...prev,
-      [dialog]: true,
-    }));
+  const openDialog = (type: "login" | "register" | "reset-password") => {
+    setDialogState({ open: true, type });
   };
 
-  const closeDialog = (dialog: "login" | "register") => {
-    setDialogState((prev) => ({
-      ...prev,
-      [dialog]: false,
-    }));
+  const closeDialog = () => {
+    setDialogState({ open: false, type: "login" });
   };
 
   const toggleDropdown = () => {
@@ -99,8 +85,30 @@ function UserDropdown({
             : "bg-green-700 hover:bg-green-600"
         )}
       >
-        <UserIcon className="h-5 w-5" />
-        {currentUser ? currentUser.name : "Konto"}
+        {currentUser ? (
+          <>
+            {currentUser.image ? (
+              <Image
+                src={currentUser.image}
+                alt="Avatar"
+                className="h-8 w-8 rounded-full"
+                width={32}
+                height={32}
+              />
+            ) : (
+              <div className="h-8 w-8 rounded-full bg-gray-300 flex items-center justify-center">
+                <span className="text-sm font-bold text-gray-600">
+                  {currentUser.name.charAt(0)}
+                </span>
+              </div>
+            )}
+            {currentUser.name}
+          </>
+        ) : (
+          <>
+            Konto
+          </>
+        )}
         <ChevronDownIcon
           className="ml-2 -mr-1 h-5 w-5 text-white"
           aria-hidden="true"
@@ -120,12 +128,27 @@ function UserDropdown({
           </div>
           <div className="py-1">
             {currentUser ? (
-              <button
-                onClick={() => router.push("/dashboard")}
-                className="group flex w-full items-center px-4 py-2 text-sm text-gray-900 hover:bg-blue-100 hover:text-blue-700"
-              >
-                Dashboard
-              </button>
+              <>
+                <button
+                  onClick={() => {
+                    closeDropdown();
+                    router.push("/settings");
+                  }}
+                  className="group flex w-full items-center px-4 py-2 text-sm text-gray-900 hover:bg-gray-100"
+                >
+                  Innstillinger
+                </button>
+                <button
+                  onClick={() => {
+                    closeDropdown();
+                    // Legg til din logout-funksjon her
+                    router.push("/api/auth/signout");
+                  }}
+                  className="group flex w-full items-center px-4 py-2 text-sm text-gray-900 hover:bg-gray-100"
+                >
+                  Logg ut
+                </button>
+              </>
             ) : (
               <>
                 <button
@@ -154,29 +177,35 @@ function UserDropdown({
         </div>
       )}
 
-      {/* Login Dialog */}
+      {/* Dialoger */}
       <Dialog
-        open={dialogState.login}
+        open={dialogState.open}
         onOpenChange={(open) => {
-          if (!open) closeDialog("login");
+          if (!open) closeDialog();
         }}
       >
         <DialogContent className="p-0 w-auto bg-transparent border-none">
-          <DialogTitle className="sr-only">Logg inn</DialogTitle>
-          <LoginForm />
-        </DialogContent>
-      </Dialog>
-
-      {/* Register Dialog */}
-      <Dialog
-        open={dialogState.register}
-        onOpenChange={(open) => {
-          if (!open) closeDialog("register");
-        }}
-      >
-        <DialogContent className="p-0 w-auto bg-transparent border-none">
-          <DialogTitle className="sr-only">Opprett bruker</DialogTitle>
-          <RegisterForm />
+          <DialogTitle className="sr-only">
+            {dialogState.type === "login" && "Logg inn"}
+            {dialogState.type === "register" && "Opprett bruker"}
+            {dialogState.type === "reset-password" && "Tilbakestill passord"}
+          </DialogTitle>
+          {dialogState.type === "login" && (
+            <LoginForm
+              onForgotPassword={() => openDialog("reset-password")}
+              onRegister={() => openDialog("register")}
+              onLoginSuccess={() => {
+                closeDialog();
+                router.push("/settings");
+              }}
+            />
+          )}
+          {dialogState.type === "register" && (
+            <RegisterForm onAlreadyHaveAccount={() => openDialog("login")} />
+          )}
+          {dialogState.type === "reset-password" && (
+            <ResetForm onBackToLogin={() => openDialog("login")} />
+          )}
         </DialogContent>
       </Dialog>
     </div>
