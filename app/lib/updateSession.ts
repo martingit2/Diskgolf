@@ -9,13 +9,13 @@ export const updateSession = async (updatedUser: {
   email: string;
   name: string;
   role: string;
-  isTwoFactorEnabled: boolean;
+  isTwoFactorEnable: boolean;
 }) => {
   await signIn("credentials", {
     redirect: false,
     email: updatedUser.email,
     name: updatedUser.name,
     role: updatedUser.role,
-    isTwoFactorEnabled: updatedUser.isTwoFactorEnabled,
+    isTwoFactorEnable: updatedUser.isTwoFactorEnable,
   });
 };
