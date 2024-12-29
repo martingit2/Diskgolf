@@ -72,7 +72,7 @@ export const authOptions: AuthOptions = {
       if (token.sub && session.user) {
         session.user.id = token.sub;
         session.user.role = token.role as UserRole;
-        session.user.isTwoFactorEnable = token.isTwoFactorEnabled as boolean;
+        session.user.isTwoFactorEnable = token.isTwoFactorEnable as boolean;
         session.user.name = token.name || "Ukjent navn";
         session.user.email = token.email || "Ukjent e-post";
         session.user.isOAuth = token.isOAuth as boolean;
@@ -97,7 +97,7 @@ export const authOptions: AuthOptions = {
         token.name = existingUser.name;
         token.email = existingUser.email;
         token.role = existingUser.role as UserRole;
-        token.isTwoFactorEnabled = existingUser.isTwoFactorEnable;
+        token.isTwoFactorEnable = existingUser.isTwoFactorEnable;
 
         return token;
       } catch (error) {

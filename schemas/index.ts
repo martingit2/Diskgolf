@@ -20,7 +20,7 @@ const passwordValidation = z
 export const SettingsSchema = z
   .object({
     name: z.optional(z.string()),
-    isTwoFactorEnabled: z.optional(z.boolean()),
+    isTwoFactorEnable: z.optional(z.boolean()),
     role: z.enum([UserRole.ADMIN, UserRole.USER, UserRole.CLUB_LEADER]),
     email: z.optional(z.string().email()),
     password: z.optional(passwordValidation),
