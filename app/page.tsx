@@ -18,7 +18,7 @@ export default function Home() {
       </section>
 
 
-      {/* Søkefeltene og kartet */}
+      {/* Søkefeltene og kart */}
       <section className="mx-auto max-w-7xl mt-10 p-6 bg-gradient-to-r from-gray-100 via-white to-gray-100 shadow-lg rounded-lg">
   <div className="text-center p-8">
     <h1 className="text-3xl font-extrabold text-gray-800 leading-tight">
