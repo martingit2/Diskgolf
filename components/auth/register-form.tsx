@@ -1,11 +1,11 @@
-"use client";
+"Use client";
 
 import React, { useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { RegisterSchema } from "@/schemas";
-import { Form, FormControl, FormField, FormItem, FormLabel } from "@/components/ui/form";
+import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { CardWrapper } from "./card-wrapper";
 import { Button } from "../ui/button";
@@ -68,6 +68,7 @@ const RegisterForm = ({ onAlreadyHaveAccount }: RegisterFormProps) => {
                       placeholder="Ola Nordmann"
                     />
                   </FormControl>
+                  <FormMessage /> {/* Viser valideringsfeil for "name" */}
                 </FormItem>
               )}
             />
@@ -85,6 +86,7 @@ const RegisterForm = ({ onAlreadyHaveAccount }: RegisterFormProps) => {
                       type="email"
                     />
                   </FormControl>
+                  <FormMessage /> {/* Viser valideringsfeil for "email" */}
                 </FormItem>
               )}
             />
@@ -102,6 +104,7 @@ const RegisterForm = ({ onAlreadyHaveAccount }: RegisterFormProps) => {
                       type="password"
                     />
                   </FormControl>
+                  <FormMessage /> {/* Viser valideringsfeil for "password" */}
                 </FormItem>
               )}
             />
