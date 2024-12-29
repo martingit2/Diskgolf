@@ -70,7 +70,7 @@ const SettingsPage = () => {
       name: user?.name || "",
       email: user?.email || "",
       role: user?.role || UserRole.USER,
-      isTwoFactorEnable: user?.isTwoFactorEnable || false,
+      isTwoFactorEnabled: user?.isTwoFactorEnable || false,
     },
   });
 
@@ -80,7 +80,7 @@ const SettingsPage = () => {
         name: user.name,
         email: user.email,
         role: user.role,
-        isTwoFactorEnable: user.isTwoFactorEnable || false,
+        isTwoFactorEnabled: user.isTwoFactorEnable || false,
       });
     }
   }, [user, form]);
@@ -214,7 +214,7 @@ const SettingsPage = () => {
               {user?.isOAuth === false && (
                 <FormField
                   control={form.control}
-                  name="isTwoFactorEnable"
+                  name="isTwoFactorEnabled"
                   render={({ field }) => (
                     <FormItem className="flex flex-row items-center justify-between rounded-lg border p-3 shadow-sm">
                       <div className="space-y-0.5">

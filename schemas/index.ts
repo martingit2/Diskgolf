@@ -5,6 +5,7 @@ export const sanitizeInput = (input: string): string => {
   return input.replace(/['"\\;()=]/g, ""); // Fjerner potensielt skadelige tegn som ', ", \, ;, (, ), =
 };
 
+
 // Valideringsregler for passord (gjenbrukes for konsistens)
 const passwordValidation = z
   .string()
@@ -19,7 +20,7 @@ const passwordValidation = z
 export const SettingsSchema = z
   .object({
     name: z.optional(z.string()),
-    isTwoFactorEnable: z.optional(z.boolean()), // Endret fra isTwoFactorEnabled til isTwoFactorEnable
+    isTwoFactorEnabled: z.optional(z.boolean()),
     role: z.enum([UserRole.ADMIN, UserRole.USER, UserRole.CLUB_LEADER]),
     email: z.optional(z.string().email()),
     password: z.optional(passwordValidation),

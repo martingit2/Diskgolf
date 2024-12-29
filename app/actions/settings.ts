@@ -30,7 +30,7 @@ export const settings = async (values: z.infer<typeof SettingsSchema>) => {
     values.email = undefined;
     values.password = undefined;
     values.newPassword = undefined;
-    values.isTwoFactorEnable = undefined; // Riktig felt
+    values.isTwoFactorEnabled = undefined;
   }
 
   // Håndter e-postoppdatering
@@ -66,9 +66,9 @@ export const settings = async (values: z.infer<typeof SettingsSchema>) => {
   // Kartlegg felter for databasen
   const updatedData = {
     ...values,
-    isTwoFactorEnable: values.isTwoFactorEnable, // Riktig felt
+    isTwoFactorEnable: values.isTwoFactorEnabled, // Mapper felt
   };
-  delete updatedData.isTwoFactorEnable; // Slett feilfeltet hvis det finnes
+  delete updatedData.isTwoFactorEnabled; // Fjern det som ikke finnes i databasen
 
   // Oppdater bruker i databasen
   try {

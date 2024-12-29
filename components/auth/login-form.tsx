@@ -5,13 +5,7 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { LoginSchema } from "@/schemas";
-import {
-  Form,
-  FormControl,
-  FormField,
-  FormItem,
-  FormLabel,
-} from "@/components/ui/form";
+import { Form, FormControl, FormField, FormItem, FormLabel } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { CardWrapper } from "./card-wrapper";
 import { Button } from "../ui/button";
@@ -25,11 +19,7 @@ interface LoginFormProps {
   onLoginSuccess?: () => void;
 }
 
-const LoginForm = ({
-  onForgotPassword,
-  onRegister,
-  onLoginSuccess,
-}: LoginFormProps) => {
+const LoginForm = ({ onForgotPassword, onRegister, onLoginSuccess }: LoginFormProps) => {
   const [error, setError] = useState<string | undefined>(undefined);
   const [success, setSuccess] = useState<string | undefined>(undefined);
   const [isPending, setIsPending] = useState(false);
@@ -49,19 +39,15 @@ const LoginForm = ({
     setIsPending(true);
 
     try {
+      // Kall signIn direkte i klientkomponenten
       const result = await signIn("credentials", {
         email: values.email,
         password: values.password,
-        code: values.code, // Legger til 2FA-token
         redirect: false,
       });
 
       if (result?.error) {
-        if (result.error === "Invalid 2FA token") {
-          setError("Ugyldig 2FA-token. Vennligst prøv igjen.");
-        } else {
-          setError("E-post eller passord er feil!");
-        }
+        setError("E-post eller passord er feil!");
         return;
       }
 
@@ -127,23 +113,6 @@ const LoginForm = ({
                   >
                     Glemt passord?
                   </Button>
-                </FormItem>
-              )}
-            />
-            <FormField
-              control={form.control}
-              name="code"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>2FA-kode</FormLabel>
-                  <FormControl>
-                    <Input
-                      {...field}
-                      disabled={isPending}
-                      placeholder="123456"
-                      type="text"
-                    />
-                  </FormControl>
                 </FormItem>
               )}
             />

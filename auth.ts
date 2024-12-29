@@ -3,6 +3,7 @@ import { PrismaAdapter } from "@auth/prisma-adapter";
 import client from "@/app/lib/prismadb";
 import authConfig from "@/auth.config";
 import { getUserById } from "@/data/user";
+import { getTwoFactorConfirmationByUserId } from "@/data/two-factor-confirmation";
 import { getAccountByUserId } from "@/data/account";
 import { UserRole } from "@prisma/client";
 import { getServerSession } from "next-auth/next";
@@ -23,7 +24,7 @@ export const authOptions: AuthOptions = {
     },
   },
   callbacks: {
-    async signIn({ user, account, credentials }) {
+    async signIn({ user, account }) {
       if (account?.provider !== "credentials") return true;
 
       const existingUser = await getUserById(user.id);
@@ -34,23 +35,20 @@ export const authOptions: AuthOptions = {
       }
 
       if (existingUser.isTwoFactorEnable) {
-        if (!user.email) {
-          console.error("E-post mangler for bruker:", user.id);
-          return false; // Avvis innlogging hvis e-post mangler
+        const twoFactorConfirmation = await getTwoFactorConfirmationByUserId(
+          existingUser.id
+        );
+
+        if (!twoFactorConfirmation) {
+          console.error(
+            "Tofaktorautentisering mangler bekreftelse for bruker:",
+            user.id
+          );
+          return false;
         }
 
-        const twoFactorToken = await client.twoFactorToken.findFirst({
-          where: { email: user.email },
-        });
-
-        if (!twoFactorToken || twoFactorToken.token !== credentials?.code) {
-          console.error("Ugyldig 2FA-token for bruker:", user.id);
-          return false; // Avvis innlogging
-        }
-
-        // Slett token etter vellykket validering
-        await client.twoFactorToken.delete({
-          where: { id: twoFactorToken.id },
+        await client.twoFactorConfirmation.delete({
+          where: { id: twoFactorConfirmation.id },
         });
       }
       return true;
@@ -64,7 +62,7 @@ export const authOptions: AuthOptions = {
         session.user.role = token.role as UserRole;
       }
       if (session.user) {
-        session.user.isTwoFactorEnable = token.isTwoFactorEnable as boolean;
+        session.user.isTwoFactorEnable = token.isTwoFactorEnabled as boolean;
         session.user.name = token.name || "Ukjent navn";
         session.user.email = token.email || "Ukjent e-post";
         session.user.isOAuth = token.isOAuth as boolean;
@@ -89,7 +87,7 @@ export const authOptions: AuthOptions = {
       token.name = existingUser.name;
       token.email = existingUser.email;
       token.role = existingUser.role as UserRole;
-      token.isTwoFactorEnable = existingUser.isTwoFactorEnable;
+      token.isTwoFactorEnabled = existingUser.isTwoFactorEnable;
 
       console.log("Oppdatert token:", token);
       return token;
