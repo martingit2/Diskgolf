@@ -28,7 +28,7 @@ export default function Home() {
       Zoom inn på kartet for å finne baner i nærheten eller oppdag nye destinasjoner. Perfekt for både nybegynnere og erfarne spillere.
     </p>
   </div>
-  <div className="relative w-full h-[500px]"> {/* Lagt til "relative" her */}
+  <div className="relative w-full h-[500px]">
     <Map />
     <div className="absolute top-2 right-2 bg-gradient-to-r from-gray-100 via-white to-gray-100 text-gray-800 text-sm px-4 py-2 rounded-lg shadow-lg flex items-center space-x-2">
   <svg
