@@ -10,62 +10,69 @@ import { LoginSchema } from "@/schemas";
 import client from "../lib/prismadb";
 import { generateTwoFactorToken, generateVerificationToken } from "../lib/tokens";
 import { sendTwoFactorTokenEmail, sendVerificationEmail } from "../lib/mail";
+import { signIn } from "next-auth/react"; // Sørg for riktig import
+import { DEFAULT_LOGIN_REDIRECT } from "@/routes";
 
 export const login = async (
-  values: z.infer<typeof LoginSchema>
+  values: z.infer<typeof LoginSchema>,
+  callbackUrl?: string | null
 ): Promise<{ success?: string; error?: string; twoFactor?: boolean }> => {
   const validatedFields = LoginSchema.safeParse(values);
 
   if (!validatedFields.success) {
-    return { error: "Innlogging mislyktes. Sjekk at e-post og passord er riktig formatert." };
+    return { error: "Invalid fields!" };
   }
 
   const { email, password, code } = validatedFields.data;
 
-  // Hent bruker fra databasen
   const existingUser = await getUserByEmail(email);
+
   if (!existingUser || !existingUser.email || !existingUser.hashedPassword) {
-    return { error: "E-post eller passord er feil!" };
+    return { error: "Email does not exist!" };
   }
 
-  // Valider passord
+  // Validate password
   const isPasswordValid = await bcrypt.compare(password, existingUser.hashedPassword);
   if (!isPasswordValid) {
-    return { error: "E-post eller passord er feil!" };
+    return { error: "Invalid credentials!" };
   }
 
-  // Sjekk om e-posten er bekreftet
+  // Check email verification
   if (!existingUser.emailVerified) {
     const verificationToken = await generateVerificationToken(existingUser.email);
-    await sendVerificationEmail(verificationToken.email, verificationToken.token);
-    return { success: "En bekreftelses-e-post er sendt til deg." };
+
+    await sendVerificationEmail(
+      verificationToken.email,
+      verificationToken.token
+    );
+
+    return { success: "Confirmation email sent!" };
   }
 
-  // Håndter tofaktorautentisering
-  if (existingUser.isTwoFactorEnable) {
+  // Handle Two-Factor Authentication (2FA)
+  if (existingUser.isTwoFactorEnable && existingUser.email) {
     if (code) {
-      // Valider 2FA-token
       const twoFactorToken = await getTwoFactorTokenByEmail(existingUser.email);
 
       if (!twoFactorToken) {
-        return { error: "Ugyldig kode!" };
+        return { error: "Invalid code!" };
       }
 
       if (twoFactorToken.token !== code) {
-        return { error: "Ugyldig kode!" };
+        return { error: "Invalid code!" };
       }
 
       const hasExpired = new Date(twoFactorToken.expires) < new Date();
       if (hasExpired) {
-        return { error: "Koden har utløpt. Generer en ny." };
+        return { error: "Code expired!" };
       }
 
-      // Slett token etter validering
+      // Delete 2FA token after successful validation
       await client.twoFactorToken.delete({
         where: { id: twoFactorToken.id },
       });
 
-      // Slett eksisterende bekreftelse, hvis det finnes
+      // Delete existing confirmation if it exists
       const existingConfirmation = await getTwoFactorConfirmationByUserId(existingUser.id);
       if (existingConfirmation) {
         await client.twoFactorConfirmation.delete({
@@ -73,21 +80,36 @@ export const login = async (
         });
       }
 
-      // Opprett ny bekreftelse
+      // Create new confirmation
       await client.twoFactorConfirmation.create({
         data: {
           userId: existingUser.id,
         },
       });
     } else {
-      // Generer og send ny 2FA-kode
+      // Generate and send new 2FA code
       const twoFactorToken = await generateTwoFactorToken(existingUser.email);
-      await sendTwoFactorTokenEmail(twoFactorToken.email, twoFactorToken.token);
+      await sendTwoFactorTokenEmail(
+        twoFactorToken.email,
+        twoFactorToken.token
+      );
 
       return { twoFactor: true };
     }
   }
 
-  // Returner suksessmelding for innlogging
-  return { success: "Innlogging vellykket!" };
+  try {
+    await signIn("credentials", {
+      email,
+      password,
+      redirectTo: callbackUrl || DEFAULT_LOGIN_REDIRECT,
+    });
+  } catch (error) {
+    if (error instanceof Error) {
+      return { error: error.message || "Something went wrong!" };
+    }
+    return { error: "An unknown error occurred." };
+  }
+
+  return { success: "Login successful!" };
 };
