@@ -56,10 +56,10 @@ function Header() {
       <nav className="mx-auto flex max-w-7xl items-center justify-between p-6 lg:px-8" aria-label="Global">
         <div className="flex lg:flex-1 gap-x-8">
           <span className="font-sans text-3xl font-bold bg-gradient-to-r from-green-600 via-green-300 to-green-600 text-transparent bg-clip-text">
-            DiscGolf
+            DiskGolf
           </span>
           <Link href="/" className="-m-1.5 p-1.5">
-            <span className="sr-only">Discgolf</span>
+            <span className="sr-only">DiskGolf</span>
             <Image src="/lightgreen.png" alt="Logo" width={48} height={48} />
           </Link>
         </div>

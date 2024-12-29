@@ -8,8 +8,8 @@ import { auth } from "@/auth";
 import SessionWrapper from "./providers/SessionWrapper";
 
 export const metadata: Metadata = {
-  title: "DiscGolf",
-  description: "DiscGolf App",
+  title: "DiskGolf",
+  description: "DiskGolf App",
 };
 
 export default async function RootLayout({

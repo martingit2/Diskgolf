@@ -1,8 +1,8 @@
 
-import { LoginButton } from "@/components/auth/login-button";
+
 import Map from "@/components/Map";
 import SearchForm from "@/components/SearchForm";
-import { Button } from "@/components/ui/button";
+
 
 export default function Home() {
   return (
@@ -17,35 +17,41 @@ export default function Home() {
         </h2>
       </section>
 
+
       {/* Søkefeltene og kartet */}
-      <section className="mx-auto max-w-7xl mt-10 p-6 bg-white rounded-t-lg shadow-md">
-        <div className="pt-5">
-          <h3 className="text-xl font-bold">Finn og utforsk din neste DiscGolf-bane</h3>
-          <p className="font-light">
-            Oppdag baner nær deg eller utforsk nye destinasjoner. Perfekt for både nybegynnere og erfarne spillere.
-          </p>
-        </div>
+      <section className="mx-auto max-w-7xl mt-10 p-6 bg-gradient-to-r from-gray-100 via-white to-gray-100 shadow-lg rounded-lg">
+  <div className="text-center p-8">
+    <h1 className="text-3xl font-extrabold text-gray-800 leading-tight">
+      Utforsk <span className="text-green-600">DiskGolf-baner</span> på kartet
+    </h1>
+    <p className="text-gray-600 text-lg mt-2">
+      Zoom inn på kartet for å finne baner i nærheten eller oppdag nye destinasjoner. Perfekt for både nybegynnere og erfarne spillere.
+    </p>
+  </div>
+  <div className="relative w-full h-[500px]"> {/* Lagt til "relative" her */}
+    <Map />
+    <div className="absolute top-2 right-2 bg-gradient-to-r from-gray-100 via-white to-gray-100 text-gray-800 text-sm px-4 py-2 rounded-lg shadow-lg flex items-center space-x-2">
+  <svg
+    xmlns="http://www.w3.org/2000/svg"
+    className="h-5 w-5 text-green-600"
+    fill="none"
+    viewBox="0 0 24 24"
+    stroke="currentColor"
+    strokeWidth={2}
+  >
+    <path
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      d="M8 16l-4-4m0 0l4-4m-4 4h16"
+    />
+  </svg>
+  <span className="font-medium">Dra og zoom for å utforske</span>
+</div>
+  </div>
 
         {/* Søke-seksjon */}
-        <div className="mt-6">
+        <div className="mt-20">
           <SearchForm />
-        </div>
-
-        {/* Kart-seksjon */}
-        <div className="mt-10">
-          <h1 className="text-2xl font-bold mb-4 text-center">Utforsk DiscGolf-baner på kartet</h1>
-          <div className="w-full h-[500px]">
-            <Map /> {/* Kartet vises uten eksplisitt center-prop */}
-          </div>
-        </div>
-        <div className="mt-10 mb-4 text-center">
-        <LoginButton asChild>
-          <Button variant="secondary" size="lg">
-            Test
-
-          </Button>
-
-        </LoginButton>
         </div>
       </section>
     </main>
