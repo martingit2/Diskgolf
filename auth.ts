@@ -17,80 +17,93 @@ export const authOptions: AuthOptions = {
   },
   events: {
     async linkAccount({ user }) {
-      await client.user.update({
-        where: { id: user.id },
-        data: { emailVerified: new Date() },
-      });
+      try {
+        await client.user.update({
+          where: { id: user.id },
+          data: { emailVerified: new Date() },
+        });
+      } catch (error) {
+        console.error("Feil under linking av konto:", error);
+      }
     },
   },
   callbacks: {
     async signIn({ user, account }) {
-      if (account?.provider !== "credentials") return true;
+      try {
+        // Tillat OAuth uten e-postverifisering
+        if (account?.provider !== "credentials") return true;
 
-      const existingUser = await getUserById(user.id);
+        const existingUser = await getUserById(user.id);
 
-      if (!existingUser?.emailVerified) {
-        console.error("E-posten er ikke verifisert for bruker:", user.id);
-        return false;
-      }
-
-      if (existingUser.isTwoFactorEnable) {
-        const twoFactorConfirmation = await getTwoFactorConfirmationByUserId(
-          existingUser.id
-        );
-
-        if (!twoFactorConfirmation) {
-          console.error(
-            "Tofaktorautentisering mangler bekreftelse for bruker:",
-            user.id
-          );
+        // Avslå innlogging uten e-postverifisering
+        if (!existingUser?.emailVerified) {
+          console.error("E-posten er ikke verifisert for bruker:", user.id);
           return false;
         }
 
-        await client.twoFactorConfirmation.delete({
-          where: { id: twoFactorConfirmation.id },
-        });
+        // Håndter tofaktorautentisering
+        if (existingUser.isTwoFactorEnable) {
+          const twoFactorConfirmation = await getTwoFactorConfirmationByUserId(
+            existingUser.id
+          );
+
+          if (!twoFactorConfirmation) {
+            console.error(
+              "Tofaktorautentisering mangler bekreftelse for bruker:",
+              user.id
+            );
+            return false;
+          }
+
+          // Slett bekreftelsen etter vellykket validering
+          await client.twoFactorConfirmation.delete({
+            where: { id: twoFactorConfirmation.id },
+          });
+        }
+
+        return true;
+      } catch (error) {
+        console.error("Feil i signIn callback:", error);
+        return false;
       }
-      return true;
     },
 
     async session({ token, session }) {
       if (token.sub && session.user) {
         session.user.id = token.sub;
-      }
-      if (token.role && session.user) {
         session.user.role = token.role as UserRole;
-      }
-      if (session.user) {
         session.user.isTwoFactorEnable = token.isTwoFactorEnabled as boolean;
         session.user.name = token.name || "Ukjent navn";
         session.user.email = token.email || "Ukjent e-post";
         session.user.isOAuth = token.isOAuth as boolean;
       }
-      console.log("Oppdatert sesjon:", session);
       return session;
     },
 
     async jwt({ token }) {
       if (!token.sub) return token;
 
-      const existingUser = await getUserById(token.sub);
+      try {
+        const existingUser = await getUserById(token.sub);
 
-      if (!existingUser) {
-        console.error("Fant ikke bruker for token.sub:", token.sub);
+        if (!existingUser) {
+          console.error("Fant ikke bruker for token.sub:", token.sub);
+          return token;
+        }
+
+        const existingAccount = await getAccountByUserId(existingUser.id);
+
+        token.isOAuth = !!existingAccount;
+        token.name = existingUser.name;
+        token.email = existingUser.email;
+        token.role = existingUser.role as UserRole;
+        token.isTwoFactorEnabled = existingUser.isTwoFactorEnable;
+
+        return token;
+      } catch (error) {
+        console.error("Feil i JWT callback:", error);
         return token;
       }
-
-      const existingAccount = await getAccountByUserId(existingUser.id);
-
-      token.isOAuth = !!existingAccount;
-      token.name = existingUser.name;
-      token.email = existingUser.email;
-      token.role = existingUser.role as UserRole;
-      token.isTwoFactorEnabled = existingUser.isTwoFactorEnable;
-
-      console.log("Oppdatert token:", token);
-      return token;
     },
   },
   adapter: PrismaAdapter(client),
