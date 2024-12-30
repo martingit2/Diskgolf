@@ -17,34 +17,42 @@ const passwordValidation = z
     message: "Passord kan ikke inneholde apostrofer",
   });
 
-export const SettingsSchema = z
+  export const SettingsSchema = z
   .object({
-    name: z.optional(z.string()),
-    isTwoFactorEnable: z.optional(z.boolean()),
+    name: z.optional(z.string().min(1, "Navn kan ikke være tomt")),
+    email: z.optional(z.string().email({ message: "Ugyldig e-postadresse" })),
     role: z.enum([UserRole.ADMIN, UserRole.USER, UserRole.CLUB_LEADER]),
-    email: z.optional(z.string().email()),
-    password: z.optional(passwordValidation),
-    newPassword: z.optional(passwordValidation),
+    isTwoFactorEnabled: z.optional(z.boolean()),
+    password: z.optional(z.string()), // Ingen forhåndsvalidering her
+    newPassword: z.optional(z.string()), // Ingen forhåndsvalidering her
   })
-  .refine((data) => {
-    if (data.password && !data.newPassword) {
-      return false;
+  .superRefine((data, ctx) => {
+    // Hvis brukeren forsøker å oppdatere passord, må begge feltene være oppgitt og valide
+    if ((data.password && !data.newPassword) || (!data.password && data.newPassword)) {
+      ctx.addIssue({
+        code: "custom",
+        path: ["password"], // Feltet som feilen er knyttet til
+        message: "Både gjeldende og nytt passord må oppgis hvis du vil endre passord.",
+      });
     }
 
-    return true;
-  }, {
-    message: "Nytt passord er påkrevd!",
-    path: ["newPassword"],
-  })
-  .refine((data) => {
-    if (data.newPassword && !data.password) {
-      return false;
+    // Validering for nytt passord
+    if (data.newPassword && (!data.password || data.password.length < 6)) {
+      ctx.addIssue({
+        code: "custom",
+        path: ["password"],
+        message: "Gjeldende passord må være minst 6 tegn for å oppdatere passord.",
+      });
     }
 
-    return true;
-  }, {
-    message: "Passord er påkrevd!",
-    path: ["password"],
+    // Validering for nytt passord må oppfylle regler bare når det er oppgitt
+    if (data.newPassword && data.newPassword.length < 6) {
+      ctx.addIssue({
+        code: "custom",
+        path: ["newPassword"],
+        message: "Nytt passord må være minst 6 tegn.",
+      });
+    }
   });
 
 export const NewPasswordSchema = z.object({
