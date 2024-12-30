@@ -34,7 +34,7 @@ Applikasjonen vil tilby funksjonalitet som:
 - [React Spinners (BeatLoader)](https://www.npmjs.com/package/react-spinners) for lasteindikatorer
 
 **Backend:**
-- [Supabase](https://supabase.com/) for databasehåndtering og autentisering
+- [Supabase](https://supabase.com/) for postgressql databasehåndtering og autentisering
 - [Prisma](https://www.prisma.io/) for ORM og databasemanipulasjon
 - [NextAuth.js](https://next-auth.js.org/) for autentisering
 - [bcrypt](https://www.npmjs.com/package/bcrypt) for passordkryptering
