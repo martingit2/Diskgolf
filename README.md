@@ -4,7 +4,7 @@
 
 Dette er prosjektet til gruppe 11 i emnet **APP-2000** ved **Universitetet i Sørøst-Norge (USN)**, Campus Bø, studieåret **2024/2025**. Prosjektet går ut på å utvikle en **webapplikasjon for discgolf**, med både desktop- og mobilvennlig funksjonalitet.
 
-Applikasjonen er under utvikling og er tilgjengelig på: [https://diskgolf.app](https://diskgolf.app). Vær oppmerksom på at siden ikke er under utvikling og kan inneholde feil. Denne oppdateres med nytt innhold hver gang vi oppdaterer main branch.
+Applikasjonen er under utvikling og er tilgjengelig på: [https://diskgolf.app](https://diskgolf.app). Vær oppmerksom på at siden ikke er komplett og kan inneholde feil. Denne oppdateres med nytt innhold hver gang vi oppdaterer main branch.
 
 ### Gruppemedlemmer
 - **Maria Sofie Ulvheim**
