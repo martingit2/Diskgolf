@@ -55,8 +55,8 @@ export const settings = async (values: z.infer<typeof SettingsSchema>) => {
       return { error: "Feil passord!" };
     }
 
-    const hashedPassword = await bcrypt.hash(values.newPassword, 10);
-    values.password = hashedPassword;
+    const Password = await bcrypt.hash(values.newPassword, 10);
+    values.password = Password;
     values.newPassword = undefined;
   }
 
