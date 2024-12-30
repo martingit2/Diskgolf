@@ -33,7 +33,7 @@ Applikasjonen vil tilby funksjonalitet som:
 - [Axios](https://axios-http.com/) for HTTP-forespørsler
 
 **Backend:**
-- [Supabase](https://supabase.com/) for database og autentisering
+- [Supabase](https://supabase.com/) for postgressql database og autentisering
 - [Prisma](https://www.prisma.io/) for ORM og databasemanipulasjon
 - [NextAuth.js](https://next-auth.js.org/) for brukerhåndtering og autentisering
 - [Zod](https://zod.dev/) for datavalidering
