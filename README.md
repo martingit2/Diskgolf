@@ -20,26 +20,30 @@ Applikasjonen vil tilby funksjonalitet som:
 - **Poengkort** for spillere som registrerer sine resultater underveis.
 - **Brukerkontoer** for å lagre resultater, statistikker og anmeldelser.
 
-## Teknologi og verktøy
-
 **Frontend:**
 - [Next.js](https://nextjs.org/) med pages routing
 - [Tailwind CSS](https://tailwindcss.com/) for styling
-- [shadcn/ui](https://shadcn.dev/) for UI-komponenter
-- [Heroicons](https://heroicons.com/) og [Headless UI](https://headlessui.dev/) for ikoner og tilgjengelige komponenter
-- [Axios](https://axios-http.com/) for HTTP-forespørsler
-- [Zustand](https://github.com/pmndrs/zustand) for tilstandshåndtering
+- [Shadcn/UI](https://shadcn.dev/) for UI-komponenter
+- [Headless UI](https://headlessui.dev/) for tilgjengelige komponenter
+- [Heroicons](https://heroicons.com/) for ikoner
 - [React Hook Form](https://react-hook-form.com/) for skjemaer
 - [React Hot Toast](https://react-hot-toast.com/) for varslinger
-- [React Spinners (BeatLoader)](https://www.npmjs.com/package/react-spinners) for lasteindikatorer
+- [Zustand](https://github.com/pmndrs/zustand) for tilstandshåndtering
+- [React-Leaflet](https://react-leaflet.js.org/) for kartintegrasjon
+- [Axios](https://axios-http.com/) for HTTP-forespørsler
 
 **Backend:**
-- [Supabase](https://supabase.com/) for postgressql databasehåndtering og autentisering
+- [Supabase](https://supabase.com/) for database og autentisering
 - [Prisma](https://www.prisma.io/) for ORM og databasemanipulasjon
-- [NextAuth.js](https://next-auth.js.org/) for autentisering
-- [bcrypt](https://www.npmjs.com/package/bcrypt) for passordkryptering
+- [NextAuth.js](https://next-auth.js.org/) for brukerhåndtering og autentisering
 - [Zod](https://zod.dev/) for datavalidering
 - [Resend](https://resend.com/) for e-posthåndtering
+
+**Dev-verktøy:**
+- [ESLint](https://eslint.org/) for kodekvalitet
+- [TypeScript](https://www.typescriptlang.org/) for statisk typet JavaScript
+- [Tailwind CSS Animate](https://github.com/tailwindlabs/tailwindcss-animate) for animasjoner
+- [PostCSS](https://postcss.org/) for CSS-transformasjoner
 
 **Deploy:**
 - [Vercel](https://vercel.com/) for hosting av frontend og backend.
