@@ -38,8 +38,9 @@ APP2000_G11_25/
 ├── docs/                            # Dokumentasjon og ressurser
 │   ├── Project_WBS_Plan.docx        # Prosjektplan og WBS-diagram
 │   └── Figma/                       # Figma-design og prototyper
-├── src/                             # Kildekode
-│   ├── frontend/                    # Frontend-kode
-│   └── backend/                     # Backend-kode
+├── app/                             # Kildekode
+│   ├── (protected)                  # Frontend-kode
+│   └── actions/                     # Backend-kode
+|   └── Components/                  # Komponenter
 ├── data/                            # Data og statiske ressurser
 ├── README.md                        # Prosjektdokumentasjon
