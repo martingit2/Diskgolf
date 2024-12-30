@@ -12,6 +12,7 @@ import { Button } from "../ui/button";
 import { FormError } from "../form-error";
 import { FormSuccess } from "../form-success";
 import { signIn } from "next-auth/react";
+import { Social } from "./social"; // Import Social-komponenten
 
 interface LoginFormProps {
   onForgotPassword: () => void;
@@ -39,7 +40,6 @@ const LoginForm = ({ onForgotPassword, onRegister, onLoginSuccess }: LoginFormPr
     setIsPending(true);
 
     try {
-      // Kall signIn direkte i klientkomponenten
       const result = await signIn("credentials", {
         email: values.email,
         password: values.password,
@@ -124,6 +124,9 @@ const LoginForm = ({ onForgotPassword, onRegister, onLoginSuccess }: LoginFormPr
           </Button>
         </form>
       </Form>
+      <div className="mt-4">
+        <Social /> {/* Social plasseres nå under "Logg inn"-knappen */}
+      </div>
     </CardWrapper>
   );
 };
