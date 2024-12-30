@@ -22,9 +22,9 @@ import { FormError } from "@/components/form-error";
 import { FormSuccess } from "@/components/form-success";
 import { newPassword } from "@/app/actions/new-password";
 
-export const NewPasswordForm = () => {
+const NewPasswordForm = () => {
   const searchParams = useSearchParams();
-  const token = searchParams?.get("token") ?? ""; // Fallback til en tom streng hvis searchParams er null
+  const token = searchParams?.get("token") || ""; // Hent token fra URL-en
 
   const [error, setError] = useState<string | undefined>("");
   const [success, setSuccess] = useState<string | undefined>("");
@@ -89,3 +89,11 @@ export const NewPasswordForm = () => {
     </div>
   );
 };
+
+export default function WrappedNewPasswordForm() {
+  return (
+    <div className="flex justify-center">
+      <NewPasswordForm />
+    </div>
+  );
+}

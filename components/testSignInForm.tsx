@@ -2,7 +2,7 @@
 
 import { signIn } from "next-auth/react";
 import { useSearchParams } from "next/navigation";
-import { useEffect } from "react";
+import { Suspense, useEffect } from "react";
 
 function SignInForm() {
   const searchParams = useSearchParams();
@@ -17,4 +17,10 @@ function SignInForm() {
   return null;
 }
 
-export default SignInForm;
+export default function WrappedSignInForm() {
+  return (
+    <Suspense fallback={<div>Laster inn...</div>}>
+      <SignInForm />
+    </Suspense>
+  );
+}

@@ -2,20 +2,19 @@
 
 import LoginForm from "@/components/auth/login-form";
 
+export const dynamic = "force-dynamic";
+
 const LoginPage = () => {
   const handleForgotPassword = () => {
     console.log("Naviger til glemt passord");
-    // Legg til logikk for navigasjon til glemt passord-side
   };
 
   const handleRegister = () => {
     console.log("Naviger til registrering");
-    // Legg til logikk for navigasjon til registreringsside
   };
 
   const handleLoginSuccess = () => {
     console.log("Innlogging vellykket");
-    // Legg til logikk for navigasjon til dashboard eller annen side
   };
 
   return (

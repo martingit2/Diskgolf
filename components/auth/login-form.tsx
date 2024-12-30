@@ -12,7 +12,7 @@ import { Button } from "../ui/button";
 import { FormError } from "../form-error";
 import { FormSuccess } from "../form-success";
 import { signIn } from "next-auth/react";
-import { Social } from "./social"; // Import Social-komponenten
+import SocialWithSuspense from "./social-with-suspense"; // Oppdatert import
 
 interface LoginFormProps {
   onForgotPassword: () => void;
@@ -125,7 +125,7 @@ const LoginForm = ({ onForgotPassword, onRegister, onLoginSuccess }: LoginFormPr
         </form>
       </Form>
       <div className="mt-4">
-        <Social /> {/* Social plasseres nå under "Logg inn"-knappen */}
+        <SocialWithSuspense /> {/* Bruker nå SocialWithSuspense */}
       </div>
     </CardWrapper>
   );
