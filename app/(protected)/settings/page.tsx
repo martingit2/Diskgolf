@@ -6,7 +6,6 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useState, useEffect } from "react";
 import { useSession } from "next-auth/react";
 
-import { Switch } from "@/components/ui/switch";
 import {
   Select,
   SelectContent,
@@ -24,7 +23,6 @@ import {
   FormControl,
   FormItem,
   FormLabel,
-  FormDescription,
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
@@ -39,51 +37,51 @@ type User = {
   name: string;
   email: string;
   role: UserRole;
-  isTwoFactorEnable?: boolean;
-  isOAuth?: boolean;
+  isOAuth: boolean;
 };
 
 const SettingsPage = () => {
-  const { data: session } = useSession();
+  const { data: session, status } = useSession();
   const [user, setUser] = useState<User | null>(null);
   const [error, setError] = useState<string | undefined>();
   const [success, setSuccess] = useState<string | undefined>();
+  const [isReady, setIsReady] = useState(false);
 
+  // Oppdaterer brukerdata basert på session
   useEffect(() => {
-    if (session?.user) {
+    if (status === "authenticated" && session?.user) {
       setUser({
         id: session.user.id || "",
-        name: session.user.name || "",
-        email: session.user.email || "",
+        name: session.user.name || "Ukjent bruker",
+        email: session.user.email || "Ingen e-post",
         role: (session.user.role as UserRole) || UserRole.USER,
-        isTwoFactorEnable: session.user.isTwoFactorEnable,
-        isOAuth: session.user.isOAuth,
+        isOAuth: session.user.isOAuth ?? false,
       });
+      setIsReady(true);
     }
-  }, [session]);
+  }, [status, session]);
 
   const form = useForm<z.infer<typeof SettingsSchema>>({
     resolver: zodResolver(SettingsSchema),
     defaultValues: {
+      name: "",
+      email: "",
+      role: UserRole.USER,
       password: undefined,
       newPassword: undefined,
-      name: user?.name || "",
-      email: user?.email || "",
-      role: user?.role || UserRole.USER,
-      isTwoFactorEnable: user?.isTwoFactorEnable || false,
     },
   });
 
+  // Oppdater skjemaet når brukerdata endres
   useEffect(() => {
     if (user) {
       form.reset({
         name: user.name,
         email: user.email,
         role: user.role,
-        isTwoFactorEnable: user.isTwoFactorEnable || false,
       });
     }
-  }, [user, form]);
+  }, [user]);
 
   const onSubmit = async (values: z.infer<typeof SettingsSchema>) => {
     setError("");
@@ -102,12 +100,16 @@ const SettingsPage = () => {
     }
   };
 
-  if (!user) {
+  if (status === "loading" || !isReady) {
     return <div>Laster inn brukerdata...</div>;
   }
 
+  if (!user) {
+    return <div>Ingen brukerdata tilgjengelig.</div>;
+  }
+
   return (
-    <Card className="w-[600px]">
+    <Card key={user.id} className="w-[600px]">
       <CardHeader>
         <p className="text-2xl font-semibold text-center">⚙️ Innstillinger</p>
       </CardHeader>
@@ -115,6 +117,7 @@ const SettingsPage = () => {
         <Form {...form}>
           <form className="space-y-6" onSubmit={form.handleSubmit(onSubmit)}>
             <div className="space-y-4">
+              {/* Navn */}
               <FormField
                 control={form.control}
                 name="name"
@@ -122,34 +125,62 @@ const SettingsPage = () => {
                   <FormItem>
                     <FormLabel>Navn</FormLabel>
                     <FormControl>
+                      <Input {...field} placeholder="Ola Nordmann" />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              {/* E-post */}
+              <FormField
+                control={form.control}
+                name="email"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>E-post</FormLabel>
+                    <FormControl>
                       <Input
                         {...field}
-                        placeholder="Ola Nordmann"
+                        placeholder="ola.nordmann@eksempel.no"
+                        type="email"
                       />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
                 )}
               />
-              {user?.isOAuth === false && (
+              {/* Rolle */}
+              <FormField
+                control={form.control}
+                name="role"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Rolle</FormLabel>
+                    <Select
+                      onValueChange={field.onChange}
+                      defaultValue={field.value}
+                    >
+                      <FormControl>
+                        <SelectTrigger>
+                          <SelectValue placeholder="Velg en rolle" />
+                        </SelectTrigger>
+                      </FormControl>
+                      <SelectContent>
+                        <SelectItem value={UserRole.ADMIN}>Administrator</SelectItem>
+                        <SelectItem value={UserRole.USER}>Bruker</SelectItem>
+                        <SelectItem value={UserRole.CLUB_LEADER}>
+                          Klubbleder
+                        </SelectItem>
+                      </SelectContent>
+                    </Select>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              {/* Passord-felter, hvis ikke OAuth */}
+              {user.isOAuth === false && (
                 <>
-                  <FormField
-                    control={form.control}
-                    name="email"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>E-post</FormLabel>
-                        <FormControl>
-                          <Input
-                            {...field}
-                            placeholder="ola.nordmann@eksempel.no"
-                            type="email"
-                          />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
+                  {/* Gjeldende passord */}
                   <FormField
                     control={form.control}
                     name="password"
@@ -167,6 +198,7 @@ const SettingsPage = () => {
                       </FormItem>
                     )}
                   />
+                  {/* Nytt passord */}
                   <FormField
                     control={form.control}
                     name="newPassword"
@@ -186,59 +218,10 @@ const SettingsPage = () => {
                   />
                 </>
               )}
-              <FormField
-                control={form.control}
-                name="role"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Rolle</FormLabel>
-                    <Select
-                      onValueChange={field.onChange}
-                      defaultValue={field.value}
-                    >
-                      <FormControl>
-                        <SelectTrigger>
-                          <SelectValue placeholder="Velg en rolle" />
-                        </SelectTrigger>
-                      </FormControl>
-                      <SelectContent>
-                        <SelectItem value={UserRole.ADMIN}>Administrator</SelectItem>
-                        <SelectItem value={UserRole.USER}>Bruker</SelectItem>
-                        <SelectItem value={UserRole.CLUB_LEADER}>Klubbleder</SelectItem>
-                      </SelectContent>
-                    </Select>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-              {user?.isOAuth === false && (
-                <FormField
-                  control={form.control}
-                  name="isTwoFactorEnable"
-                  render={({ field }) => (
-                    <FormItem className="flex flex-row items-center justify-between rounded-lg border p-3 shadow-sm">
-                      <div className="space-y-0.5">
-                        <FormLabel>Tofaktor-autentisering</FormLabel>
-                        <FormDescription>
-                          Aktiver tofaktor-autentisering for kontoen din.
-                        </FormDescription>
-                      </div>
-                      <FormControl>
-                        <Switch
-                          checked={field.value}
-                          onCheckedChange={field.onChange}
-                        />
-                      </FormControl>
-                    </FormItem>
-                  )}
-                />
-              )}
             </div>
             <FormError message={error} />
             <FormSuccess message={success} />
-            <Button type="submit">
-              Lagre
-            </Button>
+            <Button type="submit">Lagre</Button>
           </form>
         </Form>
       </CardContent>

@@ -27,13 +27,16 @@ export default async function RootLayout({
 
   return (
     <html lang="en">
-      <body>
+      <body className="min-h-screen flex flex-col">
         <ToasterProvider />
         <SessionWrapper session={session}>
           <Header />
           <LoginModal />
           <RegisterModal />
-          {children}
+          <main className="flex-grow">{children}</main>
+          <footer className="text-white p-4 text-center" style={{ backgroundColor: "var(--headerColor)" }}>
+            © 2024 DiskGolf. Alle rettigheter forbeholdt.
+          </footer>
         </SessionWrapper>
       </body>
     </html>
