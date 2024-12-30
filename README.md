@@ -23,7 +23,7 @@ Applikasjonen vil tilby funksjonalitet som:
 ## Teknologi og verktøy
 
 **Frontend:**
-- [Next.js](https://nextjs.org/) med pages routing (ikke app-router)
+- [Next.js](https://nextjs.org/) med pages routing
 - [Tailwind CSS](https://tailwindcss.com/) for styling
 - [shadcn/ui](https://shadcn.dev/) for UI-komponenter
 - [Heroicons](https://heroicons.com/) og [Headless UI](https://headlessui.dev/) for ikoner og tilgjengelige komponenter
