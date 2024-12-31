@@ -21,7 +21,7 @@ Applikasjonen vil tilby funksjonalitet som:
 - **Brukerkontoer** for å lagre resultater, statistikker og anmeldelser.
 
 **Frontend:**
-- [Next.js](https://nextjs.org/) med pages routing
+- [Next.js](https://nextjs.org/) for hybrid routing-struktur og server-side rendering
 - [Tailwind CSS](https://tailwindcss.com/) for styling
 - [Shadcn/UI](https://shadcn.dev/) for UI-komponenter
 - [Headless UI](https://headlessui.dev/) for tilgjengelige komponenter
@@ -47,6 +47,20 @@ Applikasjonen vil tilby funksjonalitet som:
 
 **Deploy:**
 - [Vercel](https://vercel.com/) for hosting av frontend og backend.
+
+---
+
+## **Arkitektur**
+Vi bruker en **hybrid løsning** for applikasjonen:
+- **Server Actions**: Brukes for intern logikk og håndtering av funksjoner som sletting av brukere, oppretting av vurderinger, osv. Dette gir rask og effektiv kommunikasjon mellom frontend og backend uten unødvendige nettverkskall.
+- **API-ruter**: Brukes for å eksponere spesifikke data til eksterne klienter (f.eks. mobilapper eller tredjeparts tjenester). Disse håndteres gjennom RESTful API-ruter definert i `/pages/api`.
+
+### **Eksempel**
+- **Server Actions**:
+  - Slett bruker: Kalles direkte fra frontend via `actions/delete.ts`.
+  - Opprett vurdering: Kalles fra frontend uten nettverksforespørsel.
+- **API-ruter**:
+  - Hent baner: RESTful endepunkt `/api/courses` gir eksterne klienter tilgang til informasjon om discgolfbaner.
 
 ---
 
