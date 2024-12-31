@@ -33,6 +33,7 @@ import { FormError } from "@/components/form-error";
 import { FormSuccess } from "@/components/form-success";
 import { UserRole } from "@prisma/client";
 import { settings } from "@/app/actions/settings";
+import { deleteUser } from "@/app/actions/delete-user";
 
 type User = {
   id: string;
@@ -48,6 +49,7 @@ const SettingsPage = () => {
   const [user, setUser] = useState<User | null>(null);
   const [error, setError] = useState<string | undefined>();
   const [success, setSuccess] = useState<string | undefined>();
+  const [isDeleting, setIsDeleting] = useState(false); // For sletting
 
   useEffect(() => {
     if (session?.user) {
@@ -103,6 +105,30 @@ const SettingsPage = () => {
       setError("Noe gikk galt!");
     }
   };
+
+
+  // Funksjon for å håndtere sletting av brukeren
+  const handleDeleteUser = async () => {
+    if (confirm("Er du sikker på at du vil slette kontoen din?")) {
+      setIsDeleting(true);
+      try {
+        const response = await deleteUser();
+        if (response.success) {
+          alert(response.message);
+          window.location.href = "/"; // Send brukeren til startsiden
+        } else {
+          setError(response.message);
+        }
+      } catch {
+        setError("Noe gikk galt under sletting.");
+      } finally {
+        setIsDeleting(false);
+      }
+    }
+  };
+
+
+
 
   if (!user) {
     return <div>Laster inn brukerdata...</div>;
@@ -222,6 +248,16 @@ const SettingsPage = () => {
             <FormSuccess message={success} />
             <Button type="submit">Lagre</Button>
           </form>
+          <div className="mt-6">
+            <Button
+              variant="destructive"
+              onClick={handleDeleteUser}
+              disabled={isDeleting}
+              className="bg-red-500 hover:bg-red-600 text-white"
+            >
+              {isDeleting ? "Sletter..." : "Slett min konto"}
+            </Button>
+          </div>
         </Form>
       </CardContent>
     </Card>

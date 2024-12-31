@@ -20,7 +20,10 @@ import { PrismaClient } from "@prisma/client"; // Importerer Prisma-klienten fra
 
 
 /* eslint-disable @typescript-eslint/no-unused-vars */
-const prisma = new PrismaClient();
+const prisma = new PrismaClient({
+  log: ["query", "info", "warn", "error"],
+});
+
 /* eslint-enable @typescript-eslint/no-unused-vars */
 
 

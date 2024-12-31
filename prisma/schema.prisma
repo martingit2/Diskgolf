@@ -7,6 +7,7 @@ datasource db {
   url               = env("DATABASE_URL")
   directUrl         = env("DIRECT_URL")
 }
+
 enum UserRole {
   ADMIN
   USER
@@ -23,11 +24,11 @@ model User {
   createdAt      DateTime @default(now()) // Tidsstempel for opprettelse
   updatedAt      DateTime @updatedAt // Automatisk oppdatert tidsstempel
   favoriteCourses String[] // Liste over ID-er til favorittbaner
-  role  UserRole @default(USER)
+  role            UserRole @default(USER)
 
-  accounts Account[]
-  rounds   Round[]
-  reviews  Review[]
+  accounts       Account[]
+  rounds         Round[]
+  reviews        Review[]
 
   isTwoFactorEnable Boolean @default(false)
   twoFactorConfirmation TwoFactorConfirmation?
@@ -83,7 +84,7 @@ model Round {
   score    Int
   createdAt DateTime @default(now())
 
-  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade) 
   course Course @relation(fields: [courseId], references: [id], onDelete: Cascade)
 }
 
@@ -95,7 +96,7 @@ model Review {
   comment  String?
   createdAt DateTime @default(now())
 
-  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade) 
   course Course @relation(fields: [courseId], references: [id], onDelete: Cascade)
 }
 
@@ -126,6 +127,6 @@ model TwoFactorToken {
 model TwoFactorConfirmation {
   id String @id @default(cuid())
   userId String
-  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade) 
   @@unique([userId])
 }
