@@ -1,23 +1,27 @@
 
 
 import Map from "@/components/Map";
+import BaneCarousel from "@/components/popular-carousel";
 import SearchForm from "@/components/SearchForm";
+import RotatingText from "@/components/text-rotator";
 
 
-export default function Home() {
-  return (
-    <main className="bg-[var(--headerColor)]">
-      {/* Overskrift-seksjon */}
-      <section className="max-w-7xl mx-auto p-6">
-        <h1 className="font-bold text-5xl bg-gradient-to-r from-green-600 via-green-300 to-green-600 text-transparent bg-clip-text">
-          Ta spillet ditt til neste nivå
-        </h1>
-        <h2 className="text-white py-5 text-xl">
-          Søk etter baner, turneringer, klubber og mye mer!
-        </h2>
-      </section>
-
-
+    export default function HomePage() {
+      return (
+        <main className="bg-[var(--headerColor)]">
+          {/* Overskrift-seksjon */}
+          <section className="max-w-7xl mx-auto p-6">
+            <h1 className="font-bold text-5xl bg-gradient-to-r from-green-600 via-green-300 to-green-600 text-transparent bg-clip-text">
+              Ta spillet ditt til neste nivå
+            </h1>
+            <h2 className="text-white py-5 text-xl">
+              <span className="font-semibold text-green-300">
+                <RotatingText />
+              </span>{" "}
+              og mye mer!
+            </h2>
+          </section>
+          
       {/* Søkefeltene og kart */}
       <section className="mx-auto max-w-7xl mt-10 p-6 bg-gradient-to-r from-gray-100 via-white to-gray-100 shadow-lg rounded-lg">
   <div className="text-center p-8">
@@ -25,7 +29,7 @@ export default function Home() {
       Utforsk <span className="text-green-600">DiskGolf-baner</span> på kartet
     </h1>
     <p className="text-gray-600 text-lg mt-2">
-      Zoom inn på kartet for å finne baner i nærheten eller oppdag nye destinasjoner. Perfekt for både nybegynnere og erfarne spillere.
+      Zoom inn på kartet for å finne baner i nærheten eller oppdag nye destinasjoner.
     </p>
   </div>
   <div className="relative w-full h-[500px]">
@@ -50,8 +54,12 @@ export default function Home() {
   </div>
 
         {/* Søke-seksjon */}
-        <div className="mt-20">
+        <div className="mt-4">
           <SearchForm />
+        </div>
+        <div className="mt-20">
+          <BaneCarousel />
+
         </div>
       </section>
     </main>
