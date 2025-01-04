@@ -62,6 +62,7 @@ Applikasjonen er under utvikling og er tilgjengelig på: [https://diskgolf.app](
 ```
   git clone https://github.com/brukernavn/prosjekt.git
   cd prosjekt ```
+```
 3. Installer avhengigheter
 ```
 npm install
