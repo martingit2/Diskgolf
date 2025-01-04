@@ -51,6 +51,21 @@ Applikasjonen er under utvikling og er tilgjengelig på: [https://diskgolf.app](
 
 ---
 
+## **Arkitektur**
+Vi bruker en **hybrid løsning** for applikasjonen:
+- **Server Actions**: Brukes for intern logikk og håndtering av funksjoner som sletting av brukere, oppretting av vurderinger, osv. Dette gir rask og effektiv kommunikasjon mellom frontend og backend uten unødvendige nettverkskall.
+- **API-ruter**: Brukes for å eksponere spesifikke data til eksterne klienter (f.eks. mobilapper eller tredjeparts tjenester). Disse håndteres gjennom RESTful API-ruter definert i `/pages/api`.
+
+### **Eksempel**
+- **Server Actions**:
+  - Slett bruker: Kalles direkte fra frontend via `actions/delete.ts`.
+  - Opprett vurdering: Kalles fra frontend uten nettverksforespørsel.
+- **API-ruter**:
+  - Hent baner: RESTful endepunkt `/api/courses` gir eksterne klienter tilgang til informasjon om discgolfbaner.
+
+---
+
+
 ## Kom i gang
 
 ### Krav
@@ -74,19 +89,7 @@ npm run dev
 ```
 
 
-## **Arkitektur**
-Vi bruker en **hybrid løsning** for applikasjonen:
-- **Server Actions**: Brukes for intern logikk og håndtering av funksjoner som sletting av brukere, oppretting av vurderinger, osv. Dette gir rask og effektiv kommunikasjon mellom frontend og backend uten unødvendige nettverkskall.
-- **API-ruter**: Brukes for å eksponere spesifikke data til eksterne klienter (f.eks. mobilapper eller tredjeparts tjenester). Disse håndteres gjennom RESTful API-ruter definert i `/pages/api`.
 
-### **Eksempel**
-- **Server Actions**:
-  - Slett bruker: Kalles direkte fra frontend via `actions/delete.ts`.
-  - Opprett vurdering: Kalles fra frontend uten nettverksforespørsel.
-- **API-ruter**:
-  - Hent baner: RESTful endepunkt `/api/courses` gir eksterne klienter tilgang til informasjon om discgolfbaner.
-
----
 
 ## Viktige Datoer
 
