@@ -75,9 +75,10 @@ Vi bruker en **hybrid løsning** for applikasjonen:
 ### Installasjon
 1. Klon prosjektet fra GitHub:
 ```
-  git clone https://github.com/App-2000-G11/APP2000_G11_25.git
+git clone https://github.com/App-2000-G11/APP2000_G11_25.git
 
-  cd prosjekt ```
+cd APP2000_G11_25
+
 ```
 3. Installer avhengigheter
 ```
@@ -87,8 +88,6 @@ npm install
 ```
 npm run dev
 ```
-
-
 
 
 ## Viktige Datoer
