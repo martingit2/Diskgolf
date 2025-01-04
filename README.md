@@ -60,7 +60,8 @@ Applikasjonen er under utvikling og er tilgjengelig på: [https://diskgolf.app](
 ### Installasjon
 1. Klon prosjektet fra GitHub:
 ```
-  git clone https://github.com/brukernavn/prosjekt.git
+  git clone https://github.com/App-2000-G11/APP2000_G11_25.git
+
   cd prosjekt ```
 ```
 3. Installer avhengigheter
