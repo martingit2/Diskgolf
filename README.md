@@ -12,43 +12,65 @@ Applikasjonen er under utvikling og er tilgjengelig på: [https://diskgolf.app](
 - **Mina Vamnes Nyhagen**
 - **Said Hussain Khawajazad**
 
-## Beskrivelse
+# Teknologistakk
 
-Applikasjonen vil tilby funksjonalitet som:
-- **Søk etter discgolfbaner** med filtrering på sted, vanskelighetsgrad og anmeldelser.
-- **Klubb- og banestyring** for discgolfklubber.
-- **Poengkort** for spillere som registrerer sine resultater underveis.
-- **Brukerkontoer** for å lagre resultater, statistikker og anmeldelser.
+## Frontend
+- **Next.js**: Hybrid routing-struktur og server-side rendering.
+- **Tailwind CSS**: For moderne, responsiv styling.
+- **shadcn/ui**: UI-komponentbibliotek for rask utvikling.
+- **Headless UI**: Tilgjengelige komponenter for modalvinduer, menyer, osv.
+- **Heroicons**: Vektorikoner for bruk i design.
+- **Lucide React**: Moderne ikoner for UI.
+- **React Hook Form**: For håndtering av skjemaer.
+- **React Hot Toast**: For varslinger.
+- **Zustand**: For enklere tilstandshåndtering.
+- **React-Leaflet**: Kartintegrasjon for interaktive kart.
+- **Swiper**: For karuseller og dynamiske bildeseksjoner.
+- **React Icons**: For tilgang til populære ikonpakker.
+- **Axios**: For håndtering av HTTP-forespørsler.
 
-**Frontend:**
-- [Next.js](https://nextjs.org/) for hybrid routing-struktur og server-side rendering
-- [Tailwind CSS](https://tailwindcss.com/) for styling
-- [Shadcn/UI](https://shadcn.dev/) for UI-komponenter
-- [Headless UI](https://headlessui.dev/) for tilgjengelige komponenter
-- [Heroicons](https://heroicons.com/) for ikoner
-- [React Hook Form](https://react-hook-form.com/) for skjemaer
-- [React Hot Toast](https://react-hot-toast.com/) for varslinger
-- [Zustand](https://github.com/pmndrs/zustand) for tilstandshåndtering
-- [React-Leaflet](https://react-leaflet.js.org/) for kartintegrasjon
-- [Axios](https://axios-http.com/) for HTTP-forespørsler
+## Backend
+- **Supabase**: PostgreSQL database og autentisering.
+- **Prisma**: ORM (Object-Relational Mapper) for databasen.
+- **NextAuth.js**: For brukerautentisering og håndtering av OAuth.
+- **Zod**: For streng datavalidering.
+- **bcrypt.js**: For hashing og sikker håndtering av passord.
+- **Resend**: For e-posthåndtering og utsendelse.
 
-**Backend:**
-- [Supabase](https://supabase.com/) for postgressql database og autentisering
-- [Prisma](https://www.prisma.io/) for ORM og databasemanipulasjon
-- [NextAuth.js](https://next-auth.js.org/) for brukerhåndtering og autentisering
-- [Zod](https://zod.dev/) for datavalidering
-- [Resend](https://resend.com/) for e-posthåndtering
+## Utviklingsverktøy
+- **ESLint**: For kodekvalitet og konsistens.
+- **TypeScript**: For statisk typet JavaScript.
+- **Tailwind CSS Animate**: For animasjoner i UI.
+- **PostCSS**: For CSS-transformasjoner.
+- **Webpack**: For pakkebygger og optimalisering.
+- **Sonner**: For varslinger i frontend.
+- **Class Variance Authority**: For dynamisk kombinasjon av CSS-klasser.
 
-**Dev-verktøy:**
-- [ESLint](https://eslint.org/) for kodekvalitet
-- [TypeScript](https://www.typescriptlang.org/) for statisk typet JavaScript
-- [Tailwind CSS Animate](https://github.com/tailwindlabs/tailwindcss-animate) for animasjoner
-- [PostCSS](https://postcss.org/) for CSS-transformasjoner
-
-**Deploy:**
-- [Vercel](https://vercel.com/) for hosting av frontend og backend.
+## Deploy
+- **Vercel**: Hosting for både frontend og backend.
 
 ---
+
+## Kom i gang
+
+### Krav
+1. Node.js (versjon >= 16)
+2. npm (versjon >= 7) eller yarn
+
+### Installasjon
+1. Klon prosjektet fra GitHub:
+```
+  git clone https://github.com/brukernavn/prosjekt.git
+  cd prosjekt ```
+3. Installer avhengigheter
+```
+npm install
+```
+3. Kjør prosjektet lokalt
+```
+npm run dev
+```
+
 
 ## **Arkitektur**
 Vi bruker en **hybrid løsning** for applikasjonen:
