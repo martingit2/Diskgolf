@@ -15,39 +15,40 @@ Applikasjonen er under utvikling og er tilgjengelig på: [https://diskgolf.app](
 # Teknologistakk
 
 ## Frontend
-- **Next.js**: Hybrid routing-struktur og server-side rendering.
-- **Tailwind CSS**: For moderne, responsiv styling.
-- **shadcn/ui**: UI-komponentbibliotek for rask utvikling.
-- **Headless UI**: Tilgjengelige komponenter for modalvinduer, menyer, osv.
-- **Heroicons**: Vektorikoner for bruk i design.
-- **Lucide React**: Moderne ikoner for UI.
-- **React Hook Form**: For håndtering av skjemaer.
-- **React Hot Toast**: For varslinger.
-- **Zustand**: For enklere tilstandshåndtering.
-- **React-Leaflet**: Kartintegrasjon for interaktive kart.
-- **Swiper**: For karuseller og dynamiske bildeseksjoner.
-- **React Icons**: For tilgang til populære ikonpakker.
-- **Axios**: For håndtering av HTTP-forespørsler.
+- [**Next.js**](https://nextjs.org): Hybrid routing-struktur og server-side rendering.
+- [**Tailwind CSS**](https://tailwindcss.com): For moderne, responsiv styling.
+- [**shadcn/ui**](https://ui.shadcn.com): UI-komponentbibliotek for rask utvikling.
+- [**Headless UI**](https://headlessui.dev): Tilgjengelige komponenter for modalvinduer, menyer, osv.
+- [**Heroicons**](https://heroicons.com): Vektorikoner for bruk i design.
+- [**Lucide React**](https://lucide.dev): Moderne ikoner for UI.
+- [**React Hook Form**](https://react-hook-form.com): For håndtering av skjemaer.
+- [**React Hot Toast**](https://react-hot-toast.com): For varslinger.
+- [**Zustand**](https://github.com/pmndrs/zustand): For enklere tilstandshåndtering.
+- [**React-Leaflet**](https://react-leaflet.js.org): Kartintegrasjon for interaktive kart.
+- [**Swiper**](https://swiperjs.com): For karuseller og dynamiske bildeseksjoner.
+- [**React Icons**](https://react-icons.github.io/react-icons): For tilgang til populære ikonpakker.
+- [**Axios**](https://axios-http.com): For håndtering av HTTP-forespørsler.
 
 ## Backend
-- **Supabase**: PostgreSQL database og autentisering.
-- **Prisma**: ORM (Object-Relational Mapper) for databasen.
-- **NextAuth.js**: For brukerautentisering og håndtering av OAuth.
-- **Zod**: For streng datavalidering.
-- **bcrypt.js**: For hashing og sikker håndtering av passord.
-- **Resend**: For e-posthåndtering og utsendelse.
+- [**Supabase**](https://supabase.io): PostgreSQL database og autentisering.
+- [**Prisma**](https://www.prisma.io): ORM (Object-Relational Mapper) for databasen.
+- [**NextAuth.js**](https://next-auth.js.org): For brukerautentisering og håndtering av OAuth.
+- [**Zod**](https://zod.dev): For streng datavalidering.
+- [**bcrypt.js**](https://github.com/dcodeIO/bcrypt.js): For hashing og sikker håndtering av passord.
+- [**Resend**](https://resend.com): For e-posthåndtering og utsendelse.
 
 ## Utviklingsverktøy
-- **ESLint**: For kodekvalitet og konsistens.
-- **TypeScript**: For statisk typet JavaScript.
-- **Tailwind CSS Animate**: For animasjoner i UI.
-- **PostCSS**: For CSS-transformasjoner.
-- **Webpack**: For pakkebygger og optimalisering.
-- **Sonner**: For varslinger i frontend.
-- **Class Variance Authority**: For dynamisk kombinasjon av CSS-klasser.
+- [**ESLint**](https://eslint.org): For kodekvalitet og konsistens.
+- [**TypeScript**](https://www.typescriptlang.org): For statisk typet JavaScript.
+- [**Tailwind CSS Animate**](https://tailwindcss-animate.dev): For animasjoner i UI.
+- [**PostCSS**](https://postcss.org): For CSS-transformasjoner.
+- [**Webpack**](https://webpack.js.org): For pakkebygger og optimalisering.
+- [**Sonner**](https://sonner.dev): For varslinger i frontend.
+- [**Class Variance Authority**](https://cva.style): For dynamisk kombinasjon av CSS-klasser.
 
 ## Deploy
-- **Vercel**: Hosting for både frontend og backend.
+- [**Vercel**](https://vercel.com): Hosting for både frontend og backend.
+
 
 ---
 
