@@ -31,7 +31,7 @@ const passwordValidation = z
     if ((data.password && !data.newPassword) || (!data.password && data.newPassword)) {
       ctx.addIssue({
         code: "custom",
-        path: ["password"], // Feltet som feilen er knyttet til
+        path: ["password"], 
         message: "Både gjeldende og nytt passord må oppgis hvis du vil endre passord.",
       });
     }
