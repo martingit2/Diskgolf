@@ -10,7 +10,7 @@ Applikasjonen er under utvikling og er tilgjengelig på: [https://diskgolf.app](
 - **Maria Sofie Ulvheim**
 - **Martin Andreas Pettersen**
 - **Mina Vamnes Nyhagen**
-- **Said Hussain Khawajazad**
+- **Said Hussain Khawajazada**
 
 # Teknologistakk
 
