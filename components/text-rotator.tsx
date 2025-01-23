@@ -19,7 +19,7 @@ const RotatingText = () => {
       setCurrentIndex((prevIndex) => (prevIndex + 1) % messages.length);
     }, 3000); // Bytt tekst hver 3. sekund
     return () => clearInterval(interval);
-  }, []);
+  }, [messages.length]);
 
   return <span>{messages[currentIndex]}</span>;
 };

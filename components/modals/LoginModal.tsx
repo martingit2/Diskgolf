@@ -11,6 +11,7 @@ import { FaGithub } from "react-icons/fa";
 import Heading from "../Heading";
 import { signIn } from "next-auth/react";
 import { useRouter } from "next/navigation";
+import Image from 'next/image';
 
 const LoginModal = () => {
   const registerModal = useRegisterModal();
@@ -96,13 +97,19 @@ const LoginModal = () => {
 
       {/* Google-knapp */}
       <button
-        onClick={() => signIn("google")}
-        disabled={isLoading}
-        className="flex items-center justify-center gap-2 bg-black hover:bg-green-700 text-white py-2 px-4 rounded-lg transition disabled:opacity-70 disabled:cursor-not-allowed"
-      >
-        <img src="/google.svg" alt="Google Icon" className="w-5 h-5" />
-        Logg inn med Google
-      </button>
+      onClick={() => signIn("google")}
+      disabled={isLoading}
+      className="flex items-center justify-center gap-2 bg-black hover:bg-green-700 text-white py-2 px-4 rounded-lg transition disabled:opacity-70 disabled:cursor-not-allowed"
+    >
+      <Image
+        src="/google.svg"
+        alt="Google Icon"
+        width={20}
+        height={20}
+        className="w-5 h-5"
+      />
+      Logg inn med Google
+    </button>
 
       {/* GitHub-knapp */}
       <button

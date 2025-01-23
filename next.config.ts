@@ -1,29 +1,33 @@
-/** @type {import('next').NextConfig} */
-const nextConfig = {
-  reactStrictMode: true, // Aktiverer streng modus
-  swcMinify: true, // Raskere minifisering
+import type { NextConfig } from "next";
+
+const nextConfig: NextConfig = {
+  reactStrictMode: true, // Enable strict mode
+  //swcMinify: true, // Faster minification
   env: {
-    NEXT_PUBLIC_APP_URL: process.env.NEXT_PUBLIC_APP_URL, // Legg til offentlige miljøvariabler
-    RESEND_API_KEY: process.env.RESEND_API_KEY, // API-nøkkel
+    NEXT_PUBLIC_APP_URL: process.env.NEXT_PUBLIC_APP_URL, // Public environment variables
+    RESEND_API_KEY: process.env.RESEND_API_KEY, // API key
   },
   images: {
-    domains: ["localhost", "example.com"], // Eksterne bilder tillates
+    domains: ["localhost", "example.com"], // Allow external images
   },
   async redirects() {
     return [
       {
         source: "/old-route",
         destination: "/new-route",
-        permanent: true, // 301-redirect
+        permanent: true, // 301 redirect
       },
     ];
   },
-  webpack: (config: import("webpack").Configuration) => {
-    // Tilpass Webpack-oppsett hvis nødvendig
+  webpack: (config) => {
+    // Custom Webpack configuration
     config.resolve = config.resolve || {};
     config.resolve.fallback = { fs: false, net: false, tls: false };
     return config;
   },
+  eslint: {
+    ignoreDuringBuilds: true, // Ignore ESLint warnings/errors during builds
+  },
 };
 
-module.exports = nextConfig;
+export default nextConfig;

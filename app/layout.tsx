@@ -6,6 +6,7 @@ import ToasterProvider from "./providers/ToasterProvider";
 import LoginModal from "@/components/modals/LoginModal";
 import { auth } from "@/auth";
 import SessionWrapper from "./providers/SessionWrapper";
+import { ThemeProvider } from "@/components/ThemeProvider"; // Import updated ThemeProvider
 
 export const metadata: Metadata = {
   title: "DiskGolf",
@@ -20,24 +21,29 @@ export default async function RootLayout({
   let session = null;
 
   try {
-    session = await auth(); // Hent sesjonen
+    session = await auth(); // Fetch the session
   } catch (error) {
-    console.error("Feil ved henting av sesjon:", error);
+    console.error("Error fetching session:", error);
   }
 
   return (
-    <html lang="en">
+    <html lang="en" suppressHydrationWarning>
       <body className="min-h-screen flex flex-col">
-        <ToasterProvider />
-        <SessionWrapper session={session}>
-          <Header />
-          <LoginModal />
-          <RegisterModal />
-          <main className="flex-grow">{children}</main>
-          <footer className="text-white p-4 text-center" style={{ backgroundColor: "var(--headerColor)" }}>
-            © 2024 DiskGolf. Alle rettigheter forbeholdt.
-          </footer>
-        </SessionWrapper>
+        <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
+          <ToasterProvider />
+          <SessionWrapper session={session}>
+            <Header />
+            <LoginModal />
+            <RegisterModal />
+            <main className="flex-grow">{children}</main>
+            <footer
+              className="text-white p-4 text-center"
+              style={{ backgroundColor: "var(--headerColor)" }}
+            >
+              © 2024 DiskGolf. Alle rettigheter forbeholdt.
+            </footer>
+          </SessionWrapper>
+        </ThemeProvider>
       </body>
     </html>
   );

@@ -9,6 +9,8 @@ import { toast } from "react-hot-toast"; // For å vise notifikasjoner.
 import Modal from "./Modal"; // Gjenbrukbar Modal-komponent.
 import Input from "@/components/inputs/Input"; // Gjenbrukbar Input-komponent.
 import { FaGithub } from "react-icons/fa"; // Ikon for GitHub fra react-icons.
+import Image from "next/image";
+
 
 const RegisterModal = () => {
   // Hooks for å kontrollere modalens visningstilstand.
@@ -128,15 +130,16 @@ const RegisterModal = () => {
       />
 
       {/* Google-knapp */}
+      {/* Google-knapp */}
       <button
         onClick={() => console.log("Registrer med Google")}
         className="flex items-center justify-center gap-2 bg-black hover:bg-green-700 text-white py-2 px-4 rounded-lg transition disabled:opacity-70 disabled:cursor-not-allowed"
       >
-        {/* Bruker SVG-ikonet fra public-mappen */}
-        <img
+        <Image
           src="/google.svg"
           alt="Google Icon"
-          className="w-5 h-5"
+          width={20}
+          height={20}
         />
         Registrer deg med din Google-konto
       </button>

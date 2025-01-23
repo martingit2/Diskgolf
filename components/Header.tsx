@@ -17,6 +17,7 @@ import { cn } from '@/app/lib/utils';
 import UserDropdown from './UserDropDown';
 import { useSession } from 'next-auth/react';
 import { User } from '@/app/types';
+import { useTheme } from "next-themes"; // Import the useTheme hook
 
 const navLinks = [
   {
@@ -50,6 +51,8 @@ function Header() {
   // Bruker NextAuth for å hente brukerdata
   const { data: session } = useSession();
   const currentUser = session?.user as User | null;
+  const { theme, setTheme } = useTheme(); // Access theme and setTheme functions
+
 
   return (
     <header className="bg-[#000311]">
@@ -140,9 +143,19 @@ function Header() {
           </a>
         </Popover.Group>
 
-        <div className="hidden lg:flex lg:flex-1 lg:justify-end">
+                <div className="hidden lg:flex lg:flex-1 lg:justify-end items-center space-x-4">
+          {/* Dark Mode Toggle Button */}
+          <button
+              onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
+              className="inline-flex justify-center items-center px-4 py-2 text-sm font-medium text-white bg-green-700 rounded-md hover:bg-green-600"
+            >
+              {theme === "dark" ? "Light Mode" : "Dark Mode"}
+            </button>
+
+          {/* User Dropdown */}
           <UserDropdown isMobile={false} currentUser={currentUser} />
         </div>
+
       </nav>
 
       <Dialog as="div" className="lg:hidden" open={mobileMenuOpen} onClose={setMobileMenuOpen}>
