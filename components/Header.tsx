@@ -18,6 +18,8 @@ import UserDropdown from './UserDropDown';
 import { useSession } from 'next-auth/react';
 import { User } from '@/app/types';
 import { useTheme } from "next-themes"; // Import the useTheme hook
+import KontaktOss from './kontaktOss';
+
 
 const navLinks = [
   {
@@ -138,9 +140,8 @@ function Header() {
           <a href="#" className="text-sm font-semibold leading-6 text-white">
             Turneringer
           </a>
-          <a href="#" className="text-sm font-semibold leading-6 text-white">
-            Kontakt oss
-          </a>
+          <KontaktOss />
+
         </Popover.Group>
 
                 <div className="hidden lg:flex lg:flex-1 lg:justify-end items-center space-x-4">
@@ -221,12 +222,8 @@ function Header() {
                 >
                   Turneringer
                 </a>
-                <a
-                  href="#"
-                  className="-mx-3 block rounded-lg px-3 py-2 text-base font-semibold leading-7 text-white hover:bg-blue-800"
-                >
-                  Kontakt oss
-                </a>
+                
+
               </div>
               <div className="py-6">
                 <UserDropdown isMobile={true} currentUser={currentUser} />
