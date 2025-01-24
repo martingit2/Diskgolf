@@ -5,35 +5,47 @@ import { useForm } from "react-hook-form";
 import * as z from "zod";
 import { Button } from "@/components/ui/button";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
-import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Popover, PopoverTrigger } from "@/components/ui/popover";
-import { format } from "date-fns";
 import { useState } from "react";
 
-// Zod-skjema for validering
+// Definerer fylker og tilhørende steder
+const fylker: Record<string, string[]> = {
+  "Telemark": ["Bø"],
+  "Troms": ["Tromsø"],
+  "Oslo": ["Oslo Sentrum"],
+  "Vestland": ["Bergen"],
+  "Rogaland": ["Stavanger"],
+  "Trøndelag": ["Trondheim"],
+  "Agder": ["Kristiansand"],
+  "Møre og Romsdal": ["Ålesund"],
+  "Nordland": ["Bodø"],
+};
+
+const banetyper = ["Skogsbane", "Parkbane", "Fjellbane", "Bybane", "Åpen slette"];
+
 export const formSchema = z.object({
-  location: z.string().min(2, "Område må inneholde minst 2 tegn.").max(50, "Område kan ikke være lengre enn 50 tegn."),
-  difficulty: z.enum(["1", "2", "3", "4", "5"]).optional(), // Vanskelighetsgrad (1-5)
-  sortBy: z.enum(["popularity", "difficulty", "rating"]).optional(), // Sortering (Popularitet, Vanskelighetsgrad, Rating, vi trenger vel noe mer?)
-  dates: z
-    .object({
-      from: z.date(),
-      to: z.date(),
-    })
-    .optional(), // Valgfri bookingdato
+  fylke: z.string().optional(),
+  sted: z.string().optional(),
+  difficulty: z.enum(["1", "2", "3", "4", "5"]).optional(),
+  numberOfHoles: z.enum(["5", "10", "15", "20"]).optional(),
+  starRating: z.enum(["1", "2", "3", "4", "5"]).optional(),
+  reviewCount: z.enum(["10", "50", "100", "200"]).optional(),
+  baneType: z.string().optional(),
 });
 
 function SearchForm() {
-  const [dates] = useState<{ from?: Date; to?: Date }>(); // Fjernet setDates
+  const [selectedFylke, setSelectedFylke] = useState("");
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      location: "",
+      fylke: "",
+      sted: "",
       difficulty: undefined,
-      sortBy: undefined,
-      dates: undefined,
+      numberOfHoles: undefined,
+      starRating: undefined,
+      reviewCount: undefined,
+      baneType: "",
     },
   });
 
@@ -45,43 +57,29 @@ function SearchForm() {
   return (
     <div className="p-4 bg-white rounded-lg shadow-lg">
       <Form {...form}>
-        <form
-          onSubmit={form.handleSubmit(onSubmit)}
-          className="grid grid-cols-1 lg:grid-cols-4 gap-4"
-        >
-          {/* Område */}
+        <form onSubmit={form.handleSubmit(onSubmit)} className="grid grid-cols-1 lg:grid-cols-3 gap-4">
+          
+          {/* Fylke */}
           <FormField
             control={form.control}
-            name="location"
+            name="fylke"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Område</FormLabel>
+                <FormLabel>Fylke</FormLabel>
                 <FormControl>
-                  <Input placeholder="Skriv inn område (f.eks. Bø, Telemark)" {...field} />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-
-          {/* Vanskelighetsgrad */}
-          <FormField
-            control={form.control}
-            name="difficulty"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Vanskelighetsgrad</FormLabel>
-                <FormControl>
-                  <Select onValueChange={field.onChange} value={field.value}>
+                  <Select onValueChange={(value) => {
+                    field.onChange(value);
+                    setSelectedFylke(value);
+                  }} value={field.value}>
                     <SelectTrigger>
-                      <SelectValue placeholder="Velg vanskelighetsgrad" />
+                      <SelectValue placeholder="Velg fylke">{field.value || "Velg fylke"}</SelectValue>
                     </SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="1">1 - Enklest</SelectItem>
-                      <SelectItem value="2">2</SelectItem>
-                      <SelectItem value="3">3 - Middels</SelectItem>
-                      <SelectItem value="4">4</SelectItem>
-                      <SelectItem value="5">5 - Vanskeligst</SelectItem>
+                      {Object.keys(fylker).map((fylke) => (
+                        <SelectItem key={fylke} value={fylke}>
+                          {fylke}
+                        </SelectItem>
+                      ))}
                     </SelectContent>
                   </Select>
                 </FormControl>
@@ -90,22 +88,54 @@ function SearchForm() {
             )}
           />
 
-          {/* Sortering */}
+          {/* Sted */}
+<FormField
+  control={form.control}
+  name="sted"
+  render={({ field }) => (
+    <FormItem>
+      <FormLabel>Sted</FormLabel>
+      <FormControl>
+        <Select onValueChange={field.onChange} value={field.value || ""}>
+          <SelectTrigger>
+            <SelectValue placeholder="Velg sted">{field.value || "Velg sted"}</SelectValue>
+          </SelectTrigger>
+          <SelectContent>
+            {selectedFylke ? (
+              fylker[selectedFylke].map((sted) => (
+                <SelectItem key={sted} value={sted}>
+                  {sted}
+                </SelectItem>
+              ))
+            ) : (
+              <SelectItem value="placeholder" disabled>
+                Velg et fylke først
+              </SelectItem>
+            )}
+          </SelectContent>
+        </Select>
+      </FormControl>
+      <FormMessage />
+    </FormItem>
+  )}
+/>
+          {/* Antall hull */}
           <FormField
             control={form.control}
-            name="sortBy"
+            name="numberOfHoles"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Sorter etter</FormLabel>
+                <FormLabel>Antall hull</FormLabel>
                 <FormControl>
                   <Select onValueChange={field.onChange} value={field.value}>
                     <SelectTrigger>
-                      <SelectValue placeholder="Velg sortering" />
+                      <SelectValue placeholder="Velg antall hull">{field.value || "Velg antall hull"}</SelectValue>
                     </SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="popularity">Popularitet</SelectItem>
-                      <SelectItem value="difficulty">Vanskelighetsgrad</SelectItem>
-                      <SelectItem value="rating">Rating</SelectItem>
+                      <SelectItem value="5">Minst 5 hull</SelectItem>
+                      <SelectItem value="10">Minst 10 hull</SelectItem>
+                      <SelectItem value="15">Minst 15 hull</SelectItem>
+                      <SelectItem value="20">Minst 20 hull</SelectItem>
                     </SelectContent>
                   </Select>
                 </FormControl>
@@ -114,47 +144,91 @@ function SearchForm() {
             )}
           />
 
-          {/* Bookingdato */}
+          {/* Popularitet */}
           <FormField
             control={form.control}
-            name="dates"
-            render={() => (
+            name="starRating"
+            render={({ field }) => (
               <FormItem>
-                <FormLabel>Sjekk tilgjengelighet</FormLabel>
+                <FormLabel>Popularitet</FormLabel>
                 <FormControl>
-                  <Popover>
-                    <PopoverTrigger asChild>
-                      <Button variant="outline" className="w-full">
-                        {dates?.from ? (
-                          dates.to ? (
-                            `${format(dates.from, "dd.MM.yyyy")} - ${format(dates.to, "dd.MM.yyyy")}`
-                          ) : (
-                            format(dates.from, "dd.MM.yyyy")
-                          )
-                        ) : (
-                          "Velg dato"
-                        )}
-                      </Button>
-                    </PopoverTrigger>
-
-                  </Popover>
+                  <Select onValueChange={field.onChange} value={field.value}>
+                    <SelectTrigger>
+                      <SelectValue placeholder="Velg antall stjerner">{field.value || "Velg antall stjerner"}</SelectValue>
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="1">1 stjerne</SelectItem>
+                      <SelectItem value="2">2 stjerner</SelectItem>
+                      <SelectItem value="3">3 stjerner</SelectItem>
+                      <SelectItem value="4">4 stjerner</SelectItem>
+                      <SelectItem value="5">5 stjerner</SelectItem>
+                    </SelectContent>
+                  </Select>
                 </FormControl>
                 <FormMessage />
               </FormItem>
             )}
           />
+
+          {/* Antall anmeldelser */}
+<FormField
+  control={form.control}
+  name="reviewCount"
+  render={({ field }) => (
+    <FormItem>
+      <FormLabel>Antall anmeldelser</FormLabel>
+      <FormControl>
+        <Select onValueChange={field.onChange} value={field.value}>
+          <SelectTrigger>
+            <SelectValue placeholder="Velg antall anmeldelser">{field.value || "Velg antall anmeldelser"}</SelectValue>
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="0">Ingen krav til anmeldelser</SelectItem>
+            <SelectItem value="10">10+ anmeldelser</SelectItem>
+            <SelectItem value="50">50+ anmeldelser</SelectItem>
+            <SelectItem value="100">100+ anmeldelser</SelectItem>
+            <SelectItem value="200">200+ anmeldelser</SelectItem>
+          </SelectContent>
+        </Select>
+      </FormControl>
+      <FormMessage />
+    </FormItem>
+  )}
+/>
+
+          {/* Bane type */}
+          <FormField
+            control={form.control}
+            name="baneType"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Bane type</FormLabel>
+                <FormControl>
+                  <Select onValueChange={field.onChange} value={field.value}>
+                    <SelectTrigger>
+                      <SelectValue placeholder="Velg bane type">{field.value || "Velg bane type"}</SelectValue>
+                    </SelectTrigger>
+                    <SelectContent>
+                      {banetyper.map((type) => (
+                        <SelectItem key={type} value={type}>
+                          {type}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+
+           <div className="col-span-full flex justify-center">
+            <Button type="submit" className="w-full max-w-lg bg-[#292C3D] text-white font-semibold py-2 px-4 rounded hover:bg-green-700 transition duration-300">
+              Søk
+            </Button>
+          </div>
         </form>
       </Form>
-
-      {/* Søk-knappen midtstilt uavhengig av skjermstørrelse */}
-      <div className="flex justify-center mt-4">
-        <Button
-          type="submit"
-          className="w-full max-w-xs bg-[#292C3D] text-white font-semibold py-2 px-4 rounded hover:bg-green-700 transition duration-300"
-        >
-          Søk
-        </Button>
-      </div>
     </div>
   );
 }
