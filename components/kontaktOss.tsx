@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { FaFacebook, FaInstagram, FaTwitter } from "react-icons/fa"; // Import icons from react-icons
 
 export default function KontaktOss() {
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -36,6 +37,11 @@ export default function KontaktOss() {
               <p>
                 <span className="font-medium">Telefon:</span> +47 123 456 789
               </p>
+              <p>
+                <span className="font-medium">Adresse:</span>  Gulbringvegen 28,Bø, MIDT I TELEMARK
+              </p>
+
+              {/* Social Media Icons */}
               <div className="flex justify-around mt-4">
                 <a
                   href="https://facebook.com"
@@ -43,7 +49,7 @@ export default function KontaktOss() {
                   rel="noopener noreferrer"
                   className="text-blue-600 hover:text-blue-800"
                 >
-                  Facebook
+                  <FaFacebook size={24} />
                 </a>
                 <a
                   href="https://instagram.com"
@@ -51,7 +57,7 @@ export default function KontaktOss() {
                   rel="noopener noreferrer"
                   className="text-pink-600 hover:text-pink-800"
                 >
-                  Instagram
+                  <FaInstagram size={24} />
                 </a>
                 <a
                   href="https://x.com"
@@ -59,7 +65,7 @@ export default function KontaktOss() {
                   rel="noopener noreferrer"
                   className="text-blue-400 hover:text-blue-600"
                 >
-                  X
+                  <FaTwitter size={24} />
                 </a>
               </div>
             </div>
