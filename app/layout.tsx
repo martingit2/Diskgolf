@@ -7,6 +7,7 @@ import LoginModal from "@/components/modals/LoginModal";
 import { auth } from "@/auth";
 import SessionWrapper from "./providers/SessionWrapper";
 import { ThemeProvider } from "@/components/ThemeProvider"; // Import updated ThemeProvider
+import Footer from "@/components/Footer";
 
 export const metadata: Metadata = {
   title: "DiskGolf",
@@ -36,12 +37,7 @@ export default async function RootLayout({
             <LoginModal />
             <RegisterModal />
             <main className="flex-grow">{children}</main>
-            <footer
-              className="text-white p-4 text-center"
-              style={{ backgroundColor: "var(--headerColor)" }}
-            >
-              © 2024 DiskGolf. Alle rettigheter forbeholdt.
-            </footer>
+            <Footer />
           </SessionWrapper>
         </ThemeProvider>
       </body>

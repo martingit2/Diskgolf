@@ -17,7 +17,7 @@ import { cn } from '@/app/lib/utils';
 import UserDropdown from './UserDropDown';
 import { useSession } from 'next-auth/react';
 import { User } from '@/app/types';
-import { useTheme } from "next-themes"; // Import the useTheme hook
+// import { useTheme } from "next-themes"; // Import the useTheme hook
 import KontaktOss from './kontaktOss';
 
 
@@ -53,7 +53,7 @@ function Header() {
   // Bruker NextAuth for å hente brukerdata
   const { data: session } = useSession();
   const currentUser = session?.user as User | null;
-  const { theme, setTheme } = useTheme(); // Access theme and setTheme functions
+  // const { theme, setTheme } = useTheme(); // Access theme and setTheme functions
 
 
   return (
@@ -145,13 +145,18 @@ function Header() {
         </Popover.Group>
 
                 <div className="hidden lg:flex lg:flex-1 lg:justify-end items-center space-x-4">
+          
           {/* Dark Mode Toggle Button */}
+          
+          {/* flytt denne til settings page.tsx elns slik at den havner i settings.
           <button
               onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
               className="inline-flex justify-center items-center px-4 py-2 text-sm font-medium text-white bg-green-700 rounded-md hover:bg-green-600"
             >
               {theme === "dark" ? "Light Mode" : "Dark Mode"}
             </button>
+            */}
+            
 
           {/* User Dropdown */}
           <UserDropdown isMobile={false} currentUser={currentUser} />

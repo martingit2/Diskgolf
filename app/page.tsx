@@ -2,8 +2,7 @@ import Map from "@/components/Map";
 import BaneCarousel from "@/components/popular-carousel";
 import SearchForm from "@/components/SearchForm";
 import RotatingText from "@/components/text-rotator";
-import KontaktOss from "@/components/kontaktOss"; // Direct import
-import Footer from "@/components/Footer";
+// import KontaktOss from "@/components/kontaktOss"; // Direct import
 
 export default function HomePage() {
   return (
@@ -42,11 +41,6 @@ export default function HomePage() {
         <div className="mt-20">
           <BaneCarousel />
         </div>
-      </section>
-
-      {/* Kontakt Oss Section */}
-      <section className="mx-auto max-w-7xl mt-10 p-6">
-       <Footer /> 
       </section>
     </main>
   );
