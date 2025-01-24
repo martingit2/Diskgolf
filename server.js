@@ -4,6 +4,8 @@ import { WebSocketServer } from 'ws';
 import path from 'path';
 import { fileURLToPath } from 'url';
 
+/* test */
+
 // Konverter for ES-moduler
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
