@@ -32,13 +32,13 @@ export default function KontaktOss() {
             <h2 className="text-2xl font-bold mb-4 text-black">Kontakt Oss</h2>
             <div className="space-y-4 text-gray-800">
               <p>
-                <span className="font-medium">E-post:</span> kontakt@diskgolf.com
+                <span className="font-medium">E-post:</span> postmottak@usn.no
               </p>
               <p>
                 <span className="font-medium">Telefon:</span> +47 123 456 789
               </p>
               <p>
-                <span className="font-medium">Adresse:</span>  Gulbringvegen 28,Bø, MIDT I TELEMARK
+                <span className="font-medium">Adresse:</span>  Gullbringvegen 28, 3800 Bø, Midt-Telemark 
               </p>
 
               {/* Social Media Icons */}

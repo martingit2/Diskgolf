@@ -8,13 +8,13 @@ export default function Footer() {
         <div className="text-center md:text-left">
           <h2 className="text-xl font-bold">Kontaktinformasjon</h2>
           <p className="mt-2">
-            <span className="font-medium">E-post:</span> kontakt@diskgolf.com
+            <span className="font-medium">E-post:</span> postmottak@usn.no
           </p>
           <p>
             <span className="font-medium">Telefon:</span> +47 123 456 789
           </p>
           <p>
-                <span className="font-medium">Adresse:</span>  Gulbringvegen 28,Bø, MIDT I TELEMARK
+                <span className="font-medium">Adresse:</span>  Gullbringvegen 28, 3800 Bø, Midt-Telemark 
                 </p>
         </div>
         <div className="flex space-x-4 mt-4">
