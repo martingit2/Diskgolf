@@ -44,9 +44,6 @@ export default function Footer() {
             </a>
         </div>
       </div>
-      <div className="text-center text-sm mt-6">
-        &copy; 2024 DiskGolf. Alle rettigheter forbeholdt.
-      </div>
     </footer>
   );
 }
