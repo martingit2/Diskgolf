@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="no">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DiskGolf Spill</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+    <div id="game-container">
+        <h1>DiskGolf Spill</h1>
+        
+        <!-- Velg spillertype -->
+        <div id="player-selection">
+            <button id="solo-game-btn">Spill alene</button>
+            <button id="multi-player-btn">Legg til spillere</button>
+        </div>
+        
+        <!-- Legg til spillere -->
+        <div id="player-names" style="display: none;">
+            <h2>Legg til spillere</h2>
+            <input type="text" id="player-name" placeholder="Spillerens navn">
+            <button id="add-player-btn">Legg til spiller</button>
+            <div id="players-list"></div>
+            <button id="start-game-btn" style="display:none;">Start Spill</button>
+        </div>
+
+        <!-- Spillet pågår -->
+        <div id="game-board" style="display: none;">
+            <div id="turn-message"></div>
+            <div id="score-board">
+                <p>Antall Kast: <span id="cast-count">0</span></p>
+                <p>Poeng: <span id="score">0</span></p>
+                <p>OB: <span id="ob-count">0</span></p>
+                <p>Par: <span id="par-count">0</span></p>
+                <p>Fullførte Hull: <span id="completed-holes">0</span></p>
+            </div>
+            <button id="throw-button">Kast</button>
+            <button id="goal-button">Fullført hull</button>
+            <button id="restart-button">Restart Spill</button>
+            <button id="exit-button" style="display:none;">Avslutt Spill</button> <!-- Ny knapp for å avslutte spillet -->
+        </div>
+
+        <div id="game-over-message" style="display:none;"></div> <!-- Game over message -->
+
+    </div>
+
+    <script src="script.js"></script>
+
+</body>
+</html>
