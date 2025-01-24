@@ -177,7 +177,7 @@ function endGame() {
     gameOverMessage.style.display = 'block';  // Show the game over message
 }
 
-/* function exitGame() {
+ /* function exitGame() {
     // Reset to the start page
     gameBoardDiv.style.display = 'none';
     soloGameBtn.style.display = 'inline-block';

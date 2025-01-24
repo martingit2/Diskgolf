@@ -3,19 +3,22 @@ import http from 'http';
 import { WebSocketServer } from 'ws';
 import path from 'path';
 import { fileURLToPath } from 'url';
-
-/* test */
+import next from 'next';
 
 // Konverter for ES-moduler
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
+const dev = process.env.NODE_ENV !== 'production';
+const nextApp = next({ dev });
+const nextHandler = nextApp.getRequestHandler();
+
 const app = express();
 const server = http.createServer(app);
 const wss = new WebSocketServer({ server });
 
-// Server statiske filer fra public-mappen
-app.use(express.static(path.join(__dirname, 'public')));
+// Serve statiske filer fra public-mappen for spillet på /spill
+app.use('/spill', express.static(path.join(__dirname, 'public')));
 
 // Route for å serve index.html når noen går til "/spill"
 app.get('/spill', (req, res) => {
@@ -25,6 +28,7 @@ app.get('/spill', (req, res) => {
 let waitingPlayers = [];
 let games = [];
 
+// WebSocket-håndtering
 wss.on('connection', (ws) => {
     console.log('En spiller har koblet til');
     waitingPlayers.push(ws);
@@ -56,7 +60,12 @@ wss.on('connection', (ws) => {
     });
 });
 
-const port = process.env.PORT || 5000;
-server.listen(port, () => {
-    console.log(`Server listening on port ${port}`);
+// Håndter alle andre ruter med Next.js
+nextApp.prepare().then(() => {
+    app.all('*', (req, res) => nextHandler(req, res));
+
+    const port = process.env.PORT || 5000;
+    server.listen(port, () => {
+        console.log(`Server kjører på port ${port}`);
+    });
 });
