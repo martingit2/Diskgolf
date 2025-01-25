@@ -1,5 +1,7 @@
 import Map from "@/components/Map";
 import BaneCarousel from "@/components/popular-carousel";
+import QuickStartGame from "@/components/QuickStartGame";
+import ReviewCarousel from "@/components/ReviewCarousel";
 import SearchForm from "@/components/SearchForm";
 import RotatingText from "@/components/text-rotator";
 // import KontaktOss from "@/components/kontaktOss"; // Direct import
@@ -41,6 +43,12 @@ export default function HomePage() {
         <div className="mt-20">
           <BaneCarousel />
         </div>
+        <div className="mt-4">
+          <ReviewCarousel />
+          </div>
+      <div className="mt-10">
+      <QuickStartGame />
+      </div>
       </section>
     </main>
   );
