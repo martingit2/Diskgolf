@@ -1,3 +1,12 @@
+/** 
+ * Filnavn: layout.tsx
+ * Beskrivelse: Layout-komponent for autentiseringssider. 
+ * Sentraliserer autentiseringsrelaterte sider og komponenter i brukergrensesnittet for en bedre brukeropplevelse.
+ * Utvikler: Martin Pettersen
+ */
+
+
+
 const AuthLayout = ({ children }: { children: React.ReactNode }) => {
     return (
       <div

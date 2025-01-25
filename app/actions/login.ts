@@ -1,3 +1,15 @@
+/** 
+ * Filnavn: login.ts
+ * Beskrivelse: Serverfunksjon for å håndtere brukerinnlogging med støtte for passordvalidering, 
+ * e-postverifisering og tofaktorautentisering (2FA).
+ * - Validerer brukerens innloggingsdetaljer ved hjelp av Zod-skjema.
+ * - Sjekker om e-post er bekreftet, sender verifikasjonsmail om nødvendig.
+ * - Håndterer tofaktorautentisering (2FA) ved å generere og validere 2FA-koder.
+ * - Bruker NextAuth for autentisering og håndtering av økter.
+ * Utvikler: Martin Pettersen
+ */
+
+
 "use server";
 
 import * as z from "zod";

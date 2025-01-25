@@ -1,3 +1,13 @@
+/** 
+ * Filnavn: page.tsx
+ * Beskrivelse: Sidekomponent for håndtering av brukerinnlogging. 
+ * Renderer innloggingsskjema og håndterer hendelser for registrering, glemt passord og vellykket innlogging.
+ * Utvikler: Martin Pettersen
+ */
+
+
+
+
 "use client";
 
 import LoginForm from "@/components/auth/login-form";

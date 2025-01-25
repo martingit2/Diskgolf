@@ -1,3 +1,11 @@
+/** 
+ * Filnavn: Page.tsx
+ * Beskrivelse: Sidekomponent for administrasjon av brukerinnstillinger, inkludert endring av 
+ * personlig informasjon, passord, tofaktor-autentisering og sletting av konto.
+ * Utvikler: Martin Pettersen
+ */
+
+
 "use client";
 
 import * as z from "zod";

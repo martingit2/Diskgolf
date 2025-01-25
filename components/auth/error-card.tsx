@@ -1,3 +1,12 @@
+/** 
+ * Filnavn: error-card.tsx
+ * Beskrivelse: Komponent for å vise en feilmelding med en tilbakeknapp til innloggingssiden.
+ * Viser en advarsel til brukeren hvis en feil oppstår.
+ * Utvikler: Martin Pettersen
+ */
+
+
+
 import { CardWrapper } from "@/components/auth/card-wrapper";
 import { ExclamationTriangleIcon } from "@heroicons/react/20/solid";
 

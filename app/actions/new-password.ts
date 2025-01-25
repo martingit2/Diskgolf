@@ -1,3 +1,13 @@
+/** 
+ * Filnavn: newPassword.ts
+ * Beskrivelse: Serverfunksjon for å håndtere tilbakestilling av passord ved hjelp av en token.
+ * Funksjonen validerer brukerens nye passord, sjekker tokenets gyldighet, og oppdaterer passordet i databasen.
+ * Utvikler: Martin Pettersen
+ */
+
+
+
+
 "use server";
 
 import * as z from "zod";

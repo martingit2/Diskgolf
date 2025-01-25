@@ -1,3 +1,12 @@
+/** 
+ * Filnavn: verification-token.ts
+ * Beskrivelse: Tjenestefunksjoner for henting av e-postverifikasjonstokens fra databasen via Prisma.
+ * Gir mulighet for å hente tokens basert på tokenverdi eller e-postadresse.
+ * Utvikler: Martin Pettersen
+ */
+
+
+
 import client from "@/app/lib/prismadb";
 
 

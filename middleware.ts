@@ -1,3 +1,11 @@
+/**
+ * Filnavn: middleware.ts
+ * Beskrivelse: Middleware for å håndtere autentisering og ruteautorisasjon i Next.js-applikasjonen. 
+ * Kontrollerer brukerens tilgang til ulike ruter basert på autentiseringstilstand.
+ * Utvikler: Martin Pettersen
+ */
+
+
 import { NextRequest, NextResponse } from "next/server";
 import { getToken } from "next-auth/jwt";
 import { apiAuthPrefix, authRoutes, DEFAULT_LOGIN_REDIRECT, publicRoutes } from "./routes";

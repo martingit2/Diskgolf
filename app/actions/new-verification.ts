@@ -1,3 +1,12 @@
+/** 
+ * Filnavn: new-verification.ts
+ * Beskrivelse: Serverfunksjon for å håndtere e-postverifisering basert på en token.
+ * Funksjonen validerer om tokenet er gyldig og ikke utløpt, oppdaterer brukerens verifiseringsstatus
+ * i databasen, og sletter tokenet etter vellykket verifisering.
+ * Utvikler: Martin Pettersen
+ */
+
+
 "use server";
 
 import { getUserByEmail } from "@/data/user";

@@ -1,3 +1,12 @@
+/** 
+ * Filnavn: index.ts
+ * Beskrivelse: Skjemavalidering for ulike autentiserings- og brukerhandlinger ved hjelp av Zod.
+ * Håndterer validering for registrering, innlogging, passordtilbakestilling og brukerinnstillinger.
+ * Utvikler: Martin Pettersen
+ */
+
+
+
 import { UserRole } from "@prisma/client";
 import * as z from "zod";
 

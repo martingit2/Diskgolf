@@ -1,3 +1,12 @@
+/** 
+ * Filnavn: RegisterModal.tsx
+ * Beskrivelse: Modal-komponent for brukerregistrering. Håndterer registreringsskjema, sosial innlogging og navigasjon til innlogging.
+ * Utvikler: Martin Pettersen
+ */
+
+
+
+
 "use client"; // Indikerer at denne komponenten skal rendres på klientsiden.
 
 import axios from "axios"; // Axios brukes for å sende HTTP-forespørsler til backend.

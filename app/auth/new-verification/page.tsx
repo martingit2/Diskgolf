@@ -1,3 +1,12 @@
+/** 
+ * Filnavn: page.tsx
+ * Beskrivelse: Sidekomponent for håndtering av ny e-postverifisering. 
+ * Viser et skjema der brukeren kan bekrefte sin e-postadresse via en verifikasjonslenke.
+ * Utvikler: Martin Pettersen
+ */
+
+
+
 "use client";
 
 import { Suspense } from "react";

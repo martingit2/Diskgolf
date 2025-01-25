@@ -1,3 +1,11 @@
+/** 
+ * Filnavn: register-form.tsx
+ * Beskrivelse: Komponent for å håndtere brukerregistrering med skjema, validering og innsending.
+ * Inkluderer feilmeldinger, suksessmeldinger og sosial innlogging.
+ * Utvikler: Martin Pettersen
+ */
+
+
 "Use client";
 
 import React, { useState } from "react";

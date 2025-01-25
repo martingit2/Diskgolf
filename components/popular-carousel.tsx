@@ -1,3 +1,12 @@
+/** 
+ * Filnavn: BaneCarousel.tsx
+ * Beskrivelse: Karusellkomponent for visning av topprangerte diskgolfbaner. 
+ * Inkluderer dynamisk lasting av bilder, stjerne-rangering og responsiv tilpasning.
+ * Utvikler: Martin Pettersen
+ */
+
+
+
 "use client";
 
 import { Swiper, SwiperSlide } from "swiper/react";

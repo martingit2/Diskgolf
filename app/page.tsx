@@ -1,3 +1,11 @@
+/** 
+ * Filnavn: page.tsx
+ * Beskrivelse: Hovedsiden for DiskGolf-appen, inneholder kart, søkefunksjonalitet, anmeldelser og en tekstrotator for interaktiv brukeropplevelse.
+ * Utvikler: Martin Pettersen
+ */
+
+
+
 import Map from "@/components/Map";
 import BaneCarousel from "@/components/popular-carousel";
 import QuickStartGame from "@/components/QuickStartGame";

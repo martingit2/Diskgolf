@@ -1,3 +1,11 @@
+/** 
+ * Filnavn: mail.ts
+ * Beskrivelse: Hjelpefunksjoner for å sende e-poster til brukere for tofaktorautentisering, 
+ * passordtilbakestilling og e-postbekreftelse. Bruker Resend API for e-postutsending.
+ * Utvikler: Martin Pettersen
+ */
+
+
 import { Resend } from "resend";
 
 if (!process.env.RESEND_API_KEY) {

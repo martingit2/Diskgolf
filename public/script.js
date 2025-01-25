@@ -1,3 +1,14 @@
+/** 
+ * Filnavn: script.js
+ * Beskrivelse: Spillkontroller for et disk-golf-spill med både solo og flerspiller-modus. 
+ * Denne koden håndterer brukergrensesnittet, WebSocket-tilkobling og spilltilstanden.
+ * Funksjonalitet inkluderer spillstart, poengsummer, kast, mål, og spillets avslutning.
+ * 
+ * Utvikler: Martin Pettersen
+ */
+
+
+
 const soloGameBtn = document.getElementById('solo-game-btn');
 const multiPlayerBtn = document.getElementById('multi-player-btn');
 const playerNamesDiv = document.getElementById('player-names');

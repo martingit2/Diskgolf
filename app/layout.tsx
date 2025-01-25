@@ -1,3 +1,10 @@
+/** 
+ * Filnavn: RootLayout.tsx
+ * Beskrivelse: Hovedlayoutkomponenten for applikasjonen. Håndterer globale komponenter som header, modaler, sesjonshåndtering og layoutstruktur.
+ * Utvikler: Martin Pettersen
+ */
+
+
 import type { Metadata } from "next";
 import "./globals.css";
 import Header from "@/components/Header";

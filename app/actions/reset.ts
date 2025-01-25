@@ -1,3 +1,12 @@
+/** 
+ * Filnavn: reset.ts
+ * Beskrivelse: Serverfunksjon for tilbakestilling av passord via e-post.
+ * Validerer brukerens e-postadresse, genererer en tilbakestillingstoken, 
+ * og sender en e-post med en lenke for å tilbakestille passordet.
+ * Utvikler: Martin Pettersen
+ */
+
+
 "use server";
 
 import * as z from "zod";

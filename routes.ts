@@ -1,3 +1,13 @@
+/** 
+ * Filnavn: routes.ts
+ * Beskrivelse: Definerer ruter for offentlig tilgang, autentisering og API-bruk i DiskGolf-applikasjonen.
+ * Inkluderer standard omdirigeringsbane etter innlogging.
+ * Utvikler: Martin Pettersen
+ */
+
+
+
+
 /**
 * En array av routes som er tilgjengelig for personer
 * Som ikke er logget inn. Disse sidene krever ikke authentication

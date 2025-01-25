@@ -1,3 +1,12 @@
+/** 
+ * Filnavn: role-gate.tsx
+ * Beskrivelse: Komponent for tilgangskontroll basert på brukerrolle. 
+ * Viser innhold kun hvis brukeren har nødvendig rolle.
+ * Utvikler: Martin Pettersen
+ */
+
+
+
 "use client";
 
 import { UserRole } from "@prisma/client";

@@ -1,3 +1,11 @@
+/** 
+ * Filnavn: SearchForm.tsx
+ * Beskrivelse: Skjema for søk etter diskgolfbaner basert på ulike kriterier som fylke, sted, vanskelighetsgrad, antall hull og popularitet.
+ * Inneholder validering, API-forespørsler og visning av søkeresultater.
+ * Utvikler: Martin Pettersen
+ */
+
+
 "use client";
 
 import { zodResolver } from "@hookform/resolvers/zod";

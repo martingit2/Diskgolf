@@ -1,3 +1,11 @@
+/** 
+ * Filnavn: auth.ts
+ * Beskrivelse: NextAuth-konfigurasjon for autentisering i DiskGolf-applikasjonen. 
+ * Håndterer innlogging via OAuth og credentials, samt tofaktorautentisering.
+ * Utvikler: Martin Pettersen
+ */
+
+
 import NextAuth, { type AuthOptions } from "next-auth";
 import { PrismaAdapter } from "@auth/prisma-adapter";
 import client from "@/app/lib/prismadb";

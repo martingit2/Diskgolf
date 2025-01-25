@@ -1,3 +1,11 @@
+/** 
+ * Filnavn: header.tsx for auth
+ * Beskrivelse: Komponent for å vise en overskrift med en valgfri beskrivelse.
+ * Inkluderer animasjon og tilpasset skrifttype for en profesjonell visning.
+ * Utvikler: Martin Pettersen
+ */
+
+
 import { cn } from "@/app/lib/utils";
 import { Poppins } from "next/font/google";
 

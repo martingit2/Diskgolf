@@ -1,12 +1,23 @@
+/**
+ * Filnavn: Navbar.tsx
+ * Beskrivelse: Navigasjonskomponent med lenker til ulike sider og brukerknapp.
+ * Utvikler: Martin Pettersen
+ */
+
 "use client";
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-
 import { Button } from "@/components/ui/button";
 import { UserButton } from "@/components/auth/user-button";
 
-
+/**
+ * Navbar-komponenten håndterer navigasjon mellom forskjellige sider.
+ * Viser lenker til "Server", "Client", "Admin" og "Settings", 
+ * med dynamisk styling basert på aktiv rute.
+ * @component
+ * @author Martin Pettersen
+ */
 export const Navbar = () => {
   const pathname = usePathname();
 

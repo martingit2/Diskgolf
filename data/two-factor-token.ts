@@ -1,3 +1,12 @@
+/** 
+ * Filnavn: two-factor-token.ts
+ * Beskrivelse: Tjenestefunksjoner for henting av tofaktorautentiseringstoken fra databasen.
+ * Gir mulighet for å hente token enten via token-verdi eller e-post.
+ * Utvikler: Martin Pettersen
+ */
+
+
+
 import client from "@/app/lib/prismadb";
 
 

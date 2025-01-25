@@ -1,3 +1,10 @@
+/** 
+ * Filnavn: Button.tsx
+ * Beskrivelse: Gjenbrukbar knapp-komponent med støtte for tilpasset stil, ikoner og interaksjoner.
+ * Utvikler: Martin Pettersen
+ */
+
+
 "use client"; // Indikerer at denne komponenten skal rendres på klientsiden.
 
 import { IconType } from "react-icons"; // Typing for ikonkomponenten.

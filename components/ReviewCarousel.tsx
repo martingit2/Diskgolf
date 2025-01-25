@@ -1,3 +1,12 @@
+/** 
+ * Filnavn: ReviewCarousel.tsx
+ * Beskrivelse: Karusellkomponent for visning av brukeranmeldelser av diskgolfbaner.
+ * Viser anmeldelser med navn, rating, tekst og tilknyttede baner.
+ * Utvikler: Martin Pettersen
+ */
+
+
+
 "use client";
 
 import { FaStar } from "react-icons/fa";

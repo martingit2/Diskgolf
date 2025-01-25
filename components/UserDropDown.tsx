@@ -1,3 +1,12 @@
+/** 
+ * Filnavn: UserDropdown.tsx
+ * Beskrivelse: Komponent for brukerens dropdown-meny. Inkluderer alternativer for innlogging, registrering, tilbakestilling av passord, og utlogging.
+ * Tilbyr en responsiv og tilgjengelig meny for både desktop- og mobilvisning.
+ * Utvikler: Martin Pettersen
+ */
+
+
+
 "use client";
 
 import {

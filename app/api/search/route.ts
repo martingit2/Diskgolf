@@ -1,3 +1,14 @@
+
+/** 
+ * Filnavn: route.ts
+ * Beskrivelse: API-endepunkt for søk etter discgolfbaner basert på ulike filtre som fylke, sted, vanskelighetsgrad,
+ * antall hull, stjernerangering, antall anmeldelser og banetype. 
+ * Returnerer en liste over discgolfbaner som matcher angitte søkekriterier.
+ * Utvikler: Martin Pettersen
+ */
+
+
+
 // app/api/search/route.ts
 import { NextResponse } from 'next/server';
 

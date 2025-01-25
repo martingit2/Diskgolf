@@ -1,3 +1,11 @@
+/** 
+ * Filnavn: new-password-form.tsx
+ * Beskrivelse: Komponent for tilbakestilling av passord. 
+ * Håndterer validering og innsending av nytt passord med token fra URL-en.
+ * Utvikler: Martin Pettersen
+ */
+
+
 "use client";
 
 import * as z from "zod";

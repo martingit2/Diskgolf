@@ -1,3 +1,10 @@
+/** 
+ * Filnavn: card-wrapper.tsx
+ * Beskrivelse: Wrapper-komponent for kortlayout med tittel, innhold, tilbakeknapp og valgfri sosiale medier-seksjon.
+ * Utvikler: Martin Pettersen
+ */
+
+
 "use client";
 
 import { Card, CardContent, CardFooter } from "../ui/card";

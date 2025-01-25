@@ -1,3 +1,11 @@
+/** 
+ * Filnavn: auth.config.ts
+ * Beskrivelse: Konfigurasjonsfil for NextAuth autentisering. Støtter Google, GitHub og e-post/pasord-basert innlogging.
+ * Inneholder tilpasset logikk for autentisering av brukere via credentials.
+ * Utvikler: Martin Pettersen
+ */
+
+
 import bcrypt from "bcryptjs";
 import type { NextAuthOptions } from "next-auth"; // Oppdaterer til NextAuthOptions
 import Credentials from "next-auth/providers/credentials";

@@ -1,3 +1,12 @@
+/** 
+ * Filnavn: Header.tsx
+ * Beskrivelse: Navigasjonskomponent for DiskGolf-applikasjonen. Håndterer både desktop- og mobilvisning.
+ * Inkluderer brukerinnlogging, navigasjonslenker og interaktive elementer som dropdowns.
+ * Utvikler: Martin Pettersen
+ */
+
+
+
 'use client';
 
 import { Bars3Icon, XMarkIcon } from '@heroicons/react/24/outline';

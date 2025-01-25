@@ -1,3 +1,11 @@
+/** 
+ * Filnavn: Map.tsx
+ * Beskrivelse: Kartkomponent for visning av diskgolfbaner. 
+ * Laster Leaflet dynamisk for å unngå server-side rendering (SSR) problemer.
+ * Utvikler: Martin Pettersen
+ */
+
+
 "use client";
 
 import dynamic from "next/dynamic";

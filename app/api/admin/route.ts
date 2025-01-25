@@ -1,3 +1,10 @@
+/** 
+ * Filnavn: route.ts
+ * Beskrivelse: API-endepunkt for å sjekke om den autentiserte brukeren har administratorrettigheter.
+ * Returnerer HTTP 200 OK hvis brukeren har ADMIN-rolle, ellers HTTP 403 Forbidden.
+ * Utvikler: Martin Pettersen
+ */
+
 
 import { currentRole } from "@/app/lib/auth";
 import { UserRole } from "@prisma/client";

@@ -1,3 +1,11 @@
+/** 
+ * Filnavn: auth.ts
+ * Beskrivelse: Hjelpefunksjoner for å hente informasjon om innlogget bruker og brukerrolle 
+ * via autentiseringssystemet. Brukes til tilgangskontroll og personalisering av brukeropplevelsen.
+ * Utvikler: Martin Pettersen
+ */
+
+
 import { auth } from "@/auth";
 
 

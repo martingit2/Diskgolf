@@ -1,3 +1,12 @@
+/** 
+ * Filnavn: new-verifcation-form.tsx
+ * Beskrivelse: Komponent for håndtering av e-postverifisering. 
+ * Henter token fra URL og sender verifiseringsforespørsel automatisk ved innlasting.
+ * Utvikler: Martin Pettersen
+ */
+
+
+
 "use client";
 
 import { useCallback, useEffect, useState } from "react";

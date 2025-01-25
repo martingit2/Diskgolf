@@ -1,3 +1,13 @@
+/** 
+ * Filnavn: register.ts
+ * Beskrivelse: Serverfunksjon for å håndtere brukerregistrering.
+ * Validerer brukerens registreringsinformasjon, sjekker om e-posten allerede er i bruk, 
+ * lagrer ny bruker i databasen, og sender en bekreftelses-e-post.
+ * Utvikler: Martin Pettersen
+ */
+
+
+
 "use server";
 
 import bcrypt from "bcryptjs";

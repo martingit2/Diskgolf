@@ -1,3 +1,11 @@
+/** 
+ * Filnavn: password-reset-token.ts
+ * Beskrivelse: Tjenestefunksjoner for håndtering av passordtilbakestilling. 
+ * Henter tilbakestillingstoken basert på token eller e-post ved hjelp av Prisma ORM.
+ * Utvikler: Martin Pettersen
+ */
+
+
 import client from "@/app/lib/prismadb";
 
 

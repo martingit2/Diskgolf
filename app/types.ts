@@ -1,3 +1,11 @@
+/** 
+ * Filnavn: types.ts
+ * Beskrivelse: Definerer brukerobjektets struktur i applikasjonen. 
+ * Inkluderer egenskaper som ID, navn, e-post, rolle og sikkerhetsinnstillinger.
+ * Utvikler: Martin Pettersen
+ */
+
+
 export type User = {
     id: string; // Unik ID for brukeren
     name: string; // Brukernavn, alltid string

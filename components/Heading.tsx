@@ -1,3 +1,10 @@
+/** 
+ * Filnavn: Heading.tsx
+ * Beskrivelse: Gjenbrukbar overskriftskomponent for å vise tittel og undertekst med fleksibel justering.
+ * Utvikler: Martin Pettersen
+ */
+
+
 'use client';
 
 interface HeadingProps {

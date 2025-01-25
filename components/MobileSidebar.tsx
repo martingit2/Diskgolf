@@ -1,4 +1,8 @@
-
+/** 
+ * Filnavn: MobileSidebar.tsx
+ * Beskrivelse: Mobilvennlig navigasjonsmeny for DiskGolf-applikasjonen. Håndterer responsiv menyvisning og navigasjonslenker.
+ * Utvikler: Martin Pettersen
+ */
 
 /* Denne må oppdateres for å fungere alt står nå bare i Header.tsx
  * Vi ønsker å bruke disse pga de er gjenbrukbare komponenter og gjør det mer oversiktlig å lese kode

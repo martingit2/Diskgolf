@@ -1,3 +1,13 @@
+/** 
+ * Filnavn: RotatingText.tsx
+ * Beskrivelse: Komponent som viser roterende tekster med jevne mellomrom. 
+ * Brukes for å fremheve ulike funksjoner i DiskGolf-applikasjonen.
+ * Utvikler: Martin Pettersen
+ */
+
+
+
+
 "use client";
 
 import React, { useState, useEffect } from "react";

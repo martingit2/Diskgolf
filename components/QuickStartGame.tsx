@@ -1,3 +1,12 @@
+/** 
+ * Filnavn: QuickStartGame.tsx
+ * Beskrivelse: Komponent for å starte et hurtigspill av DiskGolf. 
+ * Inneholder en CTA-knapp som sender brukeren til spillseksjonen.
+ * Utvikler: Martin Pettersen
+ */
+
+
+
 "use client";
 
 import { useRouter } from "next/navigation";

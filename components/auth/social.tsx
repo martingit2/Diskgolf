@@ -1,3 +1,11 @@
+/** 
+ * Filnavn: social.tsx
+ * Beskrivelse: Komponent for sosiale innloggingsknapper via Google og GitHub. 
+ * Håndterer innlogging med NextAuth og støtter tilpasset callback-URL.
+ * Utvikler: Martin Pettersen
+ */
+
+
 "use client";
 
 import { signIn } from "next-auth/react";

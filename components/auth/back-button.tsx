@@ -1,3 +1,11 @@
+/** 
+ * Filnavn: back-button.tsx
+ * Beskrivelse: Tilpasset tilbakeknapp-komponent som gir fleksibilitet med valgfri klikkhendelse.
+ * Kombinerer Next.js Link med en knapp for å støtte navigasjon og eventuelle egendefinerte handlinger.
+ * Utvikler: Martin Pettersen
+ */
+
+
 "use client";
 
 import Link from "next/link";

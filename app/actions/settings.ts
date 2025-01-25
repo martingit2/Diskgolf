@@ -1,3 +1,12 @@
+/** 
+ * Filnavn: settings.ts
+ * Beskrivelse: Serverfunksjon for å håndtere oppdatering av brukerinnstillinger. 
+ * Håndterer oppdatering av navn, e-post, rolle og passord, samt e-postverifisering for nye adresser.
+ * Utvikler: Martin Pettersen
+ */
+
+
+
 "use server";
 
 import * as z from "zod";

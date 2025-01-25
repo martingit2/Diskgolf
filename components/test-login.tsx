@@ -1,3 +1,11 @@
+/** 
+ * Filnavn: test-login.tsx
+ * Beskrivelse: Enkel test-login-komponent for manuell innlogging med e-post og passord.
+ * Bruker NextAuth for autentisering og håndterer feil ved innlogging.
+ * Utvikler: Martin Pettersen
+ */
+
+
 "use client";
 
 import { useState } from "react";

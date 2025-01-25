@@ -1,5 +1,5 @@
-/**
- * useRegisterModal.ts
+/** 
+ * Filnavn: useRegisterModal.ts
  * --------------------
  * Dette er en Zustand-basert butikk som håndterer visningen av registreringsmodalen.
  * 
@@ -16,6 +16,8 @@
  * - `isOpen`: En boolean som sier om modal er åpen (`true`) eller lukket (`false`).
  * - `onOpen`: En funksjon som åpner modal ved å sette `isOpen` til `true`.
  * - `onClose`: En funksjon som lukker modal ved å sette `isOpen` til `false`.
+ * 
+ * Utvikler: Martin Pettersen
  */
 
 import { create } from "zustand"; // Zustand brukes for å lage en lett tilstandsbutikk.

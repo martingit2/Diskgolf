@@ -1,5 +1,14 @@
-"use client"; // Indikerer at denne komponenten skal rendres på klientsiden.
 
+/** 
+ * Filnavn: Input.tsx
+ * Beskrivelse: Gjenbrukbar Input-komponent for skjemaer med støtte for validering, etiketter og feilmeldinger.
+ * Utvikler: Martin Pettersen
+ */
+
+
+
+
+"use client"; 
 import { UseFormRegister, FieldValues, FieldErrors } from "react-hook-form"; // Importerer typer for skjemaer fra react-hook-form.
 
 interface InputProps {

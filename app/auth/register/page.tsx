@@ -1,3 +1,12 @@
+/** 
+ * Filnavn: page.tsx
+ * Beskrivelse: Sidekomponent for brukerregistrering. Viser en placeholder for registreringsskjema 
+ * og en knapp for å navigere til innloggingssiden.
+ * Utvikler: Martin Pettersen
+ */
+
+
+
 "use client";
 
 

@@ -1,3 +1,10 @@
+/** 
+ * Filnavn: login-form.tsx
+ * Beskrivelse: Komponent for brukerinnlogging. Håndterer innloggingsskjema med validering, feilmeldinger, og støtte for sosial innlogging.
+ * Utvikler: Martin Pettersen
+ */
+
+
 "use client";
 
 import React, { useState } from "react";

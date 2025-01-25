@@ -1,3 +1,11 @@
+/** 
+ * Filnavn: form-success.tsx
+ * Beskrivelse: Komponent for visning av suksessmeldinger i skjemaer.
+ * Viser en bekreftelsesmelding med et ikon dersom en melding er tilgjengelig.
+ * Utvikler: Martin Pettersen
+ */
+
+
 import { CheckBadgeIcon } from "@heroicons/react/20/solid";
 
 

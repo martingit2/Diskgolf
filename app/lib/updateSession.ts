@@ -1,3 +1,10 @@
+/** 
+ * Filnavn: updateSession.ts
+ * Beskrivelse: Funksjon for å oppdatere klientens økt etter at brukerinnstillinger er endret.
+ * Brukes for å sikre at brukerens sesjon reflekterer de nyeste dataene etter endringer.
+ * Utvikler: Martin Pettersen
+ */
+
 import { signIn } from "next-auth/react";
 
 /**

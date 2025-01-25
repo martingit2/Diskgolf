@@ -1,3 +1,11 @@
+/** 
+ * Filnavn: token.ts
+ * Beskrivelse: Hjelpefunksjoner for å generere og lagre tokens for tofaktorautentisering, passordtilbakestilling og e-postverifisering.
+ * Funksjonene sikrer at eksisterende tokens slettes før nye opprettes for å unngå duplikater og forbedre sikkerheten.
+ * Utvikler: Martin Pettersen
+ */
+
+
 import { getVerificationTokenByEmail } from '@/data/verification-token';
 import { v4 as uuidv4 } from 'uuid';
 import client from './prismadb';

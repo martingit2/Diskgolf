@@ -1,3 +1,11 @@
+/** 
+ * Filnavn: NavLinks.tsx
+ * Beskrivelse: Definerer navigasjonslenker og call-to-action lenker som brukes i Header og MobileSidebar-komponentene.
+ * Gjør koden mer oversiktlig og enklere å vedlikeholde ved å sentralisere lenkene på ett sted.
+ * Utvikler: Martin Pettersen
+ */
+
+
 
 /* Denne må oppdateres for å fungere alt står nå bare i Header.tsx
  * Vi ønsker å bruke disse pga de er gjenbrukbare komponenter og gjør det mer oversiktlig å lese kode

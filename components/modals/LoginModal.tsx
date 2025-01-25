@@ -1,4 +1,13 @@
-"use client"; // Indikerer at denne komponenten skal rendres på klientsiden.
+/** 
+ * Filnavn: LoginModal.tsx
+ * Beskrivelse: Modal-komponent for brukerinnlogging. Håndterer innloggingsskjema, sosiale innlogginger og navigasjon til registreringssiden.
+ * Utvikler: Martin Pettersen
+ */
+
+
+
+
+"use client"; 
 
 import { useState, useCallback } from "react";
 import { FieldValues, SubmitHandler, useForm } from "react-hook-form";

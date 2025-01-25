@@ -1,3 +1,12 @@
+/** 
+ * Filnavn: MapComponent.tsx
+ * Beskrivelse: Interaktiv kartkomponent for å vise diskgolfbaner med Leaflet-biblioteket.
+ * Inneholder dynamiske markører med popup-informasjon og bruker "Leaflet Awesome Markers" for tilpassede ikoner.
+ * Utvikler: Martin Pettersen
+ */
+
+
+
 "use client";
 
 import L from "leaflet";

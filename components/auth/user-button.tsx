@@ -1,3 +1,11 @@
+/** 
+ * Filnavn: user-button.tsx
+ * Beskrivelse: Komponent for brukerprofilmeny med avatar og utloggingsfunksjonalitet.
+ * Viser en nedtrekksmeny med brukerens profilbilde og mulighet til å logge ut.
+ * Utvikler: Martin Pettersen
+ */
+
+
 "use client";
 
 import { FaSignOutAlt, FaUser } from "react-icons/fa";

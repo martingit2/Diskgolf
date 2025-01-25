@@ -1,3 +1,10 @@
+/** 
+ * Filnavn: Logo.tsx
+ * Beskrivelse: Gjenbrukbar komponent for visning av applikasjonens logo med merkevaretekst.
+ * Forenkler vedlikehold av header-komponenten ved å isolere logo-relatert kode.
+ * Utvikler: Martin Pettersen
+ */
+
 
 
 /* Denne må oppdateres for å fungere alt står nå bare i Header.tsx

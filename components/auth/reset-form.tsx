@@ -1,3 +1,11 @@
+/** 
+ * Filnavn: reset-form.tsx
+ * Beskrivelse: Komponent for å håndtere tilbakestilling av passord. 
+ * Gir brukeren mulighet til å be om en e-post for å tilbakestille passordet.
+ * Utvikler: Martin Pettersen
+ */
+
+
 "use client";
 
 import * as z from "zod";

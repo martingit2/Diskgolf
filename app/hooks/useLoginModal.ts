@@ -1,6 +1,6 @@
-/**
- * useLoginModal.ts
- * -----------------
+/** 
+ * Filnavn: useLoginModal.ts
+ * -------------------------
  * Dette er en Zustand-basert butikk som håndterer visningen av innloggingsmodalen.
  * 
  * Hva er Zustand?
@@ -17,6 +17,8 @@
  * 1. `isOpen`: Et flagg (true/false) som sier om modal er åpen.
  * 2. `onOpen`: En funksjon som åpner modal ved å sette `isOpen` til `true`.
  * 3. `onClose`: En funksjon som lukker modal ved å sette `isOpen` til `false`.
+ * 
+ * Utvikler: Martin Pettersen
  */
 
 import { create } from "zustand"; // Zustand er et lettvektstilstandsverktøy.

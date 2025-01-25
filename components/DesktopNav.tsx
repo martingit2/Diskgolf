@@ -1,3 +1,11 @@
+/** 
+ * Filnavn: DesktopNav.tsx
+ * Beskrivelse: Navigasjonskomponent for desktopvisning, med drop-down meny for baner og direkte linker til andre seksjoner.
+ * Utvikler: Martin Pettersen
+ */
+
+
+
 
 /* Denne må oppdateres for å fungere alt står nå bare i Header.tsx
  * Vi ønsker å bruke disse pga de er gjenbrukbare komponenter og gjør det mer oversiktlig å lese kode

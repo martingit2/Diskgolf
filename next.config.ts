@@ -1,3 +1,9 @@
+/** 
+ * Filnavn: next.config.ts
+ * Beskrivelse: Konfigurasjonsfil for Next.js-applikasjonen. Håndterer miljøvariabler, bilde-domenekonfigurasjon, rute-omskrivinger, og Webpack-innstillinger.
+ * Utvikler: Martin Pettersen
+ */
+
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {

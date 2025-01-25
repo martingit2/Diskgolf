@@ -1,3 +1,10 @@
+/** 
+ * Filnavn: SessionWrapper.tsx
+ * Beskrivelse: Wrapper-komponent for å levere NextAuth-sesjon til applikasjonen.
+ * Sørger for at sesjonsdata er tilgjengelig i hele React-applikasjonen via Context API.
+ * Utvikler: Martin Pettersen
+ */
+
 "use client";
 
 import { SessionProvider } from "next-auth/react";

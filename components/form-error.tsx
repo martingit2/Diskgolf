@@ -1,3 +1,12 @@
+/** 
+ * Filnavn: form-error.tsx
+ * Beskrivelse: Komponent for visning av feilmeldinger i skjemaer. 
+ * Viser en advarsel med et ikon dersom en feilmelding er tilgjengelig.
+ * Utvikler: Martin Pettersen
+ */
+
+
+
 import { ExclamationTriangleIcon } from "@heroicons/react/20/solid";
 
 interface FormErrorProps {

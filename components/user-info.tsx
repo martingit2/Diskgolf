@@ -1,3 +1,11 @@
+/** 
+ * Filnavn: user-info.tsx
+ * Beskrivelse: Komponent for visning av brukerinfo, inkludert ID, navn, e-post, rolle og tofaktorstatus.
+ * Viser brukerdata i et kortformat med tydelig styling.
+ * Utvikler: Martin Pettersen
+ */
+
+
 
 import { 
   Card, 

@@ -1,9 +1,26 @@
+/** 
+ * Filnavn: deleteUser.ts
+ * Beskrivelse: Serverfunksjon for å slette en bruker fra databasen og logge brukeren ut.
+ * Håndterer fjerning av brukerrelaterte data før sletting.
+ * Utvikler: Martin Pettersen
+ */
+
 "use server";
 
 import prisma from "../lib/prismadb";
 import { currentUser } from "../lib/auth";
 import { signOut } from "next-auth/react";
 
+/**
+ * Sletter den nåværende brukeren fra databasen og logger ut vedkommende.
+ * Funksjonen kontrollerer om brukeren er logget inn, sjekker eksistens i databasen,
+ * fjerner eventuelle tilknyttede relasjoner, og utfører deretter sletting.
+ *
+ * @async
+ * @function
+ * @returns {Promise<{ success: boolean; message: string }>} En melding med status for slettingen.
+ * @author Martin Pettersen
+ */
 export async function deleteUser() {
   try {
     // Hent den nåværende brukeren

@@ -1,4 +1,13 @@
-"use client"; // Indikerer at denne komponenten er en klientkomponent som bruker React Hooks.
+/** 
+ * Filnavn: Modal.tsx
+ * Beskrivelse: Gjenbrukbar modal-komponent for visning av popup-bokser i applikasjonen.
+ * Brukes for registrering, varsler eller andre interaktive handlinger.
+ * Inneholder støtte for primær- og sekundærhandlinger samt lukkefunksjonalitet.
+ * Utvikler: Martin Pettersen
+ */
+
+
+"use client"; 
 
 import { useCallback, useEffect, useState } from "react";
 import { IoMdClose } from "react-icons/io"; // Importerer et ikon for lukkeknappen.

@@ -1,3 +1,11 @@
+/** 
+ * Filnavn: logout-button.tsx
+ * Beskrivelse: Komponent for å håndtere brukerens utlogging fra applikasjonen. 
+ * Utfører utlogging via NextAuth og en tilpasset server-handling.
+ * Utvikler: Martin Pettersen
+ */
+
+
 "use client";
 
 import { signOut } from "next-auth/react";
