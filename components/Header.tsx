@@ -18,7 +18,7 @@ import UserDropdown from './UserDropDown';
 import { useSession } from 'next-auth/react';
 import { User } from '@/app/types';
 // import { useTheme } from "next-themes"; // Import the useTheme hook
-import KontaktOss from './kontaktOss';
+
 
 
 const navLinks = [
@@ -131,16 +131,19 @@ function Header() {
               </Popover.Panel>
             </Transition>
           </Popover>
-          <a href="#" className="text-sm font-semibold leading-6 text-white">
-            Nyheter
-          </a>
-          <a href="#" className="text-sm font-semibold leading-6 text-white">
-            Klubber
-          </a>
-          <a href="#" className="text-sm font-semibold leading-6 text-white">
-            Turneringer
-          </a>
-          <KontaktOss />
+          <Link href="/nyheter" className="text-sm font-semibold leading-6 text-white hover:text-green-600">
+      Nyheter
+     </Link>
+     <Link href="/klubber" className="text-sm font-semibold leading-6 text-white hover:text-green-600">
+     Klubber
+     </Link>
+     <Link href="/turneringer" className="text-sm font-semibold leading-6 hover:text-green-600 text-white">
+    Turneringer
+      </Link>
+      <Link href="/kontakt" className="text-sm font-semibold leading-6 text-white hover:text-green-600">
+       Kontakt oss
+       </Link>
+   
 
         </Popover.Group>
 

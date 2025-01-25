@@ -26,7 +26,19 @@ export const authRoutes = [
     "/auth/reset",
     "/auth/new-password",
     "/test",
-]
+    "/nyheter",
+    "/faq",
+    "/turneringer",
+    "/klubber",
+    "/baner",
+    "/guide",
+    "/arrangementer",
+    "/kontakt",
+    "/medlemskap",
+    "/om-oss",
+    "/personvern",
+    "/vilkar"
+];
 
 /**
 * Prefix for API autentisering routes.

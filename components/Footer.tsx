@@ -1,6 +1,7 @@
 "use client";
 import { FaFacebook, FaInstagram, FaTwitter } from "react-icons/fa";
 import { Separator } from "@/components/ui/separator";
+import Link from "next/link";
 
 export default function Footer() {
   return (
@@ -50,23 +51,55 @@ export default function Footer() {
       <Separator className="my-6 border-gray-600 max-w-7xl mx-auto" />
 
       <div className="max-w-7xl mx-auto text-center">
-        <ul className="flex flex-wrap justify-center space-x-4">
-          <li><a href="#" className="hover:text-gray-400">Personvern</a></li>
-          <Separator orientation="vertical" className="h-4 bg-gray-600" />
-          <li><a href="#" className="hover:text-gray-400">FAQ</a></li>
-          <Separator orientation="vertical" className="h-4 bg-gray-600" />
-          <li><a href="#" className="hover:text-gray-400">Guide til Discgolf</a></li>
-          <Separator orientation="vertical" className="h-4 bg-gray-600" />
-          <li><a href="#" className="hover:text-gray-400">Vilkår for bruk</a></li>
-          <Separator orientation="vertical" className="h-4 bg-gray-600" />
-          <li><a href="#" className="hover:text-gray-400">Om oss</a></li>
-          <Separator orientation="vertical" className="h-4 bg-gray-600" />
-          <li><a href="#" className="hover:text-gray-400">Arrangementer</a></li>
-          <Separator orientation="vertical" className="h-4 bg-gray-600" />
-          <li><a href="#" className="hover:text-gray-400">Baneoversikt</a></li>
-          <Separator orientation="vertical" className="h-4 bg-gray-600" />
-          <li><a href="#" className="hover:text-gray-400">Medlemskap</a></li>
-        </ul>
+      <ul className="flex flex-wrap justify-center space-x-4">
+  <li>
+    <Link href="/personvern" className="hover:text-gray-400">
+      Personvern
+    </Link>
+  </li>
+  <Separator orientation="vertical" className="h-4 bg-gray-600" />
+  <li>
+    <Link href="/faq" className="hover:text-gray-400">
+      FAQ
+    </Link>
+  </li>
+  <Separator orientation="vertical" className="h-4 bg-gray-600" />
+  <li>
+    <Link href="/guide" className="hover:text-gray-400">
+      Guide til Discgolf
+    </Link>
+  </li>
+  <Separator orientation="vertical" className="h-4 bg-gray-600" />
+  <li>
+    <Link href="/vilkar" className="hover:text-gray-400">
+      Vilkår for bruk
+    </Link>
+  </li>
+  <Separator orientation="vertical" className="h-4 bg-gray-600" />
+  <li>
+    <Link href="/om-oss" className="hover:text-gray-400">
+      Om oss
+    </Link>
+  </li>
+  <Separator orientation="vertical" className="h-4 bg-gray-600" />
+  <li>
+    <Link href="/arrangementer" className="hover:text-gray-400">
+      Arrangementer
+    </Link>
+  </li>
+  <Separator orientation="vertical" className="h-4 bg-gray-600" />
+  <li>
+    <Link href="/baner" className="hover:text-gray-400">
+      Baneoversikt
+    </Link>
+  </li>
+  <Separator orientation="vertical" className="h-4 bg-gray-600" />
+  <li>
+    <Link href="/medlemskap" className="hover:text-gray-400">
+      Medlemskap
+    </Link>
+  </li>
+</ul>
       </div>
       <p className="mt-6 text-sm">© 2024 DiskGolf. Alle rettigheter forbeholdt.</p>
     </footer>
