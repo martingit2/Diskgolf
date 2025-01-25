@@ -74,7 +74,7 @@ I tillegg til standard REST API, bruker vi **WebSockets** for sanntidskommunikas
   - **Hent baner**: RESTful endepunkt `/api/courses` gir eksterne klienter tilgang til informasjon om discgolfbaner.
 
 - **WebSockets**:
-  - **Live poengoppdatering**: Bruk WebSockets for å sende og motta oppdateringer om poengsummer i sanntid, turbytte og andre hendelser i spillet.
+  - **Live poengoppdatering**: Bruker WebSockets for å sende og motta oppdateringer om poengsummer i sanntid, turbytte og andre hendelser i spillet.
 
 
 ---
