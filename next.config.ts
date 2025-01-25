@@ -28,25 +28,10 @@ const nextConfig: NextConfig = {
     ];
   },
 
-  async redirects() {
-    return [
-      {
-        source: "/spill",
-        destination: process.env.NODE_ENV === "development" 
-          ? "http://localhost:3000/spill" 
-          : "https://spill.diskgolf.app/spill",
-        permanent: true,
+  
+      async redirects() {
+        return [];
       },
-      {
-        source: "/",
-        has: [{ type: "host", value: "diskgolf.app" }],
-        destination: process.env.NODE_ENV === "development" 
-          ? "http://localhost:3000" 
-          : "https://diskgolf.app",
-        permanent: true,
-      },
-    ];
-  },
 
   webpack: (config) => {
     config.resolve = config.resolve || {};
