@@ -3,7 +3,7 @@ import type { NextConfig } from "next";
 const nextConfig: NextConfig = {
   reactStrictMode: true,
   env: {
-    NEXT_PUBLIC_APP_URL: "https://diskgolf-g11-6bc74f8b60cb.herokuapp.com", // Heroku app URL
+    NEXT_PUBLIC_APP_URL: "https://diskgolf.app",  // Bruk ditt eget domene
   },
   images: {
     domains: ["localhost", "diskgolf-g11-6bc74f8b60cb.herokuapp.com", "spill.diskgolf.app"],
