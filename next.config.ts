@@ -31,12 +31,6 @@ const nextConfig: NextConfig = {
   async redirects() {
     return [
       {
-        source: "/",
-        has: [{ type: "host", value: "www.diskgolf.app" }],
-        destination: "https://diskgolf.app",  // Ompek `www.diskgolf.app` til `diskgolf.app`
-        permanent: true,
-      },
-      {
         source: "/spill",
         destination: process.env.NODE_ENV === "development" 
           ? "http://localhost:3000/spill" 
@@ -53,7 +47,7 @@ const nextConfig: NextConfig = {
       },
     ];
   },
-  
+
   webpack: (config) => {
     config.resolve = config.resolve || {};
     config.resolve.fallback = { fs: false, net: false, tls: false };
