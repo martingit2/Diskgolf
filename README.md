@@ -29,6 +29,7 @@ Applikasjonen er under utvikling og er tilgjengelig på: [https://diskgolf.app](
 - [**React Icons**](https://react-icons.github.io/react-icons): For tilgang til populære ikonpakker.
 - [**Axios**](https://axios-http.com): For håndtering av HTTP-forespørsler.
 
+## Backend
 - [**Express**](https://expressjs.com): Brukes som backend-server for å håndtere API-ruter og logikk, samt for WebSocket-tilkoblinger.
 - [**WebSockets (ws)**](https://www.npmjs.com/package/ws): Brukes til sanntids kommunikasjon for spillet, inkludert poengoppdatering og turbytte.
 - [**Supabase**](https://supabase.io): PostgreSQL database og autentisering.
