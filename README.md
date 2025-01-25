@@ -111,3 +111,17 @@ APP2000_G11_25/
 |   └── Components/                  # Komponenter
 ├── data/                            # Data og statiske ressurser
 ├── README.md                        # Prosjektdokumentasjon
+```
+
+
+## Bildeattribusjoner
+
+- **woman.jpg** - [Štefan Štefančík](https://unsplash.com/@cikstefan)  
+  [Smiling Woman](https://unsplash.com/photos/smiling-woman-wearing-white-and-black-pinstriped-collared-top-QXevDflbl8A)
+
+- **woman2.jpg** - [Ayo Ogunseinde](https://unsplash.com/@armedshutter)  
+  [Woman looking sideways](https://unsplash.com/photos/woman-looking-sideways-leaning-on-white-wall-6W4F62sN_yI)
+
+- **woman3.jpg** - [Almos Bechtold](https://unsplash.com/@almosbech)  
+  [Shallow focus photo of woman face](https://unsplash.com/photos/shallow-focus-photo-of-woman-face-3402kvtHhOo)
+
