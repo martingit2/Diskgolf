@@ -6,13 +6,28 @@ const nextConfig: NextConfig = {
     NEXT_PUBLIC_APP_URL: "https://diskgolf-g11-6bc74f8b60cb.herokuapp.com", // Heroku app URL
   },
   images: {
-    domains: ["localhost", "diskgolf-g11-6bc74f8b60cb.herokuapp.com"],
+    domains: ["localhost", "diskgolf-g11-6bc74f8b60cb.herokuapp.com", "spill.diskgolf.app"],
   },
   async rewrites() {
     return [
       {
-        source: "/spill/:path*",  // Alle API-kall til /spill
-        destination: "https://diskgolf-g11-6bc74f8b60cb.herokuapp.com/spill/:path*", // Proxy til backend
+        source: "/spill/:path*",  
+        destination: "https://diskgolf-g11-6bc74f8b60cb.herokuapp.com/spill/:path*",
+      },
+    ];
+  },
+  async redirects() {
+    return [
+      {
+        source: "/spill",
+        destination: "https://diskgolf-g11-6bc74f8b60cb.herokuapp.com/spill",
+        permanent: true,
+      },
+      {
+        source: "/",
+        has: [{ type: "host", value: "spill.diskgolf.app" }],
+        destination: "https://diskgolf-g11-6bc74f8b60cb.herokuapp.com/spill",
+        permanent: true,
       },
     ];
   },
