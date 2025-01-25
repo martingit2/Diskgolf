@@ -17,7 +17,7 @@ const reviews = [
     text: "Fantastisk bane! Flott layout og utfordrende hull.",
     rating: 5,
     course: "USN BØ, Telemark",
-    avatar: "/avatars/mann.webp",
+    avatar: "/avatars/male.jpg",
   },
   {
     id: 2,
@@ -25,7 +25,7 @@ const reviews = [
     text: "Veldig bra atmosfære og godt vedlikeholdt bane.",
     rating: 4,
     course: "Skogsveien DiscGolf Park",
-    avatar: "/avatars/dame.webp",
+    avatar: "/avatars/woman.jpg",
   },
   {
     id: 3,
@@ -33,7 +33,7 @@ const reviews = [
     text: "God plass til både nybegynnere og erfarne spillere.",
     rating: 5,
     course: "Porsgrunn DiscGolf",
-    avatar: "/avatars/mann2.webp",
+    avatar: "/avatars/male2.jpg",
   },
   {
     id: 4,
@@ -41,7 +41,7 @@ const reviews = [
     text: "Fin bane med utfordrende fairways og fantastisk utsikt, anbefales!",
     rating: 3,
     course: "Drammen DiscGolf Arena",
-    avatar: "/avatars/dame2.webp",
+    avatar: "/avatars/woman2.jpg",
   },
   {
     id: 5,
@@ -49,7 +49,7 @@ const reviews = [
     text: "Gode treningsmuligheter og hyggelig miljø.",
     rating: 5,
     course: "Oslo DiscGolf Center",
-    avatar: "/avatars/mann3.webp",
+    avatar: "/avatars/male3.jpg",
   },
   {
     id: 6,
@@ -57,7 +57,7 @@ const reviews = [
     text: "Fantastisk beliggenhet, men litt for mange folk på helgene.",
     rating: 4,
     course: "Sandefjord Frisbeepark",
-    avatar: "/avatars/dame3.webp",
+    avatar: "/avatars/woman3.jpg",
   },
 ];
 
@@ -103,7 +103,7 @@ export default function ReviewCarousel() {
                   alt={review.name}
                   width={60}
                   height={60}
-                  className="rounded-full border-2 border-green-400 shadow-sm"
+                  className="avatar"
                 />
                 <p className="ml-4 text-lg font-semibold text-gray-100">
                   - {review.name}

@@ -100,6 +100,14 @@
   z-index: 0 !important;
 }
 
+.avatar {
+  width: 60px;
+  height: 60px;
+  border-radius: 50%;
+  border: 2px solid #22c55e; /* Tailwind grønn farge */
+  object-fit: cover;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
 
 
 
