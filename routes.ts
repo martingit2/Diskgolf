@@ -9,6 +9,8 @@ export const publicRoutes = [
     "/auth/new-verification",
     "/settings",
     "/spill",
+    "/api/",
+    "/api/search",
 ]
 
 

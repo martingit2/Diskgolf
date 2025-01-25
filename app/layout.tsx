@@ -6,12 +6,15 @@ import ToasterProvider from "./providers/ToasterProvider";
 import LoginModal from "@/components/modals/LoginModal";
 import { auth } from "@/auth";
 import SessionWrapper from "./providers/SessionWrapper";
-import { ThemeProvider } from "@/components/ThemeProvider"; // Import updated ThemeProvider
+// import { ThemeProvider } from "@/components/ThemeProvider"; // Kommenter ut ThemeProvider per nå
 import Footer from "@/components/Footer";
 
 export const metadata: Metadata = {
-  title: "DiskGolf",
-  description: "DiskGolf App",
+  title: "DiskGolf App - Finn baner, spill og arranger turneringer",
+  description: "Finn baner, spill diskgolf og arranger turneringer på ett sted med DiskGolf App",
+  icons: {
+    icon: "/lightgreen.png",
+  },
 };
 
 export default async function RootLayout({
@@ -30,16 +33,17 @@ export default async function RootLayout({
   return (
     <html lang="en" suppressHydrationWarning>
       <body className="min-h-screen flex flex-col">
-        <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
-          <ToasterProvider />
-          <SessionWrapper session={session}>
-            <Header />
-            <LoginModal />
-            <RegisterModal />
-            <main className="flex-grow">{children}</main>
-            <Footer />
-          </SessionWrapper>
-        </ThemeProvider>
+        {/* Kommenterer ut themeprovider per nå, siden den av og til endrer buttons selv om darkmode ikke er på*/}
+        {/* <ThemeProvider attribute="class" defaultTheme="system" enableSystem> */}
+        <ToasterProvider />
+        <SessionWrapper session={session}>
+          <Header />
+          <LoginModal />
+          <RegisterModal />
+          <main className="flex-grow">{children}</main>
+          <Footer />
+        </SessionWrapper>
+        {/* </ThemeProvider> */}
       </body>
     </html>
   );

@@ -4,7 +4,9 @@ const nextConfig: NextConfig = {
   reactStrictMode: true,
 
   env: {
-    NEXT_PUBLIC_APP_URL: "https://diskgolf.app",  // Bruker ditt eget domene
+    NEXT_PUBLIC_APP_URL: process.env.NODE_ENV === "development" 
+      ? "http://localhost:3000"  // Bruk localhost når vi er i utviklingsmiljø
+      : "https://diskgolf.app",   // Bruk produksjonsdomenet når vi er i produksjon
   },
 
   images: {
@@ -19,7 +21,9 @@ const nextConfig: NextConfig = {
     return [
       {
         source: "/spill/:path*",  
-        destination: "https://spill.diskgolf.app/:path*",  // Oppdatert til subdomenet
+        destination: process.env.NODE_ENV === "development" 
+          ? "http://localhost:3000/spill/:path*"  // Lokalt subdomene for utvikling
+          : "https://spill.diskgolf.app/:path*",  // Bruk produksjons-URL for subdomenet
       },
     ];
   },
@@ -28,19 +32,34 @@ const nextConfig: NextConfig = {
     return [
       {
         source: "/spill",
-        destination: "https://spill.diskgolf.app/spill",
+        destination: process.env.NODE_ENV === "development" 
+          ? "http://localhost:3000/spill"  // Lokalt spill-domenet i utvikling
+          : "https://spill.diskgolf.app/spill",  // Bruk produksjons-URL for produksjon
         permanent: true,
       },
       {
         source: "/",
         has: [{ type: "host", value: "spill.diskgolf.app" }],
-        destination: "https://spill.diskgolf.app/spill",
+        destination: process.env.NODE_ENV === "development" 
+          ? "http://localhost:3000/spill"  // Lokalt spill-domenet i utvikling
+          : "https://spill.diskgolf.app/spill",  // Bruk produksjons-URL for produksjon
         permanent: true,
       },
       {
         source: "/",
         has: [{ type: "host", value: "diskgolf.app" }],
-        destination: "https://diskgolf.app",
+        destination: process.env.NODE_ENV === "development" 
+          ? "http://localhost:3000"  // Lokalt hoveddomenet i utvikling
+          : "https://diskgolf.app",  // Bruk produksjons-URL for produksjon
+        permanent: true,
+      },
+      // Ekstra redirect for www.diskgolf.app hvis nødvendig
+      {
+        source: "/",
+        has: [{ type: "host", value: "www.diskgolf.app" }],
+        destination: process.env.NODE_ENV === "development" 
+          ? "http://localhost:3000"  // Lokalt hoveddomenet i utvikling
+          : "https://diskgolf.app",  // Bruk produksjons-URL for produksjon
         permanent: true,
       },
     ];
