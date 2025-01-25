@@ -116,17 +116,6 @@ APP2000_G11_25/
 
 ## Bildeattribusjoner
 
-<<<<<<< Updated upstream
-- **woman.jpg** - [Štefan Štefančík](https://unsplash.com/@cikstefan)  
-  [Smiling Woman](https://unsplash.com/photos/smiling-woman-wearing-white-and-black-pinstriped-collared-top-QXevDflbl8A)
-
-- **woman2.jpg** - [Ayo Ogunseinde](https://unsplash.com/@armedshutter)  
-  [Woman looking sideways](https://unsplash.com/photos/woman-looking-sideways-leaning-on-white-wall-6W4F62sN_yI)
-
-- **woman3.jpg** - [Almos Bechtold](https://unsplash.com/@almosbech)  
-  [Shallow focus photo of woman face](https://unsplash.com/photos/shallow-focus-photo-of-woman-face-3402kvtHhOo)
-
-=======
 | Bilde  | Fotograf           | Kilde     |
 |--------|-------------------|-----------|
 | Štefan Štefančík | [Unsplash](https://unsplash.com/@cikstefan) | [Unsplash](https://unsplash.com/photos/smiling-woman-wearing-white-and-black-pinstriped-collared-top-QXevDflbl8A) |
@@ -135,4 +124,4 @@ APP2000_G11_25/
 | Vince Fleming   | [Unsplash](https://unsplash.com/@vincefleming) | [Unsplash](https://unsplash.com/photos/person-wearing-blue-top-smiling-j3lf-Jn6deo) |
 | Irene Strong    | [Unsplash](https://unsplash.com/@leirenestrong) | [Unsplash](https://unsplash.com/photos/mens-gray-crew-neck-shirt-v2aKnjMbP_k) |
 | Albert Dera     | [Unsplash](https://unsplash.com/@albertdera) | [Unsplash](https://unsplash.com/photos/mans-grey-and-black-shirt-ILip77SbmOE) |
->>>>>>> Stashed changes
+>
