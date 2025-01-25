@@ -31,40 +31,29 @@ const nextConfig: NextConfig = {
   async redirects() {
     return [
       {
-        source: "/spill",
-        destination: process.env.NODE_ENV === "development" 
-          ? "http://localhost:3000/spill"  // Lokalt spill-domenet i utvikling
-          : "https://spill.diskgolf.app/spill",  // Bruk produksjons-URL for produksjon
+        source: "/",
+        has: [{ type: "host", value: "www.diskgolf.app" }],
+        destination: "https://diskgolf.app",  // Ompek `www.diskgolf.app` til `diskgolf.app`
         permanent: true,
       },
       {
-        source: "/",
-        has: [{ type: "host", value: "spill.diskgolf.app" }],
+        source: "/spill",
         destination: process.env.NODE_ENV === "development" 
-          ? "http://localhost:3000/spill"  // Lokalt spill-domenet i utvikling
-          : "https://spill.diskgolf.app/spill",  // Bruk produksjons-URL for produksjon
+          ? "http://localhost:3000/spill" 
+          : "https://spill.diskgolf.app/spill",
         permanent: true,
       },
       {
         source: "/",
         has: [{ type: "host", value: "diskgolf.app" }],
         destination: process.env.NODE_ENV === "development" 
-          ? "http://localhost:3000"  // Lokalt hoveddomenet i utvikling
-          : "https://diskgolf.app",  // Bruk produksjons-URL for produksjon
-        permanent: true,
-      },
-      // Ekstra redirect for www.diskgolf.app hvis nødvendig
-      {
-        source: "/",
-        has: [{ type: "host", value: "www.diskgolf.app" }],
-        destination: process.env.NODE_ENV === "development" 
-          ? "http://localhost:3000"  // Lokalt hoveddomenet i utvikling
-          : "https://diskgolf.app",  // Bruk produksjons-URL for produksjon
+          ? "http://localhost:3000" 
+          : "https://diskgolf.app",
         permanent: true,
       },
     ];
   },
-
+  
   webpack: (config) => {
     config.resolve = config.resolve || {};
     config.resolve.fallback = { fs: false, net: false, tls: false };
