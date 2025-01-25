@@ -177,14 +177,18 @@ function endGame() {
     gameOverMessage.style.display = 'block';  // Show the game over message
 }
 
- /* function exitGame() {
-    // Reset to the start page
-    gameBoardDiv.style.display = 'none';
-    soloGameBtn.style.display = 'inline-block';
-    multiPlayerBtn.style.display = 'inline-block';
-    playerNamesDiv.style.display = 'none';
-    playersListDiv.innerHTML = '';
-    startGameBtn.style.display = 'none';
-    exitButton.style.display = 'none';
-    gameOverMessage.style.display = 'none';
-} */
+// Knytt exitGame-funksjonen til knappen
+exitButton.addEventListener('click', exitGame);
+
+// Funksjonen for å håndtere utgang
+function exitGame() {
+  // Reset to the start page
+  gameBoardDiv.style.display = 'none';
+  soloGameBtn.style.display = 'inline-block';
+  multiPlayerBtn.style.display = 'inline-block';
+  playerNamesDiv.style.display = 'none';
+  playersListDiv.innerHTML = '';
+  startGameBtn.style.display = 'none';
+  exitButton.style.display = 'none';
+  gameOverMessage.style.display = 'none'; // Skjul spill slutt meldingen
+}
