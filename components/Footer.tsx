@@ -5,6 +5,7 @@
  */
 
 
+
 "use client";
 import { FaFacebook, FaInstagram, FaTwitter } from "react-icons/fa";
 import { Separator } from "@/components/ui/separator";
@@ -55,52 +56,53 @@ export default function Footer() {
         </div>
       </div>
 
-      <Separator className="my-2 border-gray-600 max-w-7xl mx-auto" />
+      {/* Oppdatert separator med gradient */}
+      <Separator className="my-4 max-w-7xl mx-auto h-2 bg-gradient-to-r from-green-600 via-green-300 to-green-600" />
 
       <div className="max-w-7xl mx-auto text-center">
-        <ul className="flex flex-wrap justify-center space-x-2 text-xs">
+        <ul className="flex flex-wrap justify-center space-x-6 text-xs">
           <li>
             <Link href="/personvern" className="hover:text-gray-400">
               Personvern
             </Link>
           </li>
-          <Separator orientation="vertical" className="h-1 bg-gray-600" />
+          <Separator orientation="vertical" className="h-4 bg-gradient-to-r from-green-600 via-green-300 to-green-600" />
           <li>
             <Link href="/faq" className="hover:text-gray-400">
               FAQ
             </Link>
           </li>
-          <Separator orientation="vertical" className="h-1 bg-gray-600" />
+          <Separator orientation="vertical" className="h-4 bg-gradient-to-r from-green-600 via-green-300 to-green-600" />
           <li>
             <Link href="/guide" className="hover:text-gray-400">
               Guide til Discgolf
             </Link>
           </li>
-          <Separator orientation="vertical" className="h-1 bg-gray-600" />
+          <Separator orientation="vertical" className="h-4 bg-gradient-to-r from-green-600 via-green-300 to-green-600" />
           <li>
             <Link href="/vilkar" className="hover:text-gray-400">
               Vilkår for bruk
             </Link>
           </li>
-          <Separator orientation="vertical" className="h-1 bg-gray-600" />
+          <Separator orientation="vertical" className="h-4 bg-gradient-to-r from-green-600 via-green-300 to-green-600" />
           <li>
             <Link href="/om-oss" className="hover:text-gray-400">
               Om oss
             </Link>
           </li>
-          <Separator orientation="vertical" className="h-1 bg-gray-600" />
+          <Separator orientation="vertical" className="h-4 bg-gradient-to-r from-green-600 via-green-300 to-green-600" />
           <li>
             <Link href="/arrangementer" className="hover:text-gray-400">
               Arrangementer
             </Link>
           </li>
-          <Separator orientation="vertical" className="h-1 bg-gray-600" />
+          <Separator orientation="vertical" className="h-4 bg-gradient-to-r from-green-600 via-green-300 to-green-600" />
           <li>
             <Link href="/baner" className="hover:text-gray-400">
               Baneoversikt
             </Link>
           </li>
-          <Separator orientation="vertical" className="h-1 bg-gray-600" />
+          <Separator orientation="vertical" className="h-4 bg-gradient-to-r from-green-600 via-green-300 to-green-600" />
           <li>
             <Link href="/medlemskap" className="hover:text-gray-400">
               Medlemskap
@@ -108,7 +110,7 @@ export default function Footer() {
           </li>
         </ul>
       </div>
-      <p className="mt-2 text-xs">© 2024 DiskGolf. Alle rettigheter forbeholdt.</p>
+      <p className="mt-2 text-xs">© 2025 DiskGolf. Alle rettigheter forbeholdt.</p>
     </footer>
   );
 }
