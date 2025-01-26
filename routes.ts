@@ -32,7 +32,11 @@ export const publicRoutes = [
     "/medlemskap",
     "/om-oss",
     "/personvern",
-    "/vilkar"
+    "/vilkar",
+    "/api/clubs",
+    "/klubb",
+    "/klubb/[id]",
+    "/klubber",
 ]
 
 

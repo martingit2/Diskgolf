@@ -1,21 +1,18 @@
-/** 
+/**
  * Filnavn: schema.prisma
- * Beskrivelse: Prisma-datamodell for DiskGolf-applikasjonen. 
+ * Beskrivelse: Prisma-datamodell for DiskGolf-applikasjonen.
  * Inkluderer brukere, baner, runder, anmeldelser og autentiseringsrelaterte data.
  * Utvikler: Martin Pettersen
  */
-
-
-
 
 generator client {
   provider = "prisma-client-js"
 }
 
 datasource db {
-  provider          = "postgresql"
-  url               = env("DATABASE_URL")
-  directUrl         = env("DIRECT_URL")
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
 }
 
 enum UserRole {
@@ -25,27 +22,71 @@ enum UserRole {
 }
 
 model User {
-  id             String   @id @default(uuid()) // Unik identifikator
-  name           String?  // Brukerens fulle navn
-  email          String?  @unique // E-postadresse, må være unik
-  emailVerified  DateTime? // Når e-posten ble verifisert
-  image          String?  // URL til profilbilde
-  hashedPassword String?  // Kryptert passord
-  createdAt      DateTime @default(now()) // Tidsstempel for opprettelse
-  updatedAt      DateTime @updatedAt // Automatisk oppdatert tidsstempel
+  id              String    @id @default(uuid()) // Unik identifikator
+  name            String? // Brukerens fulle navn
+  email           String?   @unique // E-postadresse, må være unik
+  emailVerified   DateTime? // Når e-posten ble verifisert
+  image           String? // URL til profilbilde
+  hashedPassword  String? // Kryptert passord
+  createdAt       DateTime  @default(now()) // Tidsstempel for opprettelse
+  updatedAt       DateTime  @updatedAt // Automatisk oppdatert tidsstempel
   favoriteCourses String[] // Liste over ID-er til favorittbaner
-  role            UserRole @default(USER)
+  role            UserRole  @default(USER)
 
-  accounts       Account[]
-  rounds         Round[]
-  reviews        Review[]
+  accounts Account[]
+  rounds   Round[]
+  reviews  Review[]
 
-  isTwoFactorEnable Boolean @default(false)
+  clubId String?
+  club   Club?   @relation("ClubToUsers", fields: [clubId], references: [id]) // Relasjon til Club
+
+  isTwoFactorEnable     Boolean                @default(false)
   twoFactorConfirmation TwoFactorConfirmation?
 }
 
+model Club {
+  id          String   @id @default(uuid()) // Unik identifikator
+  name        String   @unique
+  location    String
+  description String?
+  established DateTime @default(now())
+
+  users   User[]   @relation("ClubToUsers") // Relasjon til User
+  courses Course[] @relation("ClubToCourses") // Relasjon til Course
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Course {
+  id          String   @id @default(uuid())
+  name        String
+  location    String
+  description String?
+  par         Int
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  holes   Hole[]
+  reviews Review[]
+  rounds  Round[]
+
+  clubId String?
+  club   Club?   @relation("ClubToCourses", fields: [clubId], references: [id]) // Relasjon til Club
+}
+
+model Hole {
+  id       String @id @default(uuid())
+  courseId String
+  number   Int
+  par      Int
+  distance Int?
+
+  course Course @relation(fields: [courseId], references: [id], onDelete: Cascade)
+}
+
 model Account {
-  id                String   @id @default(uuid())
+  id                String  @id @default(uuid())
   userId            String
   type              String
   provider          String
@@ -63,80 +104,60 @@ model Account {
   @@unique([provider, providerAccountId])
 }
 
-model Course {
-  id          String   @id @default(uuid())
-  name        String
-  location    String
-  description String?
-  par         Int
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
-
-  holes   Hole[]
-  reviews Review[]
-  rounds  Round[]
-}
-
-model Hole {
-  id       String @id @default(uuid())
-  courseId String
-  number   Int
-  par      Int
-  distance Int?
-
-  course Course @relation(fields: [courseId], references: [id], onDelete: Cascade)
-}
-
 model Round {
-  id       String   @id @default(uuid())
-  userId   String
-  courseId String
-  score    Int
+  id        String   @id @default(uuid())
+  userId    String
+  courseId  String
+  score     Int
   createdAt DateTime @default(now())
 
-  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade) 
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
   course Course @relation(fields: [courseId], references: [id], onDelete: Cascade)
 }
 
 model Review {
-  id       String   @id @default(uuid())
-  userId   String
-  courseId String
-  rating   Int
-  comment  String?
+  id        String   @id @default(uuid())
+  userId    String
+  courseId  String
+  rating    Int
+  comment   String?
   createdAt DateTime @default(now())
 
-  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade) 
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
   course Course @relation(fields: [courseId], references: [id], onDelete: Cascade)
 }
 
 model VerificationToken {
-  id String @id @default(cuid())
-  email String
-  token String @unique
+  id      String   @id @default(cuid())
+  email   String
+  token   String   @unique
   expires DateTime
+
   @@unique([email, token])
 }
 
 model PasswordResetToken {
-  id String @id @default(cuid())
-  email String
-  token String @unique
+  id      String   @id @default(cuid())
+  email   String
+  token   String   @unique
   expires DateTime
+
   @@unique([email, token])
 }
 
 model TwoFactorToken {
-  id String @id @default(cuid())
-  email String
-  token String @unique
+  id      String   @id @default(cuid())
+  email   String
+  token   String   @unique
   expires DateTime
+
   @@unique([email, token])
 }
 
 model TwoFactorConfirmation {
-  id String @id @default(cuid())
+  id     String @id @default(cuid())
   userId String
-  user User @relation(fields: [userId], references: [id], onDelete: Cascade) 
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
   @@unique([userId])
 }
