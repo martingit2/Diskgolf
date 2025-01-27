@@ -42,6 +42,11 @@ export const publicRoutes = [
     "/api/tournaments", // API-rute for å hente turneringer
     "/api/tournaments/join", // API-rute for å bli med i turneringen
     "/api/tournaments/[id]", // API-rute for turnering med ID
+    "/dashboard",
+    "/dashboard/user",
+    "/turnering/ny",
+    "/turnering",
+    "/dashboard/user/stats",
 ];
 
 /** 
