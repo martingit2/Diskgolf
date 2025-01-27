@@ -20,7 +20,7 @@ const TournamentCreate = () => {
   const handleCreateTournament = () => {
     console.log("Creating tournament:", tournamentName, isClubTournament, participants);
 
-    // Her kan du sende data til backend via fetch/axios
+    // Her kan vi sende data til backend via fetch/axios
     // Eksempel på hvordan du kan sende dataene til backend:
     // fetch('/api/tournaments', {
     //   method: 'POST',
@@ -51,7 +51,7 @@ const TournamentCreate = () => {
         className="border p-2 mt-2 w-full"
       />
 
-      {/* Type turnering */}
+      {/* Type turnering  */}
       <div className="mt-4">
         <label>Type turnering:</label>
         <select onChange={handleTournamentTypeChange} className="border p-2 ml-2">
