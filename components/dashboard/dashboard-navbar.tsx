@@ -34,7 +34,7 @@ const DashboardNavbar = ({ userRole }: { userRole: "admin" | "klubbleder" | "bru
   const links = roleLinks[userRole] || roleLinks.bruker;
 
   return (
-    <div className="flex flex-col bg-[var(--headerColor)] text-white border-t-2 p-4 h-full min-h-screen border-r-4 border-b-2 hover:text-green-300 border-green-300">
+    <div className="flex flex-col bg-gradient-to-r from-gray-800 via-gray-950 to-gray-800 shadow-2xl text-white  p-4 h-full min-h-screen  hover:text-green-300 ">
 
       {/* Avatar på toppen */}
       <div className="mr-2 p-2">

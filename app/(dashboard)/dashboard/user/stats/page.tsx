@@ -43,8 +43,6 @@ const UserStats = () => {
     fetchStats();
   }, []);
 
-  const displayData = stats && stats.length > 0 ? stats : data; // Use stats if available, else fallback to simulated data
-
   return (
     <div className="flex min-h-screen">
       {/* Dashboard Navbar */}
@@ -64,7 +62,7 @@ const UserStats = () => {
           <div className="w-full h-auto bg-[var(--headerColor)] rounded p-4">
             <h2 className="text-xl text-green-300 font-semibold mb-4">Antall kast og Beste Runde</h2>
             <ResponsiveContainer width="100%" height={200}>
-              <LineChart data={displayData}>
+              <LineChart data={stats || data}> {/* Use stats if available, else fallback to simulated data */}
                 <CartesianGrid strokeDasharray="3 3" />
                 <XAxis dataKey="name" />
                 <YAxis />
