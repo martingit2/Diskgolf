@@ -68,7 +68,7 @@ const Klubber = () => {
         {filteredClubs.length > 0 ? (
           filteredClubs.map((club) => (
             <Link key={club.id} href={`/klubb/${club.id}`}>
-              <li className="p-6 bg-gray-950 shadow-xl rounded-lg border-4 border-green-300 hover:shadow-2xl transition duration-300 transform hover:scale-105 cursor-pointer mb-6">
+              <li className="p-6 border-4 bg-gradient-to-r from-gray-800 via-gray-950 to-gray-800 shadow-2xl border-green-200 hover:shadow-2xl transition duration-300 transform hover:scale-105 cursor-pointer mb-6">
                 <h2 className="text-2xl font-bold text-green-300">{club.name}</h2>
                 <p className="text-gray-100 text-sm mt-2">Lokasjon: <span className="font-semibold">{club.location}</span></p>
                 <p className="text-gray-100 mt-4">{club.description}</p>

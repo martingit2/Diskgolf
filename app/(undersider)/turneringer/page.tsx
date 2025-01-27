@@ -64,7 +64,7 @@ const Turneringer = () => {
         {filteredTournaments.length > 0 ? (
           filteredTournaments.map((tournament) => (
             <Link key={tournament.id} href={`/turnering/${tournament.id}`}>
-              <li className="p-6 bg-gray-950 shadow-xl rounded-lg border-4 border-green-300 hover:shadow-2xl transition duration-300 transform hover:scale-105 cursor-pointer mb-6">
+              <li className="p-6 border-4 bg-gradient-to-r from-gray-800 via-gray-950 to-gray-800 shadow-2xl border-green-200 hover:shadow-2xl transition duration-300 transform hover:scale-105 cursor-pointer mb-6">
                 <h2 className="text-2xl font-bold text-green-300">{tournament.name}</h2>
                 <p className="text-gray-100 text-sm mt-2">Type: <span className="font-semibold">{tournament.type}</span></p>
                 <p className="text-gray-400 text-xs mt-2">Opprettet: {new Date(tournament.createdAt).toLocaleDateString()}</p>
