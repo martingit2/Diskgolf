@@ -19,7 +19,7 @@ export default function QuickStartGame() {
   return (
     <div className="relative text-center rounded-lg overflow-hidden shadow-2xl">
       {/* Bakgrunn med overlegg */}
-      <div className="absolute inset-0 bg-gray-950 opacity-90"></div>
+      <div className="absolute inset-0 bg-gradient-to-r from-gray-800 via-gray-950 to-gray-800 shadow-2xl"></div>
 
       {/* Innhold */}
       <div className="relative z-10 p-12">

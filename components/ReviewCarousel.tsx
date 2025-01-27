@@ -23,7 +23,7 @@ const reviews = [
   {
     id: 1,
     name: "Ole Hansen",
-    text: "Fantastisk bane! Flott layout og utfordrende hull.",
+    text: "Fantastisk bane! Flotte omgivelser og utfordrende hull.",
     rating: 5,
     course: "USN BØ, Telemark",
     avatar: "/avatars/male.jpg",
@@ -39,7 +39,7 @@ const reviews = [
   {
     id: 3,
     name: "Lars Pettersen",
-    text: "God plass til både nybegynnere og erfarne spillere.",
+    text: "God bane, passer til både nybegynnere og erfarne spillere.",
     rating: 5,
     course: "Porsgrunn DiscGolf",
     avatar: "/avatars/male2.jpg",
@@ -89,12 +89,12 @@ export default function ReviewCarousel() {
           768: { slidesPerView: 2 },
           1024: { slidesPerView: 3 },
         }}
-        className="rounded-lg shadow-lg mt-8"
+        className="rounded-lg border shadow-lg mt-8"
       >
         {reviews.map((review) => (
           <SwiperSlide key={review.id}>
-            <div className="relative p-8 bg-gray-950 rounded-lg shadow-md border border-gray-800 flex flex-col justify-between items-center min-h-[350px]">
-              <div className="absolute inset-0 bg-gray-950 opacity-90 rounded-lg"></div>
+            <div className="relative p-8 bg-gradient-to-r from-gray-800 via-gray-950 to-gray-800 shadow-2xl rounded-lg border flex flex-col justify-between items-center min-h-[350px]">
+              <div className="absolute inset-0 bg-gradient-to-r from-gray-800 via-gray-950 to-gray-800 shadow-2xl opacity-90 rounded-lg"></div>
               <h3 className="text-2xl font-extrabold text-green-300 mb-2 relative">
                 {review.course}
               </h3>
