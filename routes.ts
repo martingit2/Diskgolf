@@ -24,7 +24,12 @@ export const publicRoutes = [
     "/nyheter",
     "/faq",
     "/turneringer",
+    "/turneringer/ny",  // Legg til ruten for å opprette ny turnering
+    "/turneringer/[id]", // Legg til ruten for turneringsvisning med ID
+    "/turneringer/id/",
     "/klubber",
+    "/klubb",
+    "/klubb/[id]",
     "/baner",
     "/guide",
     "/arrangementer",
@@ -34,11 +39,10 @@ export const publicRoutes = [
     "/personvern",
     "/vilkar",
     "/api/clubs",
-    "/klubb",
-    "/klubb/[id]",
-    "/klubber",
-]
-
+    "/api/tournaments", // API-rute for å hente turneringer
+    "/api/tournaments/join", // API-rute for å bli med i turneringen
+    "/api/tournaments/[id]", // API-rute for turnering med ID
+];
 
 /** 
 * En array av routes som brukes til autentisering

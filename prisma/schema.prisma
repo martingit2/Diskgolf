@@ -21,6 +21,11 @@ enum UserRole {
   CLUB_LEADER
 }
 
+enum TournamentType {
+  USER
+  CLUB
+}
+
 model User {
   id              String    @id @default(uuid()) // Unik identifikator
   name            String? // Brukerens fulle navn
@@ -39,6 +44,7 @@ model User {
 
   clubId String?
   club   Club?   @relation("ClubToUsers", fields: [clubId], references: [id]) // Relasjon til Club
+  tournaments Tournament[] @relation("TournamentParticipants") // Relasjon til Tournament
 
   isTwoFactorEnable     Boolean                @default(false)
   twoFactorConfirmation TwoFactorConfirmation?
@@ -160,4 +166,13 @@ model TwoFactorConfirmation {
   user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@unique([userId])
+}
+
+model Tournament {
+  id          String         @id @default(uuid())  // Unik identifikator
+  name        String         // Navn på turneringen
+  type        TournamentType // Bruk enum i stedet for string
+  participants User[]        @relation("TournamentParticipants") // Relasjon til brukere som deltar
+  createdAt   DateTime       @default(now()) // Tidsstempel for opprettelse
+  updatedAt   DateTime       @updatedAt // Automatisk oppdatert tidsstempel
 }
