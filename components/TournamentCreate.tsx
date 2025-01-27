@@ -73,12 +73,12 @@ const TournamentCreate = () => {
 
       {/* Opprett turnering */}
       <div className="mt-4">
-        <button
-          onClick={handleCreateTournament}
-          className="bg-blue-500 text-white p-2 rounded"
-        >
-          Opprett turnering
-        </button>
+      <button
+       onClick={handleCreateTournament}
+       className="w-full max-w-lg bg-[#292C3D] text-white font-semibold py-2 px-4 rounded hover:bg-green-700 transition duration-300"
+       >
+       Opprett turnering
+     </button>     
       </div>
     </div>
   );
