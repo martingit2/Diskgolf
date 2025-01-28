@@ -1,11 +1,3 @@
-/** 
- * Filnavn: SearchForm.tsx
- * Beskrivelse: Skjema for søk etter diskgolfbaner basert på ulike kriterier som fylke, sted, vanskelighetsgrad, antall hull og popularitet.
- * Inneholder validering, API-forespørsler og visning av søkeresultater.
- * Utvikler: Martin Pettersen
- */
-
-
 "use client";
 
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -15,21 +7,9 @@ import { Button } from "@/components/ui/button";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useState } from "react";
-import Image from "next/image"; // Husk å importere Image-komponenten fra Next.js
+import Image from "next/image";
 
-// Definerer fylker og tilhørende steder
-const fylker: Record<string, string[]> = {
-  "Telemark": ["Bø"],
-  "Troms": ["Tromsø"],
-  "Oslo": ["Oslo Sentrum"],
-  "Vestland": ["Bergen"],
-  "Rogaland": ["Stavanger"],
-  "Trøndelag": ["Trondheim"],
-  "Agder": ["Kristiansand"],
-  "Møre og Romsdal": ["Ålesund"],
-  "Nordland": ["Bodø"],
-};
-
+// Definerer typen for Bane
 interface Bane {
   id: number;
   name: string;
@@ -44,6 +24,18 @@ interface Bane {
   address: string;
 }
 
+const fylker: Record<string, string[]> = {
+  "Telemark": ["Bø"],
+  "Troms": ["Tromsø"],
+  "Oslo": ["Oslo Sentrum"],
+  "Vestland": ["Bergen"],
+  "Rogaland": ["Stavanger"],
+  "Trøndelag": ["Trondheim"],
+  "Agder": ["Kristiansand"],
+  "Møre og Romsdal": ["Ålesund"],
+  "Nordland": ["Bodø"],
+};
+
 const banetyper = ["Skogsbane", "Parkbane", "Fjellbane", "Bybane", "Åpen slette"];
 
 export const formSchema = z.object({
@@ -57,7 +49,7 @@ export const formSchema = z.object({
 });
 
 function SearchForm() {
-  const [searchResults, setSearchResults] = useState<Bane[]>([]);
+  const [searchResults, setSearchResults] = useState<Bane[]>([]);  // Angir eksplisitt type for searchResults
   const [selectedFylke, setSelectedFylke] = useState(""); // For å lagre fylke
   const [loading, setLoading] = useState(false); // For å vise en lastemelding
 
@@ -66,34 +58,31 @@ function SearchForm() {
     defaultValues: {
       fylke: "",
       sted: "",
-      difficulty: "Vis alle",  // Sett standard til "Vis alle"
-      numberOfHoles: "Vis alle",  // Sett standard til "Vis alle"
-      starRating: "Vis alle",     // Sett standard til "Vis alle"
-      reviewCount: "Vis alle",    // Sett standard til "Vis alle"
+      difficulty: "Vis alle",
+      numberOfHoles: "Vis alle",
+      starRating: "Vis alle",
+      reviewCount: "Vis alle",
       baneType: "",
     },
   });
 
-  // Håndtering av skjema innsending
   async function onSubmit(values: z.infer<typeof formSchema>) {
-    setLoading(true); // Start lasteindikatoren
-    const query = new URLSearchParams(values as Record<string, string>).toString(); // Bygg query-streng
+    setLoading(true);
+    const query = new URLSearchParams(values as Record<string, string>).toString();
     try {
-      const response = await fetch(`/api/search?${query}`); // Send GET-forespørsel til API-et
+      const response = await fetch(`/api/search?${query}`);
 
-      // Sjekk om svaret er OK (status 200-299)
       if (!response.ok) {
         throw new Error(`API-feil: ${response.statusText}`);
       }
 
-      // Forsøk å parse JSON hvis responsen er OK
       const data = await response.json();
-      setSearchResults(data); // Sett de hentede dataene til state
+      setSearchResults(data); // TypeScript vil nå vite at `data` er en array av `Bane`
     } catch (error) {
       console.error("Feil under søk:", error);
-      setSearchResults([]); // Tøm søkeresultater ved feil
+      setSearchResults([]);  // Tømmer resultater ved feil
     } finally {
-      setLoading(false); // Stopp lasteindikatoren
+      setLoading(false);
     }
   }
 
@@ -162,86 +151,7 @@ function SearchForm() {
             )}
           />
 
-          {/* Antall hull */}
-          <FormField
-            control={form.control}
-            name="numberOfHoles"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Antall hull</FormLabel>
-                <FormControl>
-                  <Select onValueChange={field.onChange} value={field.value}>
-                    <SelectTrigger>
-                      <SelectValue placeholder="Velg antall hull">{field.value || "Velg antall hull"}</SelectValue>
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="Vis alle">Vis alle antall hull</SelectItem>
-                      <SelectItem value="5">Minst 5 hull</SelectItem>
-                      <SelectItem value="10">Minst 10 hull</SelectItem>
-                      <SelectItem value="15">Minst 15 hull</SelectItem>
-                      <SelectItem value="20">Minst 20 hull</SelectItem>
-                    </SelectContent>
-                  </Select>
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-
-          {/* Popularitet */}
-          <FormField
-            control={form.control}
-            name="starRating"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Popularitet</FormLabel>
-                <FormControl>
-                  <Select onValueChange={field.onChange} value={field.value}>
-                    <SelectTrigger>
-                      <SelectValue placeholder="Velg antall stjerner">{field.value || "Velg antall stjerner"}</SelectValue>
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="Vis alle">Vis alle stjerner</SelectItem>
-                      <SelectItem value="1">1 stjerne</SelectItem>
-                      <SelectItem value="2">2 stjerner</SelectItem>
-                      <SelectItem value="3">3 stjerner</SelectItem>
-                      <SelectItem value="4">4 stjerner</SelectItem>
-                      <SelectItem value="5">5 stjerner</SelectItem>
-                    </SelectContent>
-                  </Select>
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-
-          {/* Antall anmeldelser */}
-          <FormField
-            control={form.control}
-            name="reviewCount"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Antall anmeldelser</FormLabel>
-                <FormControl>
-                  <Select onValueChange={field.onChange} value={field.value}>
-                    <SelectTrigger>
-                      <SelectValue placeholder="Velg antall anmeldelser">{field.value || "Velg antall anmeldelser"}</SelectValue>
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="Vis alle">Vis alle anmeldelser</SelectItem>
-                      <SelectItem value="10">10+ anmeldelser</SelectItem>
-                      <SelectItem value="50">50+ anmeldelser</SelectItem>
-                      <SelectItem value="100">100+ anmeldelser</SelectItem>
-                      <SelectItem value="200">200+ anmeldelser</SelectItem>
-                    </SelectContent>
-                  </Select>
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-
-          {/* Bane type */}
+          {/* Banetype */}
           <FormField
             control={form.control}
             name="baneType"
