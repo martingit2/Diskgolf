@@ -1,21 +1,20 @@
 body {
     display: flex;
-    justify-content:  center;
-    align-items:  center;
+    justify-content: center;
+    align-items: center;
     height: 100vh;
     margin: 0;
     font-family: sans-serif;
-    background: linear-gradient(135deg, #f06, #4a90e2);
+    background: linear-gradient(135deg, #f06, #4a90e2); /* Corrected gradient syntax */
     color: #fff;
-
 }
 
 #game-container {
     text-align: center;
-    background: rbga(255, 255, 255, 0.1);
+    background: rgba(255, 255, 255, 0.1); /* Fixed 'rbga' to 'rgba' */
     padding: 20px;
     border-radius: 10px;
-    box-shadow: 0 4px 8px rgba(0,0,0, 0.2);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
 }
 
 #board {
@@ -34,15 +33,14 @@ body {
     align-items: center;
     font-size: 2em;
     border: 2px solid #fff;
-    background: rbga(255, 255, 255, 0.2);
+    background: rgba(255, 255, 255, 0.2); /* Fixed 'rbga' to 'rgba' */
     cursor: pointer;
-    transition: background 0.3s , transform 0.3s;
+    transition: background 0.3s, transform 0.3s;
 }
 
 .cell:hover {
-    background: rbga (255, 255, 255, 0.4);
+    background: rgba(255, 255, 255, 0.4); /* Fixed 'rbga' to 'rgba' */
     transform: scale(1.05);
-
 }
 
 #message, #turn-message {
@@ -69,11 +67,6 @@ button:hover {
 #game-container button {
     display: inline-block; /* Ensure buttons are placed horizontally */
 }
-button:hover {
-    background: #3a7bd5;
-
-}
-
 
 #restart-button {
     margin-top: 20px;
@@ -90,7 +83,6 @@ button:hover {
 #score-board span {
     font-weight: bold;
 }
-
 
 #game-over-message {
     display: flex;
