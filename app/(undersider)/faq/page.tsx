@@ -123,7 +123,7 @@ const FAQPage = () => {
 
       <input
         type="text"
-        placeholder="Search for a question..."
+        placeholder="Søk etter et spørsmål..."
         value={searchTerm}
         onChange={(e) => setSearchTerm(e.target.value)}
         className="mt-4 w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 transition duration-300"
