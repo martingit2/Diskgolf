@@ -49,6 +49,7 @@ export const publicRoutes = [
     "/dashboard/user/stats",
     "/weather",
     "/api/weather",
+    "/api/courses",
 ];
 
 /** 
