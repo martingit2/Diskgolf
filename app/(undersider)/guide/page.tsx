@@ -32,41 +32,41 @@ const guideItemsData = [
     title: 'Håndtering av værforhold',
     content: 'Lær hvordan du justerer spillet ditt i vind, regn og ulike terrengforhold.',
     image: '/guideBilder/weather-strategy.jpg',
-    link: 'https://www.pdga.com/weather-strategies'
+    link: 'https://discgolfdojo.com/blog/practice/tips-mastering-disc-golf-in-rain-and-wind/'
   },
   {
     id: '5',
     title: 'Hvordan trene for å bli bedre',
     content: 'Øvelser for å forbedre presisjon, kraft og teknikk.                ',
     image: '/guideBilder/training-discgolf.jpg',
-    link: 'https://www.discgolfunited.com/training-tips'
+    link: 'https://discgolfnow.com/disc-golf-practice/'
   },
   {
     id: '6',
     title: 'Hvordan lage et riktig kast med forehand-teknikk',
     content: 'Forehand-kastet, også kjent som "sidearm", innebærer å kaste disken med hånden på en måte som ligner på en baseballkast.',
     image: '/guideBilder/forehand-throw.jpg', 
-    link: 'https://www.wikihow.com/Throw-a-Frisbee-Sidearm' 
+    link: 'https://www.flydiscs.com/throwing-a-successful-sidearm/?srsltid=AfmBOooVlyppEP2FqJhlRrC2b20Aq9x0W0hMdRtt1LNU3XcFq3k--6t4' 
   },
   {
     id: '7',
     title: 'Hvordan velge en frisbee',
     content: 'Frisbeene du bruker bør være tilpasset både ditt ferdighetsnivå og de forskjellige diskene du trenger for ulike situasjoner. Se etter lette disker som er lettere å kontrollere for nybegynnere.',
     image: '/guideBilder/selecting-disc-golf.jpg', 
-    link: 'https://www.udisc.com/blog/post/how-to-choose-the-right-disc-golf-disc' 
+    link: 'https://blog.infinitediscs.com/disc-buying-guide/' 
   },
   {
     id: '8',
     title: 'Hvordan holde styr på diskene dine',
     content: 'Bruk en disk golfbag for å oppbevare diskene dine og beskytte dem fra skade. Sørg for at diskene dine er rene og tørre før hvert kast for å få bedre ytelse.',
     image: '/guideBilder/disc-bag-organization.jpg', 
-    link: 'https://discgolfunited.com/disc-golf-bag-guide' 
+    link: 'https://www.reddit.com/r/discgolf/comments/qqj6uz/beginners_guide_for_building_the_bag/?rdt=38136' 
   },{
     id: '9',
     title: 'Hvordan bli bedre i disk golf',
     content: 'For å bli bedre i disk golf, tren på presisjon og kasteteknikk. Jobb på forskjellige kaststyper og forstå hvordan vinden påvirker diskene dine. Øv regelmessig for å utvikle ferdighetene dine.',
     image: '/guideBilder/disc-golf-training-practice.jpg',
-    link: 'https://www.discgolfunited.com/training-tips' 
+    link: 'https://www.discmania.net/blogs/discover/top-5-disc-golf-beginner-tips?srsltid=AfmBOoqhHYuFYuhN4WbDr5PSe0kJNGPNtHvRa_CvisMDbTIAJAW3eRhp' 
   }  
   
 ];
