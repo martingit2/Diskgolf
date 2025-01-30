@@ -25,5 +25,5 @@ export const navLinks = [
 
 export const cta = [
   { name: "Vis vær", href: "/weather", icon: SunIcon },
-  { name: "Kontakt oss", href: "#", icon: EnvelopeIcon },
+  { name: "Kontakt oss", href: "/kontakt", icon: EnvelopeIcon },
 ];

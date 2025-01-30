@@ -18,14 +18,14 @@ const guideItemsData = [
     title: 'Hvordan velge riktig disc',
     content: 'Forstå forskjellen mellom drivere, midrange og puttere for å forbedre spillet ditt.',
     image: '/guideBilder/riktig-disk.webp',
-    link: 'https://www.discgolf.com/disc-selection'
+    link: 'https://discgolfoutlet.com/page/12/disc-selection-guide'
   },
   {
     id: '3',
     title: 'Spillestrategier og teknikker',
     content: 'Oppdag hvordan du kan navigere på en bane og velge de beste kastene for ulike situasjoner.',
     image: '/guideBilder/disc-golf-navigation.jpg',
-    link: 'https://udisc.com/blog/post/disc-golf-strategy'
+    link: 'https://noodlearmdiscgolf.com/beginner-tips/'
   },
   {
     id: '4',
