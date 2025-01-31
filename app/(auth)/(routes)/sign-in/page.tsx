@@ -12,7 +12,7 @@ import { Suspense } from "react";
 export const dynamic = "force-dynamic";
 
 /**
- * SignInPage-komponenten renderer en innloggingsside med Suspense for lazy loading.
+ * SignInPage-komponenten renderer en innloggingsside med Suspense for lazy loading..
  * @component
  * @author Martin Pettersen
  */
