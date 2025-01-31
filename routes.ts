@@ -47,6 +47,9 @@ export const publicRoutes = [
     "/turnering/ny",
     "/turnering",
     "/dashboard/user/stats",
+    "/weather",
+    "/api/weather",
+    "/api/courses",
 ];
 
 /** 
