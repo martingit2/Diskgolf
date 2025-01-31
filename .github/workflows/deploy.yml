@@ -18,11 +18,8 @@ jobs:
       with:
         node-version: '16'
 
-    - name: Install jq
-      run: sudo apt-get install jq
-
     - name: Heroku Deploy
-      uses: heroku-actions/heroku-deploy@v1.0.0
+      uses: akshnz/heroku-deploy@v1.0.0
       with:
         heroku_app_name: 'diskgolf-g11' # Bytt til ditt Heroku-app-navn
         heroku_api_key: ${{ secrets.HEROKU_API_KEY }} # Sett opp Heroku API nøkkel i GitHub Secrets
@@ -32,5 +29,8 @@ jobs:
         DEPLOY_STATUS=$(curl -s https://api.heroku.com/apps/diskgolf-g11/releases/latest -H "Authorization: Bearer ${{ secrets.HEROKU_API_KEY }}" | jq -r '.status')
         echo "Deploy Status: $DEPLOY_STATUS"
         if [ "$DEPLOY_STATUS" != "succeeded" ]; then
+          echo "Deploy failed"
           exit 1
+        else
+          echo "Deploy succeeded"
         fi
