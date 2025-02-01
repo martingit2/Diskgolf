@@ -1,3 +1,14 @@
+/**
+ * Filnavn: page.tsx
+ * Beskrivelse: Denne siden viser personvernerklæringen for DiskGolf-appen.
+ * Den forklarer hvilke data som samles inn, hvordan de brukes, samt brukernes rettigheter.
+ * Siden er designet med Shadcn/UI og Tailwind CSS for et moderne og responsivt oppsett.
+ * 
+ * Utvikler: Said Hussain Khawajazada
+ * Opprettet: 1. februar 2025
+ * Teknologier: Next.js, Shadcn/UI, Tailwind CSS
+ */
+
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 
 export default function PersonvernPage() {
