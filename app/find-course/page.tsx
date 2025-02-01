@@ -1,7 +1,17 @@
+/** 
+ * Filnavn: page.tsx
+ * Beskrivelse: Kartkomponent som viser discgolf-baner ved hjelp av Leaflet og OpenStreetMap.
+ *              Henter kursdata fra API-et og plasserer markører på kartet med informasjon i en popup.
+ *              Bruker dynamisk import for å unngå SSR-problemer i Next.js.
+ * Utvikler: Said Hussain Khawajazada
+ */
+
+
 "use client";
 
 import { useEffect, useState } from "react";
 import dynamic from "next/dynamic";
+
 
 // Dynamically import Leaflet components to avoid SSR issues
 const MapContainer = dynamic(() => import("react-leaflet").then((mod) => mod.MapContainer), { ssr: false });

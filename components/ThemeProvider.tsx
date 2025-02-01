@@ -1,3 +1,11 @@
+/** 
+ * Filnavn: ThemeProvider.tsx
+ * Beskrivelse: En tematilpasset provider-komponent som muliggjør mørk/lys modus ved hjelp av next-themes.
+ *              Konfigurerer standardtema og støtter systemets foretrukne tema.
+ * Utvikler: Said Hussain Khawajazada
+ */
+
+
 "use client";
 
 import { ThemeProvider as NextThemesProvider } from "next-themes";

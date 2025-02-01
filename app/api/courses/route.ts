@@ -1,7 +1,15 @@
-import { PrismaClient } from "@prisma/client";
-import { NextResponse } from "next/server";
+/** 
+ * Filnavn: route.ts
+ * Beskrivelse: API-endepunkt for å hente discgolf-baner fra en database ved hjelp av Prisma.
+ *              Returnerer en liste over tilgjengelige baner med relevant informasjon som navn, sted, par og beskrivelse.
+ * Utvikler: Said Hussain Khawajazada
+ */
 
-const prisma = new PrismaClient(); // ✅ Initialize Prisma
+
+import { PrismaClient } from "@prisma/client";
+import { NextResponse } from "next/server";//
+
+const prisma = new PrismaClient(); 
 
 export async function GET() {
   try {

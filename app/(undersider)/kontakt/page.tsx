@@ -1,3 +1,11 @@
+/** 
+ * Filnavn: page.tsx
+ * Beskrivelse: En kontaktside med et brukervennlig skjema for henvendelser, inkludert felt for navn, e-post og melding.
+ *              Bruker Tailwind CSS for stil og har en responsiv layout.
+ * Utvikler: Said Hussain Khawajazada
+ */
+
+
 import React from "react";
 
 const ContactPage = () => {

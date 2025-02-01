@@ -1,3 +1,12 @@
+/** 
+ * Filnavn: KontaktOss.tsx
+ * Beskrivelse: Komponent for en kontaktmodal som viser kontaktinformasjon og sosiale medieikoner.
+ *              Inkluderer en knapp som åpner en modal med e-post, telefonnummer og adresse.
+ *              Bruker React-icons for sosiale medieikoner og Tailwind CSS for styling.
+ * Utvikler: Said Hussain Khawajazada
+ */
+
+
 "use client";
 
 import { useState } from "react";

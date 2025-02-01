@@ -1,3 +1,11 @@
+/** 
+ * Filnavn: page.tsx
+ * Beskrivelse: En interaktiv guide for discgolf med søkefunksjonalitet, paginering og animasjoner. 
+ *              Inkluderer informasjon om kasteteknikker, diskvalg og spillstrategier.
+ * Utvikler: Said Hussain Khawajazada
+ */
+
+
 'use client'
 
 import { useState } from "react";

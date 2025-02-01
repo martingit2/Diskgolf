@@ -1,3 +1,12 @@
+/** 
+ * Filnavn: page.tsx
+ * Beskrivelse: Komponent for å vise værmeldinger for standard discgolf-steder og mulighet for å søke etter nye lokasjoner. 
+ *              Brukeren kan også lagre favorittsteder for rask tilgang.
+ *              Data hentes fra en API-endepunkt og oppdateres dynamisk.
+ * Utvikler: Said Hussain Khawajazada
+ */
+
+
 'use client'
 
 import { useState, useEffect } from "react";
