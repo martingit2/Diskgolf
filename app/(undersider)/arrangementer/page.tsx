@@ -63,28 +63,36 @@ export default function ArrangementerPage() {
     );
   };
 
-  // Function to handle registration submission
-  const handleSubmit = async () => {
-    const registrationData = {
-      event: selectedEvent,
-      name,
-      email,
-      about,
-      teams: selectedTeams,
+    // Function to handle registration submission
+    // Function to handle registration submission with validation
+    const handleSubmit = async () => {
+      // Check if name or email is empty
+      if (!name.trim() || !email.trim()) {
+        alert("Vennligst fyll inn både navn og e-post før du sender forespørselen.");
+        return; // Stop the function from proceeding
+      }
+
+      const registrationData = {
+        event: selectedEvent,
+        name,
+        email,
+        about, 
+        teams: selectedTeams,
+      };
+
+      // Simulating an email notification to teams (replace with real backend/API)
+      console.log("Sending registration:", registrationData);
+
+      alert("Din registrering er sendt! Teamet vil bli varslet via e-post.");
+      
+      // Reset form
+      setName("");
+      setEmail("");
+      setAbout("");
+      setSelectedTeams([]);
+      setSelectedEvent(null);
     };
 
-    // Simulating an email notification to teams (replace with real backend/API)
-    console.log("Sending registration:", registrationData);
-
-    alert("Din registrering er sendt! Teamet vil bli varslet via e-post.");
-    
-    // Reset form
-    setName("");
-    setEmail("");
-    setAbout("");
-    setSelectedTeams([]);
-    setSelectedEvent(null); 
-  };
 
   return (
     <div className="max-w-4xl mx-auto py-10 px-4">
