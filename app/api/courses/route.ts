@@ -22,6 +22,8 @@ export async function GET() {
         par: true,
         createdAt: true,
         updatedAt: true,
+        image: true,
+        difficulty: true,
       },
     });
 

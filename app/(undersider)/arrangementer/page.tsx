@@ -56,7 +56,7 @@ export default function ArrangementerPage() {
   const [about, setAbout] = useState<string>("");
   const [selectedTeams, setSelectedTeams] = useState<string[]>([]);
 
-  // ✅ Fixed: Ensure `handleTeamSelect` works properly
+ 
   const handleTeamSelect = (team: string) => {
     setSelectedTeams((prevTeams) =>
       prevTeams.includes(team) ? prevTeams.filter((t) => t !== team) : [...prevTeams, team]

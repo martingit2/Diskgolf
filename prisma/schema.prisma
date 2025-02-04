@@ -70,6 +70,8 @@ model Course {
   location    String
   description String?
   par         Int
+  image       String?
+  difficulty  String?
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
 
