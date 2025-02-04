@@ -1,3 +1,13 @@
+/**
+ * Filnavn: page.tsx
+ * Beskrivelse: Viser en oversikt over disc golf baner med kart, søkefunksjon og filter.
+ *
+ * Utvikler: Said Hussain Khawajazada
+ * Opprettet: 3. februar 2025
+ * Teknologier: Next.js, Supabase, OpenLayers, Tailwind CSS
+ */
+
+
 "use client";
 
 import { useEffect, useState } from "react";
@@ -5,7 +15,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import Image from "next/image";
-import Map from "@/components/Map"; // ✅ Import your existing Map component
+import Map from "@/components/Map"; 
 
 export default function BaneoversiktPage() {
   const [courses, setCourses] = useState<Course[]>([]);
@@ -44,7 +54,7 @@ export default function BaneoversiktPage() {
     fetchCourses();
   }, []);
 
-  // ✅ Filter courses based on search and difficulty
+  // Filter courses based on search and difficulty
   const filteredCourses = courses.filter(
     (course) =>
       course.name.toLowerCase().includes(searchTerm.toLowerCase()) &&
@@ -74,7 +84,7 @@ export default function BaneoversiktPage() {
         </select>
       </div>
 
-      {/* ✅ Use Existing Map Component */}
+      {/* Use Existing Map Component */}
       <Map />
 
       {/* Course List */}
