@@ -1,15 +1,7 @@
-/** 
- * Filnavn: route.ts
- * Beskrivelse: API-endepunkt for å hente discgolf-baner fra en database ved hjelp av Prisma.
- *              Returnerer en liste over tilgjengelige baner med relevant informasjon som navn, sted, par og beskrivelse.
- * Utvikler: Said Hussain Khawajazada
- */
-
-
 import { PrismaClient } from "@prisma/client";
-import { NextResponse } from "next/server";//
+import { NextResponse } from "next/server";
 
-const prisma = new PrismaClient(); 
+const prisma = new PrismaClient();
 
 export async function GET() {
   try {
@@ -24,10 +16,31 @@ export async function GET() {
         updatedAt: true,
         image: true,
         difficulty: true,
+        // Fetch reviews and calculate average rating
+        reviews: {
+          select: {
+            rating: true,
+          },
+        },
       },
     });
 
-    return NextResponse.json(courses);
+    // Calculate average rating and review count
+    const coursesWithRatings = courses.map(course => {
+      const totalReviews = course.reviews.length;
+      const averageRating =
+        totalReviews > 0
+          ? course.reviews.reduce((sum, review) => sum + review.rating, 0) / totalReviews
+          : 0;
+
+      return {
+        ...course,
+        averageRating: averageRating.toFixed(1), // Keep one decimal place
+        totalReviews,
+      };
+    });
+
+    return NextResponse.json(coursesWithRatings);
   } catch (error) {
     console.error("Feil ved henting av courses:", error);
     return NextResponse.json({ error: "Kunne ikke hente courses" }, { status: 500 });
