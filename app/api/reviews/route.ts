@@ -3,11 +3,11 @@ import { currentUser } from "../../lib/auth";
 import prisma from "../../lib/prismadb";
 
 export async function POST(req: Request) {
-  // Retrieve authenticated user from NextAuth
+  // ✅ Retrieve authenticated user from NextAuth
   const user = await currentUser();
 
   if (!user || !user.email) {
-    console.error("❌ User not authenticated:", user);
+    console.error("❌ Bruker ikke autentisert:", user);
     return NextResponse.json({ error: "Bruker ikke autentisert" }, { status: 401 });
   }
 
@@ -17,7 +17,7 @@ export async function POST(req: Request) {
   });
 
   if (!dbUser) {
-    console.error("❌ User not found in database:", user.email);
+    console.error("❌ Bruker ikke funnet i databasen:", user.email);
     return NextResponse.json({ error: "Bruker ikke funnet" }, { status: 404 });
   }
 
@@ -25,9 +25,9 @@ export async function POST(req: Request) {
   let body;
   try {
     body = await req.json();
-    console.log("📌 Received body:", body);
+    console.log("📌 Mottatt body:", body);
   } catch (err) {
-    console.error("❌ Invalid JSON:", err);
+    console.error("❌ Ugyldig JSON:", err);
     return NextResponse.json({ error: "Ugyldig JSON-body" }, { status: 400 });
   }
 
@@ -37,17 +37,16 @@ export async function POST(req: Request) {
     return NextResponse.json({ error: "Mangler påkrevde felt" }, { status: 400 });
   }
 
-  // Save review in database using Prisma
+  // ✅ Save review in database using Prisma
   try {
     await prisma.review.create({
-        data: {
-          courseId, 
-          rating,
-          comment,
-          userId: dbUser.id, 
-        },
-      });
-      
+      data: {
+        courseId: courseId, // ✅ Use correct field name
+        rating,
+        comment,
+        userId: dbUser.id, // ✅ Ensure this matches the database
+      },
+    });
 
     return NextResponse.json({ message: "Anmeldelsen ble sendt inn!" }, { status: 201 });
   } catch (error) {
