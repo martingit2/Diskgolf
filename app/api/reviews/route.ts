@@ -1,27 +1,33 @@
-import { createRouteHandlerClient } from "@supabase/auth-helpers-nextjs";
-import { cookies } from "next/headers";
 import { NextResponse } from "next/server";
+import { currentUser } from "../../lib/auth";
+import prisma from "../../lib/prismadb";
 
 export async function POST(req: Request) {
-  // 🔹 Opprett Supabase-klient
-  const supabase = createRouteHandlerClient({ cookies });
+  // Retrieve authenticated user from NextAuth
+  const user = await currentUser();
 
-  // 🔹 Sjekk brukerautentisering
-  const { data, error } = await supabase.auth.getUser();
-  const user = data?.user;
-
-  if (error || !user) {
-    console.error("❌ Ingen autentisert bruker:", error);
+  if (!user || !user.email) {
+    console.error("❌ User not authenticated:", user);
     return NextResponse.json({ error: "Bruker ikke autentisert" }, { status: 401 });
   }
 
-  // 📌 Analyser forespørselsbody
+  // 🔹 Retrieve the user from the database using their email
+  const dbUser = await prisma.user.findUnique({
+    where: { email: user.email }, // Look up user by email
+  });
+
+  if (!dbUser) {
+    console.error("❌ User not found in database:", user.email);
+    return NextResponse.json({ error: "Bruker ikke funnet" }, { status: 404 });
+  }
+
+  // 📌 Parse request body properly
   let body;
   try {
     body = await req.json();
-    console.log("📌 Mottatt body:", body);
+    console.log("📌 Received body:", body);
   } catch (err) {
-    console.error("❌ Ugyldig JSON:", err);
+    console.error("❌ Invalid JSON:", err);
     return NextResponse.json({ error: "Ugyldig JSON-body" }, { status: 400 });
   }
 
@@ -31,15 +37,21 @@ export async function POST(req: Request) {
     return NextResponse.json({ error: "Mangler påkrevde felt" }, { status: 400 });
   }
 
-  // ✅ Lagre anmeldelse i databasen (antar Supabase)
-  const { error: insertError } = await supabase
-    .from("reviews")
-    .insert([{ course_id: courseId, rating, comment, user_id: user.id }]);
+  // Save review in database using Prisma
+  try {
+    await prisma.review.create({
+        data: {
+          courseId, 
+          rating,
+          comment,
+          userId: dbUser.id, 
+        },
+      });
+      
 
-  if (insertError) {
-    console.error("❌ Feil ved lagring av anmeldelse:", insertError);
+    return NextResponse.json({ message: "Anmeldelsen ble sendt inn!" }, { status: 201 });
+  } catch (error) {
+    console.error("❌ Kunne ikke lagre anmeldelsen:", error);
     return NextResponse.json({ error: "Kunne ikke lagre anmeldelsen" }, { status: 500 });
   }
-
-  return NextResponse.json({ message: "Anmeldelsen ble sendt inn!" }, { status: 201 });
 }
