@@ -9,21 +9,21 @@ export async function POST(req: Request) {
   try {
     const body = await req.json();
 
-    // ✅ Make sure we extract values from `body`
+    // ✅ Extract values from `body`
     const courseId = body.courseId;
     const rating = body.rating;
     const comment = body.comment;
 
     // 🔍 Fetch authenticated user
     const supabase = createServerComponentClient({ cookies });
-    const {
-      data: { user },
-    } = await supabase.auth.getUser();
+    const { data, error } = await supabase.auth.getUser();
 
-    if (!user || !user.id) {
-      console.error("❌ Authentication Failed: No user found.");
+    if (error || !data?.user) {
+      console.error("❌ Authentication Failed:", error?.message || "No user found.");
       return NextResponse.json({ error: "User not authenticated" }, { status: 401 });
     }
+
+    const user = data.user; // ✅ Assign the user object
 
     // ✅ Debugging Log
     console.log("📩 Review Data Received:", { courseId, rating, comment, user });

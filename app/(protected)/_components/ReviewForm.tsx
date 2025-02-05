@@ -15,7 +15,7 @@ export default function ReviewForm({ courseId, totalReviews }: { courseId: strin
     e.preventDefault();
     setIsSubmitting(true);
     setError("");
-
+  
     try {
       const response = await fetch("/api/reviews", {
         method: "POST",
@@ -25,24 +25,35 @@ export default function ReviewForm({ courseId, totalReviews }: { courseId: strin
         body: JSON.stringify({
           courseId,
           rating,
-          comment,
+          comment: comment || "", // Ensure no `null` values
         }),
       });
-
+  
+      const result = await response.json(); // ✅ Parse response JSON
+  
       if (!response.ok) {
-        throw new Error("Kunne ikke sende inn anmeldelsen.");
+        throw new Error(result.error || "Kunne ikke sende inn anmeldelsen.");
       }
-
+  
       setRating(0);
       setComment("");
-      alert("Anmeldelse sendt!");
+      alert("✅ Anmeldelse sendt!");
       setIsOpen(false); // ✅ Close the modal after submission
     } catch (err) {
-      setError("Det oppstod en feil. Prøv igjen.");
-    } finally {
+        console.error("❌ Error submitting review:", err);
+      
+        // ✅ Ensure `err` is treated as an Error object
+        if (err instanceof Error) {
+          setError(err.message);
+        } else {
+          setError("Ukjent feil oppstod. Prøv igjen."); // ✅ Fallback message for unknown errors
+        }
+      }
+       finally {
       setIsSubmitting(false);
     }
   };
+  
 
   return (
     <>
