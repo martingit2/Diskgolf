@@ -16,6 +16,8 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import Image from "next/image";
 import Map from "@/components/Map"; 
+import ReviewForm from "@/app/(protected)/_components/ReviewForm";
+
 
 export default function BaneoversiktPage() {
   const [courses, setCourses] = useState<Course[]>([]);
@@ -31,8 +33,8 @@ export default function BaneoversiktPage() {
     par: number;
     image?: string;
     difficulty?: string;
-    averageRating: number;  // ✅ Added this
-    totalReviews: number;   // ✅ Added this
+    averageRating: number;  
+    totalReviews: number;   
   };
 
   useEffect(() => {
@@ -91,8 +93,8 @@ export default function BaneoversiktPage() {
 
       {/* Course List */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mt-6">
-        {filteredCourses.map((course) => (
-          <Card key={course.id} className="shadow-lg border border-gray-200 flex flex-col h-[615px]">
+      {filteredCourses.map((course) => (
+        <Card key={course.id} className="shadow-lg border border-gray-200 flex flex-col h-[615px]">
           <CardHeader>
             <CardTitle className="text-xl font-semibold">{course.name}</CardTitle>
           </CardHeader>
@@ -104,35 +106,29 @@ export default function BaneoversiktPage() {
               height={200}
               className="rounded-lg object-cover mb-3"
             />
-            {/* 🔥 Display Star Rating and Review Count */}
-            <div className="flex items-center gap-2">
-              {Array.from({ length: 5 }, (_, i) => (
-                <span key={i} className={i < Math.round(course.averageRating) ? "text-yellow-500" : "text-gray-300"}>
-                  ★
-                </span>
-              ))}
-              <span className="text-gray-600 text-sm">({course.totalReviews} anmeldelser)</span>
+
+            {/* Display Star Rating and Review Count */}
+            <div className="flex items-center gap-2 cursor-pointer">
+              {/* Clicking on stars opens the review modal */}
+              <ReviewForm courseId={course.id} totalReviews={course.totalReviews} />
             </div>
-        
-            {/* 🔥 Keep description fixed height */}
+
+            {/* Keep description fixed height */}
             <div className="flex-grow">
               <p><strong>Sted:</strong> {course.location}</p>
               <p><strong>Par:</strong> {course.par}</p>
               <p><strong>Vanskelighetsgrad:</strong> {course.difficulty || "Ukjent"}</p>
               <p className="h-[60px] overflow-hidden"><strong>Beskrivelse:</strong> {course.description}</p>
             </div>
-        
-            {/* ✅ Button stays at the exact same position in all cards */}
+
+            {/* Button stays at the exact same position in all cards */}
             <div className="mt-4">
               <Button className="w-full">Se detaljer</Button>
             </div>
           </CardContent>
         </Card>
-        
-        
-        
-        
-        ))}
+      ))}
+
       </div>
     </div>
   );
