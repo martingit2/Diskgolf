@@ -2,7 +2,7 @@
  * @file: page.tsx
  * @description: Nyhetsside for DiskGolf 
  * @author: Maria
- * @created: 2025
+ * Inspirasjon fra: https://zensykkel.no/blogs/blogg-nyheter?page=3&srsltid=AfmBOopyYXqbkbXWoVO-VkpoglhhaqCefdeCnUbzGZ-6-zKLo0JJSELY
  */
 
 "use client";
@@ -15,13 +15,13 @@ function page() {
       title: "Vi er snart i App-store og Google Play!",
       content: <>
         <p className="text-gray-600 mb-4">
-          Vi gleder oss til å starte sesongen 2025 med dere der!
+          Vi gleder oss til å starte sesongen 2025 med dere! 
         </p>
       </>,
       image: "/nyheter/image3.jpg"
     },
     {
-      title: "Ta vare på Disk Golf utstyret ditt",
+      title: "Ta vare på Disk Golf utstyret ditt i vinter",
       content: <>
         <p className="text-gray-600 mb-4">
           Husk å rengjøre diskene dine med litt såpevann og en klut, og tørre dem godt før du lagrer dem et tørt sted med stabil temperatur 
@@ -34,7 +34,7 @@ function page() {
       title: "September og vi er her!",
       content: <>
         <p className="text-gray-600 mb-4">
-          Vi er en ny app for deg som spiller Disk Golf! Vi holder på med å lage en ny app som skal lanseres i 2025
+          Vi er en ny app for deg som spiller Disk Golf! Følg med på våre nettsider for lanseringsdato. 
         </p>
       </>,
       image: "/nyheter/image1.jpg"
