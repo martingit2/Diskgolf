@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { Dialog, DialogContent, DialogTrigger, DialogTitle } from "@/components/ui/dialog";
 
-export default function ReviewForm({ courseId, totalReviews }: { courseId: string; totalReviews: number }) {
+export default function ReviewForm({ courseId, totalReviews, averageRating = 0 }: { courseId: string; totalReviews: number; averageRating?: number }) {
 
   const [rating, setRating] = useState(0);
   const [comment, setComment] = useState("");
@@ -29,11 +29,20 @@ export default function ReviewForm({ courseId, totalReviews }: { courseId: strin
         }),
       });
   
-      const result = await response.json(); // ✅ Parse response JSON
-  
-      if (!response.ok) {
-        throw new Error(result.error || "Kunne ikke sende inn anmeldelsen.");
-      }
+      let result;
+            try {
+            result = await response.json();
+            } catch (err) {
+            console.error("❌ Kunne ikke parse serverrespons:", err);
+            setError("Ugyldig svar fra serveren. Er du logget inn?");
+            return;
+            }
+
+            if (!response.ok) {
+            setError(result?.error || "Kunne ikke sende inn anmeldelsen. Logg inn og prøv igjen.");
+            return;
+            }
+
   
       setRating(0);
       setComment("");
@@ -61,11 +70,12 @@ export default function ReviewForm({ courseId, totalReviews }: { courseId: strin
       <Dialog open={isOpen} onOpenChange={setIsOpen}>
         <DialogTrigger asChild>
           <div className="flex items-center gap-2 cursor-pointer" onClick={() => setIsOpen(true)}>
-            {Array.from({ length: 5 }, (_, i) => (
-              <span key={i} className={i < rating ? "text-yellow-500" : "text-gray-300"}>
+          {Array.from({ length: 5 }, (_, i) => (
+            <span key={i} className={i < Math.round(averageRating) ? "text-yellow-500" : "text-gray-300"}>
                 ★
-              </span>
+            </span>
             ))}
+
             <span className="text-gray-600 text-sm">
                 {totalReviews > 0 ? `(${totalReviews} anmeldelser)` : "(Skriv anmeldelse)"}
             </span>

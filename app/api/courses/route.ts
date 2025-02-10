@@ -35,7 +35,7 @@ export async function GET() {
 
       return {
         ...course,
-        averageRating: averageRating.toFixed(1), // Keep one decimal place
+        averageRating: parseFloat(averageRating.toFixed(1)), 
         totalReviews,
       };
     });

@@ -17,6 +17,8 @@ import { Button } from "@/components/ui/button";
 import Image from "next/image";
 import Map from "@/components/Map"; 
 import ReviewForm from "@/app/(protected)/_components/ReviewForm";
+import Link from "next/link";
+
 
 
 export default function BaneoversiktPage() {
@@ -107,12 +109,8 @@ export default function BaneoversiktPage() {
               className="rounded-lg object-cover mb-3"
             />
 
-            {/* Display Star Rating and Review Count */}
-            <div className="flex items-center gap-2 cursor-pointer">
-              {/* Clicking on stars opens the review modal */}
-              <ReviewForm courseId={course.id} totalReviews={course.totalReviews} />
-            </div>
-
+            {/* Clicking on stars opens the review modal */}
+            <ReviewForm courseId={course.id} totalReviews={course.totalReviews} averageRating={course.averageRating} />
             {/* Keep description fixed height */}
             <div className="flex-grow">
               <p><strong>Sted:</strong> {course.location}</p>
@@ -123,7 +121,9 @@ export default function BaneoversiktPage() {
 
             {/* Button stays at the exact same position in all cards */}
             <div className="mt-4">
+            <Link href={`/courses/${course.id}`} className="block w-full">
               <Button className="w-full">Se detaljer</Button>
+            </Link>
             </div>
           </CardContent>
         </Card>
