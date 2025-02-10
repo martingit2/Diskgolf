@@ -1,8 +1,16 @@
+/** 
+ * Filnavn: page.tsx
+ * Beskrivelse: Komponent for å vise en liste med ofte stilte spørsmål (FAQ)
+ * med søkefunksjonalitet og paginering.
+ * Utvikler: Said Hussain Khawajazada
+ */
+
+
 'use client'
 import { useState, useEffect } from "react";
 import { Pagination, PaginationContent, PaginationItem, PaginationLink, PaginationNext, PaginationPrevious } from "@/components/ui/pagination";
 
-// Sample FAQ data (replace this with dynamic data later)
+
 const sampleFAQs = [
   { id: '1', question: 'Hva er frisbeegolf?', answer: 'Frisbeegolf er et spill som ligner på tradisjonell golf, men i stedet for å bruke køller og en ball, kaster spillerne en frisbee mot et målkurv. Målet er å fullføre hver bane med færrest mulig kast.' },
   { id: '2', question: 'Hvordan kommer jeg i gang med frisbeegolf?', answer: 'For å komme i gang trenger du en frisbee, som kan kjøpes i en lokal frisbeegolfbutikk eller på nett. Mange parker har frisbeegolfbaner, så finn en i nærheten og prøv det. Det er en flott utendørsaktivitet for alle ferdighetsnivåer.' },

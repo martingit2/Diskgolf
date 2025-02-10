@@ -1,3 +1,11 @@
+/** 
+ * Filnavn: route.ts
+ * Beskrivelse: API-endepunkt for å hente værdata fra MET Norway API basert på geografiske koordinater.
+ *              Returnerer temperatur, vindhastighet og værforhold for en gitt lokasjon.
+ * Utvikler: Said Hussain Khawajazada
+ */
+
+
 export async function GET(req: Request) {
     const { searchParams } = new URL(req.url);
     const lat = searchParams.get("lat") || "59.911491"; // Default: Oslo

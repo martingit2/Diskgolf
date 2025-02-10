@@ -9,7 +9,7 @@
 
 
 /**
-* En array av routes som er tilgjengelig for personer
+* En array av routes som er tilgjengelig for personer.
 * Som ikke er logget inn. Disse sidene krever ikke authentication
 * @type {string[]}
 */
@@ -50,6 +50,7 @@ export const publicRoutes = [
     "/weather",
     "/api/weather",
     "/api/courses",
+    "/find-course"
 ];
 
 /** 

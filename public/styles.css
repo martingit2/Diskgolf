@@ -5,11 +5,9 @@ body {
     height: 100vh;
     margin: 0;
     font-family: sans-serif;
-    background: linear-gradient(to right, #2d2d2d, #1e1e1e, #2d2d2d); /* Apply custom gradient */
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); /* Shadow effect */
+    background: linear-gradient(135deg, #f06, #4a90e2); /* Corrected gradient syntax */
     color: #fff;
 }
-
 
 #game-container {
     text-align: center;

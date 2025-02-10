@@ -1,3 +1,11 @@
+/** 
+ * Filnavn: page.tsx
+ * Beskrivelse: En vilkår for bruk-side som viser nettstedets betingelser med paginering for enkel navigasjon.
+ *            Brukeren kan lese om tjenestens retningslinjer, personvern og ansvarsfraskrivelse..
+ * Utvikler: Said Hussain Khawajazada
+ */
+
+
 'use client'
 
 import { useState } from "react";
