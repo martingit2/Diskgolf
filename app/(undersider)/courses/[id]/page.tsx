@@ -1,24 +1,41 @@
 import { notFound } from "next/navigation";
+import React from "react";
 
 export default async function CoursePage({
   params,
 }: {
   params: Promise<{ id: string }>;
 }) {
-  // ✅ Await params because it's now a Promise in Next.js 15
+  console.log("🔍 Received params:", params);
+
+  // ✅ Await params because it's a Promise in Next.js 15
   const { id } = await params;
 
-  if (!id) return notFound();
+  if (!id) {
+    console.log("❌ Missing params.id, returning 404");
+    return notFound();
+  }
 
   try {
     // ✅ Fetch course data
-    const courseResponse = await fetch(`${process.env.NEXT_PUBLIC_BASE_URL}/api/courses/${id}`);
-    if (!courseResponse.ok) return notFound();
+    const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || "http://localhost:3000";
+    const courseResponse = await fetch(`${baseUrl}/api/courses/${id}`);
+
+    if (!courseResponse.ok) {
+      console.log("❌ Course not found in API");
+      return notFound();
+    }
+
     const course = await courseResponse.json();
 
     // ✅ Fetch reviews for this course
-    const reviewsResponse = await fetch(`${process.env.NEXT_PUBLIC_BASE_URL}/api/reviews?course_id=${id}`);
-    if (!reviewsResponse.ok) return notFound();
+    const reviewsResponse = await fetch(`${baseUrl}/api/reviews?course_id=${id}`);
+
+    if (!reviewsResponse.ok) {
+      console.log("❌ Reviews not found");
+      return notFound();
+    }
+
     const reviews = await reviewsResponse.json();
 
     return (
@@ -50,4 +67,7 @@ export default async function CoursePage({
     console.error("❌ Error fetching course or reviews:", error);
     return notFound();
   }
+}
+export async function generateStaticParams() {
+  return [];
 }
