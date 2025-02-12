@@ -19,7 +19,7 @@ export default async function CoursePage({
 
   try {
     // ✅ Fetch course data
-    const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || "http://localhost:3000";
+    const baseUrl = process.env.NEXT_PUBLIC_APP_URL || "https://diskgolf.app";
     const courseResponse = await fetch(`${baseUrl}/api/courses/${id}`, {
       cache: "no-store", // Prevents caching issues
     });
