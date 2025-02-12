@@ -11,6 +11,8 @@
 
 
 import { notFound } from "next/navigation";
+import React from "react";
+export const dynamic = "force-dynamic"; 
 
 export default async function ReviewPage({
   params,
@@ -39,4 +41,7 @@ export default async function ReviewPage({
       <p className="text-gray-500 mt-2">Bruker ID: {review.userId}</p>
     </div>
   );
+}
+export async function generateStaticParams() {
+  return [];
 }

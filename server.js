@@ -1,14 +1,3 @@
-/** 
- * Filnavn: server.js
- * Beskrivelse: Serverapplikasjon som bruker Express, WebSocket og Next.js for å sette opp et sanntidsspill.
- * Spillerhåndtering skjer via WebSocket, mens Next.js håndterer servering av webinnhold. 
- * Serveren tillater opp til 10 spillere å koble til og starte et spill.
- * 
- * Utvikler: Martin Pettersen
- */
-
-
-
 import express from 'express';
 import http from 'http';
 import { WebSocketServer } from 'ws';
@@ -75,7 +64,7 @@ wss.on('connection', (ws) => {
 nextApp.prepare().then(() => {
     app.all('*', (req, res) => nextHandler(req, res));
 
-    const port = process.env.PORT || 5001;
+    const port = process.env.PORT || 5000;
     server.listen(port, () => {
         console.log(`Server kjører på port ${port}`);
     });
