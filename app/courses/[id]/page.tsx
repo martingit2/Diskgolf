@@ -32,7 +32,7 @@ export default async function CoursePage({
 
   try {
     // ✅ Fetch course data
-    const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || "https://diskgolf.app";
+    const baseUrl = process.env.NEXT_PUBLIC_APP_URL || "https://diskgolf.app";
 console.log("Fetching course:", `${baseUrl}/api/courses/${id}`);
 
 const courseResponse = await fetch(`${baseUrl}/api/courses/${id}`, {
