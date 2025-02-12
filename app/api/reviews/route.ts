@@ -61,25 +61,20 @@ export async function POST(req: Request) {
 export async function GET(req: Request) {
   try {
     const url = new URL(req.url);
-    const paths = url.pathname.split("/");
-    const reviewId = paths[paths.length - 1] || undefined; // ✅ Fixed extraction
+    const courseId = url.searchParams.get("course_id"); // ✅ Get course_id from query params
 
-    if (!reviewId) {
-      return NextResponse.json({ error: "Mangler anmeldelses-ID" }, { status: 400 });
+    if (!courseId) {
+      return NextResponse.json({ error: "Missing course_id" }, { status: 400 });
     }
 
-    const review = await prisma.review.findUnique({
-      where: { id: reviewId },
+    const reviews = await prisma.review.findMany({
+      where: { courseId }, // ✅ Fetch all reviews for the given courseId
     });
 
-    if (!review) {
-      return NextResponse.json({ error: "Anmeldelse ikke funnet" }, { status: 404 });
-    }
-
-    return NextResponse.json(review);
+    return NextResponse.json(reviews); // ✅ Correct return value
 
   } catch (error) {
-    console.error("Feil ved henting av anmeldelse:", error);
+    console.error("❌ Feil ved henting av anmeldelser:", error);
     return NextResponse.json({ error: "Serverfeil" }, { status: 500 });
   }
 }

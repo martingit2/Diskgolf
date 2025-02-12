@@ -19,20 +19,24 @@ export default async function CoursePage({
   try {
     // ✅ Fetch course data
     const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || "http://localhost:3000";
-    const courseResponse = await fetch(`${baseUrl}/api/courses/${id}`);
+    const courseResponse = await fetch(`${baseUrl}/api/courses/${id}`, {
+      cache: "no-store", // Prevents caching issues
+    });
 
     if (!courseResponse.ok) {
-      console.log("❌ Course not found in API");
+      console.log("❌ Course not found in API", courseResponse.status);
       return notFound();
     }
 
     const course = await courseResponse.json();
 
     // ✅ Fetch reviews for this course
-    const reviewsResponse = await fetch(`${baseUrl}/api/reviews?course_id=${id}`);
+    const reviewsResponse = await fetch(`${baseUrl}/api/reviews?course_id=${id}`, {
+      cache: "no-store",
+    });
 
     if (!reviewsResponse.ok) {
-      console.log("❌ Reviews not found");
+      console.log("❌ Reviews not found", reviewsResponse.status);
       return notFound();
     }
 
@@ -68,6 +72,8 @@ export default async function CoursePage({
     return notFound();
   }
 }
+
+// ✅ Ensure Next.js doesn't pre-render the page as static
 export async function generateStaticParams() {
   return [];
 }

@@ -75,7 +75,7 @@ wss.on('connection', (ws) => {
 nextApp.prepare().then(() => {
     app.all('*', (req, res) => nextHandler(req, res));
 
-    const port = process.env.PORT || 5000;
+    const port = process.env.PORT || 5001;
     server.listen(port, () => {
         console.log(`Server kjører på port ${port}`);
     });

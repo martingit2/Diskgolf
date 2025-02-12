@@ -121,9 +121,10 @@ export default function BaneoversiktPage() {
 
             {/* Button stays at the exact same position in all cards */}
             <div className="mt-4">
-            <Link href={`/undersider/courses/${course.id}`} className="block w-full">
+            <Link href={`/courses/${course.id}`} passHref>
               <Button className="w-full">Se detaljer</Button>
             </Link>
+
             </div>
           </CardContent>
         </Card>
