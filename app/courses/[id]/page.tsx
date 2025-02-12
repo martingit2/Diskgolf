@@ -32,15 +32,18 @@ export default async function CoursePage({
 
   try {
     // ✅ Fetch course data
-    const baseUrl = process.env.NEXT_PUBLIC_APP_URL || "https://diskgolf.app";
-    const courseResponse = await fetch(`${baseUrl}/api/courses/${id}`, {
-      cache: "no-store", // Prevents caching issues
-    });
+    const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || "https://diskgolf.app";
+console.log("Fetching course:", `${baseUrl}/api/courses/${id}`);
 
-    if (!courseResponse.ok) {
-      console.log("❌ Course not found in API", courseResponse.status);
-      return notFound();
-    }
+const courseResponse = await fetch(`${baseUrl}/api/courses/${id}`, {
+  cache: "no-store",
+});
+
+if (!courseResponse.ok) {
+  console.error("❌ API Error:", courseResponse.status, await courseResponse.text());
+  return notFound();
+}
+
 
     const course = await courseResponse.json();
 
