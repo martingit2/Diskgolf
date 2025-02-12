@@ -51,7 +51,8 @@ export const publicRoutes = [
     "/api/weather",
     "/api/courses",
     "/find-course",
-    
+    "/courses/[id]",
+    "/courses"
 ];
 
 /** 
