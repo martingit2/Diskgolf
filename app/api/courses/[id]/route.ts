@@ -1,3 +1,15 @@
+/** 
+ * Filnavn: route.ts
+ * Beskrivelse: API-endepunkt for å hente informasjon om en spesifikk discgolf-bane basert på en gitt ID. 
+ * Funksjonalitet:
+ *   - Henter en kursoppføring fra databasen ved hjelp av Prisma ORM.
+ *   - Returnerer kursdata i JSON-format hvis den finnes.
+ *   - Håndterer feil, inkludert manglende ID, kurs som ikke finnes, og databasefeil.
+ *   - Bruker `force-dynamic` for å sikre at data hentes dynamisk ved hver forespørsel.
+ * Utvikler: Said Hussain Khawajazada
+ */
+
+
 import { NextRequest, NextResponse } from "next/server";
 import { PrismaClient } from "@prisma/client";
 export const dynamic = "force-dynamic"; // Fix dynamic rendering issue

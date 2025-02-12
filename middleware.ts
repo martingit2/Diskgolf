@@ -21,7 +21,7 @@ export default async function middleware(req: NextRequest) {
   const { nextUrl } = req;
 
   const isApiAuthRoute = nextUrl.pathname.startsWith(apiAuthPrefix);
-  const isPublicRoute = true;
+  const isPublicRoute = publicRoutes.includes(nextUrl.pathname);
   const isAuthRoute = authRoutes.includes(nextUrl.pathname);
 
   // Tillat tilgang til /auth/new-password uavhengig av autentisering

@@ -1,3 +1,18 @@
+/** 
+ * Filnavn: route.ts
+ * Beskrivelse: API-endepunkt for håndtering av anmeldelser for discgolf-baner.
+ * Funksjonalitet:
+ *   - POST: Oppretter en ny anmeldelse for en bane.
+ *     - Krever autentisering via NextAuth.
+ *     - Henter brukerens e-post og lagrer anmeldelsen med rating og kommentar.
+ *   - GET: Henter alle anmeldelser for en spesifisert bane.
+ *     - Filtrerer basert på course_id som sendes som query-parameter.
+ *     - Returnerer en liste med anmeldelser i JSON-format.
+ *   - Håndterer validering og feilmeldinger for manglende eller ugyldige data.
+ * Utvikler: Said Hussain Khawajazada
+ */
+
+
 import { NextResponse } from "next/server";
 import { currentUser } from "../../lib/auth";
 import prisma from "../../lib/prismadb";

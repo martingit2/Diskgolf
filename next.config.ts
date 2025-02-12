@@ -1,7 +1,7 @@
 /**
  * Filnavn: next.config.ts
  * Beskrivelse: Konfigurasjonsfil for Next.js-applikasjonen. Håndterer miljøvariabler, bilde-domenekonfigurasjon, rute-omskrivinger, og Webpack-innstillinger.
- * Utvikler: Martin Pettersen
+ * Utvikler: Martin Pettersen, Said Hussain Khawajazada
  */
 
 import type { NextConfig } from "next";
@@ -50,7 +50,7 @@ const nextConfig: NextConfig = {
 
   output: "standalone",
 
-  experimental: {}, // ✅ Removed `appDir` since it's enabled by default in Next.js 15+
+  experimental: {}, //  Removed `appDir` since it's enabled by default in Next.js 15+
 };
 
 export default nextConfig;

@@ -1,3 +1,16 @@
+/** 
+ * Filnavn: route.ts
+ * Beskrivelse: API-endepunkt for å hente en liste over discgolf-baner fra databasen.
+ * Funksjonalitet:
+ *   - Henter alle kursoppføringer fra databasen ved hjelp av Prisma ORM.
+ *   - Inkluderer kursdetaljer som navn, plassering, beskrivelse, vanskelighetsgrad, par, opprettelsesdato og bilde.
+ *   - Henter anmeldelser for hver bane og beregner gjennomsnittlig vurdering samt totalt antall anmeldelser.
+ *   - Returnerer data i JSON-format.
+ *   - Håndterer eventuelle feil under databaseforespørselen.
+ * Utvikler: Said Hussain Khawajazada
+ */
+
+
 import { PrismaClient } from "@prisma/client";
 import { NextResponse } from "next/server";
 

@@ -1,3 +1,15 @@
+/** 
+ * Filnavn: ReviewPage.tsx
+ * Beskrivelse: Dynamisk side for visning av en enkelt anmeldelse basert på en gitt ID. 
+ *              Henter anmeldelsesdata fra API-et og viser vurdering, kommentar og bruker-ID.
+ * Funksjonalitet:
+ *   - Henter anmeldelsen fra `/api/reviews/{id}` basert på URL-parameter.
+ *   - Viser en feilmelding hvis anmeldelsen ikke finnes.
+ *   - Viser stjernevurdering, kommentar og tilhørende bruker-ID.
+ * Utvikler: Said Hussain Khawajazada
+ */
+
+
 import { notFound } from "next/navigation";
 
 export default async function ReviewPage({

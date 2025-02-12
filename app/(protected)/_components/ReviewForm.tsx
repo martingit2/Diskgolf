@@ -1,3 +1,16 @@
+/** 
+ * Filnavn: ReviewForm.tsx
+ * Beskrivelse: Komponent for å la brukere sende inn anmeldelser av en discgolfbane. 
+ *              Inkluderer stjernevurdering, tekstfelt for kommentarer og en dialogbasert modal for innsending.
+ * Funksjonalitet:
+ *   - Lar brukere gi en vurdering fra 1 til 5 stjerner.
+ *   - Sender anmeldelsen til API-et (/api/reviews) ved innsending.
+ *   - Viser feilmeldinger hvis innsendingen mislykkes.
+ *   - Lukker modalen automatisk ved vellykket innsending.
+ * Utvikler: Said Hussain Khawajazada
+ */
+
+
 "use client";
 
 import { useState } from "react";

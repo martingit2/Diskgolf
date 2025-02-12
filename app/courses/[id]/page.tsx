@@ -1,3 +1,16 @@
+/** 
+ * Filnavn: CoursePage.tsx
+ * Beskrivelse: Dynamisk side for visning av en discgolf-bane og tilhørende anmeldelser.
+ * Funksjonalitet:
+ *   - Henter baneinformasjon fra API basert på ID i URL.
+ *   - Henter anmeldelser for banen og viser dem på siden.
+ *   - Viser en feilmelding dersom banen eller anmeldelser ikke finnes.
+ *   - Bruker "force-dynamic" for å sikre at data alltid er ferske ved lasting.
+ *   - Logger feilmeldinger for debugging og gir 404 ved manglende data.
+ * Utvikler: Said Hussain Khawajazada
+ */
+
+
 import { notFound } from "next/navigation";
 import React from "react";
 export const dynamic = "force-dynamic"; 
