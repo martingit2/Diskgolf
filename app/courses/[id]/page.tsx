@@ -36,7 +36,7 @@ export default async function CoursePage({
 console.log("Fetching course:", `${baseUrl}/api/courses/${id}`);
 
 const courseResponse = await fetch(`${baseUrl}/api/courses/${id}`, {
-  cache: "no-store",
+  cache: "force-cache",
 });
 
 if (!courseResponse.ok) {
@@ -49,7 +49,7 @@ if (!courseResponse.ok) {
 
     // ✅ Fetch reviews for this course
     const reviewsResponse = await fetch(`${baseUrl}/api/reviews?course_id=${id}`, {
-      cache: "no-store",
+      cache: "force-cache",
     });
 
     if (!reviewsResponse.ok) {

@@ -19,7 +19,7 @@ export async function GET(req: Request) {
           "User-Agent": "DiskGolfApp/1.0 (saidhussainkhwajazada@gmail.com)", 
           "Accept": "application/json",
         },
-        cache: "no-store",
+        cache: "force-cache",
       });
   
       if (!response.ok) {
