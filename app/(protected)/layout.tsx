@@ -1,9 +1,11 @@
 /** 
+ * 
  * Filnavn: ProtectedLayout.tsx
  * Beskrivelse: Layout-komponent som brukes til beskyttede sider, 
  * med navigasjonslinje og sentrert innhold.
  * Utvikler: Martin Pettersen
  */
+
 
 import { Navbar } from "./_components/navbar";
 
