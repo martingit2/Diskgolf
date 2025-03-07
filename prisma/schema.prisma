@@ -67,12 +67,18 @@ model Club {
 model Course {
   id          String   @id @default(uuid())
   name        String
-  latitude    Float    // ✅ Endret fra "location String" til separate lat/lng
+  location    String?  // ✅ Ny: Fylke/by for banen
+  latitude    Float    // ✅ Hovedposisjon for banen (f.eks. klubbhuset)
   longitude   Float
+  startLatitude Float? // ✅ Ny: Startpunkt
+  startLongitude Float?
+  goalLatitude Float?  // ✅ Ny: Sluttpunkt
+  goalLongitude Float?
   description String?
   par         Int
   image       String?
   difficulty  String?
+  numHoles    Int?     // ✅ Ny: Antall kurver (baskets) på banen
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
 
@@ -85,11 +91,13 @@ model Course {
 }
 
 model Hole {
-  id       String @id @default(uuid())
-  courseId String
-  number   Int
-  par      Int
-  distance Int?
+  id        String @id @default(uuid())
+  courseId  String
+  number    Int   // ✅ Hullnummer (f.eks. 1, 2, 3 ...)
+  par       Int   // ✅ Par-verdi for kurven
+  distance  Int?  // ✅ Valgfri avstand i meter
+  latitude  Float // ✅ Ny: Eksakte koordinater for kurven
+  longitude Float
 
   course Course @relation(fields: [courseId], references: [id], onDelete: Cascade)
 }

@@ -52,7 +52,8 @@ export const publicRoutes = [
     "/api/courses",
     "/find-course",
     "/courses/[id]",
-    "/courses"
+    "/courses",
+    "/map",
 ];
 
 /** 

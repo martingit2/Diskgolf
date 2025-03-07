@@ -4,23 +4,23 @@
  * Utvikler: Martin Pettersen
  */
 
-
-
 import Map from "@/components/Map";
 import BaneCarousel from "@/components/popular-carousel";
 import QuickStartGame from "@/components/QuickStartGame";
 import ReviewCarousel from "@/components/ReviewCarousel";
 import SearchForm from "@/components/SearchForm";
 import RotatingText from "@/components/text-rotator";
-import Script from "next/script";
 import React from "react";
 
 // Henter miljøvariabel for Cookiebot
-const domainGroupId = process.env.NEXT_PUBLIC_COOKIEBOT_DOMAIN_GROUP_ID;
+// const domainGroupId = process.env.NEXT_PUBLIC_COOKIEBOT_DOMAIN_GROUP_ID;
 
 export default function HomePage() {
   return (
     <React.Fragment>
+      {/* Cookiebot-scriptet er kommentert ut, siden trialen har utløpt */}
+      {/* Husk å fornye trialen før innlevering av prosjekt */}
+      {/*
       {domainGroupId && (
         <Script
           id="cookiebot-script"
@@ -37,6 +37,7 @@ export default function HomePage() {
           }}
         />
       )}
+      */}
 
       <main className="bg-[var(--headerColor)]">
         {/* Overskrift-seksjon */}
