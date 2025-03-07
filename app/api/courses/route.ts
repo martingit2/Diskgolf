@@ -22,7 +22,8 @@ export async function GET() {
       select: {
         id: true,
         name: true,
-        location: true,
+        latitude: true,  // ✅ Endret fra location → latitude
+        longitude: true, // ✅ Endret fra location → longitude
         description: true,
         par: true,
         createdAt: true,

@@ -67,7 +67,8 @@ model Club {
 model Course {
   id          String   @id @default(uuid())
   name        String
-  location    String
+  latitude    Float    // ✅ Endret fra "location String" til separate lat/lng
+  longitude   Float
   description String?
   par         Int
   image       String?
@@ -80,7 +81,7 @@ model Course {
   rounds  Round[]
 
   clubId String?
-  club   Club?   @relation("ClubToCourses", fields: [clubId], references: [id]) // Relasjon til Club
+  club   Club?   @relation("ClubToCourses", fields: [clubId], references: [id])
 }
 
 model Hole {
