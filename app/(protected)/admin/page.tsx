@@ -16,7 +16,7 @@ import { UserRole } from "@prisma/client";
 import toast from "react-hot-toast";
 
 /**
- * AdminPage-komponenten gir en grensesnitt for administratorer.
+ * AdminPage-komponenten gir et grensesnitt for administratorer.
  * Inkluderer tilgangskontroll og funksjoner for å teste API-ruter og serverhandlinger.
  * 
  * @component
@@ -55,37 +55,43 @@ const AdminPage = () => {
   };
 
   return (
-    <Card className="w-[600px]">
-      <CardHeader>
-        <p className="text-2xl font-semibold text-center">
-          🔑 Adminpanel
-        </p>
-      </CardHeader>
-      <CardContent className="space-y-4">
-        {/* Sjekker tilgang basert på rolle */}
-        <RoleGate allowedRole={UserRole.ADMIN}>
-          <FormSuccess message="Du har tilgang til å se dette innholdet!" />
-        </RoleGate>
+    <div className="min-h-screen bg-gray-100 flex justify-center items-start py-1"> {/* Justering av vertikal padding */}
+      <div className="w-full max-w-4xl p-4"> {/* Justering av padding for å redusere gap */}
+        <Card>
+          <CardHeader>
+            <p className="text-2xl font-semibold text-center">
+              🔑 Adminpanel
+            </p>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            {/* Sjekker tilgang basert på rolle */}
+            <RoleGate allowedRole={UserRole.ADMIN}>
+              <FormSuccess message="Du har tilgang til å se dette innholdet!" />
+            </RoleGate>
 
-        <div className="flex flex-row items-center justify-between rounded-lg border p-3 shadow-md">
-          <p className="text-sm font-medium">
-            Admin-kun API Route
-          </p>
-          <Button onClick={onApiRouteClick}>
-            Klikk for å teste
-          </Button>
-        </div>
+            {/* Admin-kun API Route */}
+            <div className="flex flex-row items-center justify-between rounded-lg border p-3 shadow-md">
+              <p className="text-sm font-medium">
+                Admin-kun API Route
+              </p>
+              <Button onClick={onApiRouteClick}>
+                Klikk for å teste
+              </Button>
+            </div>
 
-        <div className="flex flex-row items-center justify-between rounded-lg border p-3 shadow-md">
-          <p className="text-sm font-medium">
-            Admin-kun serverhandling
-          </p>
-          <Button onClick={onServerActionClick}>
-            Klikk for å teste
-          </Button>
-        </div>
-      </CardContent>
-    </Card>
+            {/* Admin-kun Serverhandling */}
+            <div className="flex flex-row items-center justify-between rounded-lg border p-3 shadow-md">
+              <p className="text-sm font-medium">
+                Admin-kun serverhandling
+              </p>
+              <Button onClick={onServerActionClick}>
+                Klikk for å teste
+              </Button>
+            </div>
+          </CardContent>
+        </Card>
+      </div>
+    </div>
   );
 };
 

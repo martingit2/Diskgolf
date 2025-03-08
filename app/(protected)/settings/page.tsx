@@ -1,10 +1,9 @@
-/** 
- * Filnavn: Page.tsx
- * Beskrivelse: Sidekomponent for administrasjon av brukerinnstillinger, inkludert endring av 
+/**
+ * Filnavn: SettingsPage.tsx
+ * Beskrivelse: Sidekomponent for administrasjon av brukerinnstillinger, inkludert endring av
  * personlig informasjon, passord, tofaktor-autentisering og sletting av konto.
  * Utvikler: Martin Pettersen
  */
-
 
 "use client";
 
@@ -112,8 +111,8 @@ const SettingsPage = () => {
     } catch {
       setError("Noe gikk galt!");
     }
-  };
 
+  };
 
   // Funksjon for å håndtere sletting av brukeren
   const handleDeleteUser = async () => {
@@ -135,140 +134,141 @@ const SettingsPage = () => {
     }
   };
 
-
-
-
   if (!user) {
     return <div>Laster inn brukerdata...</div>;
   }
 
   return (
-    <Card className="w-[600px]">
-      <CardHeader>
-        <p className="text-2xl font-semibold text-center">⚙️ Innstillinger</p>
-      </CardHeader>
-      <CardContent>
-        <Form {...form}>
-          <form className="space-y-6" onSubmit={form.handleSubmit(onSubmit)}>
-            <div className="space-y-4">
-              <FormField
-                control={form.control}
-                name="name"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Navn</FormLabel>
-                    <FormControl>
-                      <Input {...field} placeholder="Ola Nordmann" />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-              {user?.isOAuth === false && (
-                <>
+    <div className="min-h-screen bg-gray-100 flex justify-center items-start py-1"> {/* Redusert padding for å plassere innhold nærmere toppen */}
+      <div className="w-full max-w-4xl p-4">
+        <Card className="w-full">
+          <CardHeader>
+            <p className="text-2xl font-semibold text-center">⚙️ Innstillinger</p>
+          </CardHeader>
+          <CardContent>
+            <Form {...form}>
+              <form className="space-y-6" onSubmit={form.handleSubmit(onSubmit)}>
+                <div className="space-y-4">
                   <FormField
                     control={form.control}
-                    name="email"
+                    name="name"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel>E-post</FormLabel>
+                        <FormLabel>Navn</FormLabel>
                         <FormControl>
-                          <Input {...field} placeholder="ola.nordmann@eksempel.no" />
+                          <Input {...field} placeholder="Ola Nordmann" />
                         </FormControl>
                         <FormMessage />
                       </FormItem>
                     )}
                   />
-                  <FormField
-                    control={form.control}
-                    name="password"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>Gjeldende passord</FormLabel>
-                        <FormControl>
-                          <Input {...field} placeholder="******" type="password" />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-                  <FormField
-                    control={form.control}
-                    name="newPassword"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>Nytt passord</FormLabel>
-                        <FormControl>
-                          <Input {...field} placeholder="******" type="password" />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-                </>
-              )}
-              <FormField
-                control={form.control}
-                name="role"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Rolle</FormLabel>
-                    <Select onValueChange={field.onChange} defaultValue={field.value}>
-                      <FormControl>
-                        <SelectTrigger>
-                          <SelectValue placeholder="Velg en rolle" />
-                        </SelectTrigger>
-                      </FormControl>
-                      <SelectContent>
-                        <SelectItem value={UserRole.ADMIN}>Administrator</SelectItem>
-                        <SelectItem value={UserRole.USER}>Bruker</SelectItem>
-                        <SelectItem value={UserRole.CLUB_LEADER}>Klubbleder</SelectItem>
-                      </SelectContent>
-                    </Select>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-              {user?.isOAuth === false && (
-                <FormField
-                  control={form.control}
-                  name="isTwoFactorEnabled"
-                  render={({ field }) => (
-                    <FormItem className="flex flex-row items-center justify-between rounded-lg border p-3 shadow-sm">
-                      <div className="space-y-0.5">
-                        <FormLabel>Tofaktor-autentisering</FormLabel>
-                        <FormDescription>
-                          Aktiver tofaktor-autentisering for kontoen din.
-                        </FormDescription>
-                      </div>
-                      <FormControl>
-                        <Switch
-                          checked={field.value}
-                          onCheckedChange={field.onChange}
-                        />
-                      </FormControl>
-                    </FormItem>
+                  {user?.isOAuth === false && (
+                    <>
+                      <FormField
+                        control={form.control}
+                        name="email"
+                        render={({ field }) => (
+                          <FormItem>
+                            <FormLabel>E-post</FormLabel>
+                            <FormControl>
+                              <Input {...field} placeholder="ola.nordmann@eksempel.no" />
+                            </FormControl>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
+                      <FormField
+                        control={form.control}
+                        name="password"
+                        render={({ field }) => (
+                          <FormItem>
+                            <FormLabel>Gjeldende passord</FormLabel>
+                            <FormControl>
+                              <Input {...field} placeholder="******" type="password" />
+                            </FormControl>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
+                      <FormField
+                        control={form.control}
+                        name="newPassword"
+                        render={({ field }) => (
+                          <FormItem>
+                            <FormLabel>Nytt passord</FormLabel>
+                            <FormControl>
+                              <Input {...field} placeholder="******" type="password" />
+                            </FormControl>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
+                    </>
                   )}
-                />
-              )}
-            </div>
-            <FormError message={error} />
-            <FormSuccess message={success} />
-            <Button type="submit">Lagre</Button>
-          </form>
-          <div className="mt-6">
-            <Button
-              variant="destructive"
-              onClick={handleDeleteUser}
-              disabled={isDeleting}
-              className="bg-red-500 hover:bg-red-600 text-white"
-            >
-              {isDeleting ? "Sletter..." : "Slett min konto"}
-            </Button>
-          </div>
-        </Form>
-      </CardContent>
-    </Card>
+                  <FormField
+                    control={form.control}
+                    name="role"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Rolle</FormLabel>
+                        <Select onValueChange={field.onChange} defaultValue={field.value}>
+                          <FormControl>
+                            <SelectTrigger>
+                              <SelectValue placeholder="Velg en rolle" />
+                            </SelectTrigger>
+                          </FormControl>
+                          <SelectContent>
+                            <SelectItem value={UserRole.ADMIN}>Administrator</SelectItem>
+                            <SelectItem value={UserRole.USER}>Bruker</SelectItem>
+                            <SelectItem value={UserRole.CLUB_LEADER}>Klubbleder</SelectItem>
+                          </SelectContent>
+                        </Select>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                  {user?.isOAuth === false && (
+                    <FormField
+                      control={form.control}
+                      name="isTwoFactorEnabled"
+                      render={({ field }) => (
+                        <FormItem className="flex flex-row items-center justify-between rounded-lg border p-3 shadow-sm">
+                          <div className="space-y-0.5">
+                            <FormLabel>Tofaktor-autentisering</FormLabel>
+                            <FormDescription>
+                              Aktiver tofaktor-autentisering for kontoen din.
+                            </FormDescription>
+                          </div>
+                          <FormControl>
+                            <Switch
+                              checked={field.value}
+                              onCheckedChange={field.onChange}
+                            />
+                          </FormControl>
+                        </FormItem>
+                      )}
+                    />
+                  )}
+                </div>
+                <FormError message={error} />
+                <FormSuccess message={success} />
+                <Button type="submit">Lagre</Button>
+              </form>
+              <div className="mt-6">
+                <Button
+                  variant="destructive"
+                  onClick={handleDeleteUser}
+                  disabled={isDeleting}
+                  className="bg-red-500 hover:bg-red-600 text-white"
+                >
+                  {isDeleting ? "Sletter..." : "Slett min konto"}
+                </Button>
+              </div>
+            </Form>
+          </CardContent>
+        </Card>
+      </div>
+    </div>
   );
 };
 

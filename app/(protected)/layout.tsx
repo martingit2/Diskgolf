@@ -1,11 +1,9 @@
-/** 
- * 
+/**
  * Filnavn: ProtectedLayout.tsx
  * Beskrivelse: Layout-komponent som brukes til beskyttede sider, 
- * med navigasjonslinje og sentrert innhold.
+ * med navigasjonslinje og et bredere innholdsområde.
  * Utvikler: Martin Pettersen
  */
-
 
 import { Navbar } from "./_components/navbar";
 
@@ -15,7 +13,7 @@ interface ProtectedLayoutProps {
 
 /**
  * ProtectedLayout-komponenten gir en grunnstruktur for beskyttede sider i applikasjonen.
- * Inkluderer navigasjonsmeny (Navbar) og plasserer innholdet sentrert på skjermen.
+ * Inkluderer navigasjonsmeny (Navbar) og gir innholdet mer plass i bredden.
  * 
  * @component
  * @param {ProtectedLayoutProps} children - Innholdet som skal vises innenfor layouten.
@@ -23,9 +21,9 @@ interface ProtectedLayoutProps {
  */
 const ProtectedLayout = ({ children }: ProtectedLayoutProps) => {
   return (
-    <div className="min-h-screen w-full flex flex-col items-center bg-gray-100">
+    <div className="min-h-screen w-full flex flex-col bg-gray-100">
       <Navbar />
-      <main className="w-full flex flex-col items-center mt-4 lg:mt-2">
+      <main className="w-full max-w-7xl mx-auto px-6 md:px-12 mt-4 lg:mt-2">
         {children}
       </main>
     </div>
