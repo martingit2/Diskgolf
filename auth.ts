@@ -1,10 +1,9 @@
-/** 
+/**
  * Filnavn: auth.ts
  * Beskrivelse: NextAuth-konfigurasjon for autentisering i DiskGolf-applikasjonen. 
  * Håndterer innlogging via OAuth og credentials, samt tofaktorautentisering.
  * Utvikler: Martin Pettersen
  */
-
 
 import NextAuth, { type AuthOptions } from "next-auth";
 import { PrismaAdapter } from "@auth/prisma-adapter";
@@ -79,11 +78,13 @@ export const authOptions: AuthOptions = {
     async session({ token, session }) {
       if (token.sub && session.user) {
         session.user.id = token.sub;
-        session.user.role = token.role as UserRole;
+        session.user.role = token.role as UserRole || "USER"; // 🎯 Fallback til "USER" hvis `role` er undefined
         session.user.isTwoFactorEnable = token.isTwoFactorEnable as boolean;
         session.user.name = token.name || "Ukjent navn";
         session.user.email = token.email || "Ukjent e-post";
         session.user.isOAuth = token.isOAuth as boolean;
+
+        console.log("🔍 Session returnerer:", session); // Debugging
       }
       return session;
     },
@@ -104,9 +105,10 @@ export const authOptions: AuthOptions = {
         token.isOAuth = !!existingAccount;
         token.name = existingUser.name;
         token.email = existingUser.email;
-        token.role = existingUser.role as UserRole;
+        token.role = existingUser.role as UserRole || "USER"; // 🎯 Sørger for at `role` alltid er satt
         token.isTwoFactorEnable = existingUser.isTwoFactorEnable;
 
+        console.log("🔍 JWT returnerer token:", token); // Debugging
         return token;
       } catch (error) {
         console.error("Feil i JWT callback:", error);
@@ -123,6 +125,7 @@ export default NextAuth(authOptions);
 export const auth = async () => {
   try {
     const session = await getServerSession(authOptions);
+    console.log("🔍 Server-session:", session); // Debugging
     return session || null;
   } catch (error) {
     console.error("Feil ved henting av server-sesjon:", error);
