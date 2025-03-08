@@ -1,5 +1,7 @@
 import { PrismaClient } from "@prisma/client";
 import { NextResponse } from "next/server";
+import { writeFile } from "fs/promises";
+import path from "path";
 
 const prisma = new PrismaClient();
 
@@ -69,7 +71,9 @@ export async function POST(req: Request) {
     // ✅ Sjekker om bilde eksisterer og lagrer riktig URL
     let imageUrl: string | null = null;
     if (image) {
-      imageUrl = `/courses/${image.name}`;  // ✅ Riktig URL
+      const filePath = path.join(process.cwd(), "public/uploads", image.name);
+      await writeFile(filePath, Buffer.from(await image.arrayBuffer())); // Lagrer bildet på serveren
+      imageUrl = `/uploads/${image.name}`; // Lager en offentlig URL til bildet
     }
 
     // ✅ Lagre til databasen

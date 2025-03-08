@@ -1,9 +1,3 @@
-/**
- * Filnavn: Navbar.tsx
- * Beskrivelse: Navigasjonskomponent med lenker til ulike sider og brukerknapp.
- * Utvikler: Martin Pettersen
- */
-
 "use client";
 
 import Link from "next/link";
@@ -24,6 +18,7 @@ export const Navbar = () => {
 
   // Hent brukerrolle eller vis "Gjest" om ikke innlogget
   const userRole = session?.user?.role || "Gjest";
+  const userName = session?.user?.name || "Bruker";
 
   // Sjekk om brukeren er ADMIN eller CLUB_LEADER
   const isAdminOrClubLeader = userRole === "ADMIN" || userRole === "CLUB_LEADER";
@@ -35,7 +30,7 @@ export const Navbar = () => {
       <div className="flex justify-between items-center w-full mb-3 relative">
         {/* Midtstilt tekst */}
         <p className="text-sm font-semibold text-gray-700 absolute left-1/2 transform -translate-x-1/2">
-          Hei! Du er innlogget som <span className="text-green-600">{userRole}</span>
+          Hei! <span className="text-blue-700">{userName}</span> du er logget inn som <span className="text-green-600">{userRole}</span>
         </p>
 
         {/* Brukerknapp til høyre */}
@@ -61,17 +56,21 @@ export const Navbar = () => {
         <Button asChild variant={pathname === "/stats" ? "default" : "outline"}>
           <Link href="/stats">Statistikk</Link>
         </Button>
+         {/* Klubbinnstillinger-knapp vises alltid */}
+         <Button asChild variant={pathname === "/club-settings" ? "default" : "outline"}>
+            <Link href="/club-settings">Klubbinnstillinger</Link>
+          </Button>
       </div>
 
-      {/* Admin-seksjon: Vises kun for ADMIN eller CLUB_LEADER */}
+      {/* Admin-seksjon: Bane-knapper vises kun for ADMIN eller CLUB_LEADER */}
       {isAdminOrClubLeader && (
-        <div className="mt-3 w-full flex justify-center">
+        <div className="mt-3 w-full flex justify-center gap-2">
+          {/* Bane-knapp */}
           <Button asChild variant={pathname === "/map" ? "default" : "outline"}>
             <Link href="/map">Bane</Link>
           </Button>
         </div>
       )}
-
     </nav>
   );
 };

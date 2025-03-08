@@ -9,7 +9,7 @@
 import React from 'react';
 import Image from 'next/image';
 
-function page() {
+function news() {
   const newsItems = [
     {
       title: "Vi er snart i App-store og Google Play!",
@@ -84,4 +84,4 @@ function page() {
   )
 }
 
-export default page
+export default news;

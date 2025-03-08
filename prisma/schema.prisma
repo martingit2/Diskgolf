@@ -28,41 +28,51 @@ enum TournamentType {
 
 model User {
   id              String    @id @default(uuid()) // Unik identifikator
-  name            String? // Brukerens fulle navn
-  email           String?   @unique // E-postadresse, må være unik
+  name            String?  // Brukerens fulle navn
+  email           String?  @unique // E-postadresse
   emailVerified   DateTime? // Når e-posten ble verifisert
-  image           String? // URL til profilbilde
-  hashedPassword  String? // Kryptert passord
-  createdAt       DateTime  @default(now()) // Tidsstempel for opprettelse
-  updatedAt       DateTime  @updatedAt // Automatisk oppdatert tidsstempel
+  image           String?  // URL til profilbilde
+  hashedPassword  String?  // Kryptert passord
+  createdAt       DateTime @default(now()) // Tidsstempel for opprettelse
+  updatedAt       DateTime @updatedAt // Automatisk oppdatert tidsstempel
   favoriteCourses String[] // Liste over ID-er til favorittbaner
-  role            UserRole  @default(USER)
+  role            UserRole @default(USER) // Brukerens rolle (admin, user, etc.)
+
+  clubs           Club[]  @relation("ClubAdmins") // Relasjon til klubbene som brukeren er admin for
 
   accounts Account[]
   rounds   Round[]
   reviews  Review[]
 
-  clubId String?
-  club   Club?   @relation("ClubToUsers", fields: [clubId], references: [id]) // Relasjon til Club
-  tournaments Tournament[] @relation("TournamentParticipants") // Relasjon til Tournament
-
   isTwoFactorEnable     Boolean                @default(false)
   twoFactorConfirmation TwoFactorConfirmation?
+  tournaments     Tournament[] @relation("TournamentParticipants") // Relasjon til Tournament
 }
 
 model Club {
   id          String   @id @default(uuid()) // Unik identifikator
   name        String   @unique
-  location    String
-  description String?
-  established DateTime @default(now())
+  location    String   // Tidligere "sted" som vi nå har lagt til i frontend og Zod
+  description String?  // Beskrivelse av klubben
+  email       String?  // E-postadresse for klubben
+  logoUrl     String?  // Logo URL for klubben
+  imageUrl    String?  // Bilde URL for klubben (valgfritt)
+  isActive    Boolean  @default(true) // Aktivitetstilstand for klubben
+  established DateTime @default(now()) // Datoen klubben ble opprettet
 
-  users   User[]   @relation("ClubToUsers") // Relasjon til User
-  courses Course[] @relation("ClubToCourses") // Relasjon til Course
+  // Nye felter
+  address     String?  // Klubbens adresse (valgfritt)
+  phone       String?  // Klubbens telefonnummer (valgfritt)
+  website     String?  // Klubbens nettside (valgfritt)
+  postalCode  String?  // Postnummer (valgfritt)
 
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  admins      User[]   @relation("ClubAdmins") // Relasjon til brukere som er admins for klubben
+  courses     Course[] @relation("ClubToCourses") // Relasjon til klubbens baner
+
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
 }
+
 
 model Course {
   id          String   @id @default(uuid())
