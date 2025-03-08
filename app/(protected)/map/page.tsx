@@ -1,30 +1,28 @@
 "use client";
 
 import { useSession } from "next-auth/react";
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import dynamic from "next/dynamic";
 import { toast, Toaster } from "react-hot-toast";
+import { Card, CardHeader, CardContent } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 
-// Dynamisk import for kart (unngår SSR-feil)
-const MapAdminComponent = dynamic(() => import("@/components/MapAdminComponentNoSSR"), { ssr: false });
+const MapAdminComponent = dynamic(
+  () => import("@/components/MapAdminComponentNoSSR"),
+  { ssr: false }
+);
 
 const AdminDashboard = () => {
   const { data: session, status } = useSession();
   const [selectedType, setSelectedType] = useState<"bane" | "start" | "kurv" | "mål" | null>(null);
+  const [distanceMeasurements, setDistanceMeasurements] = useState<string[]>([]);
   const [image, setImage] = useState<File | null>(null);
-  const [imageUrl, setImageUrl] = useState<string>("");
-  const [courses, setCourses] = useState<{ id: string; name: string; location: string; image: string }[]>([]);
-
-  // ✅ State for start, slutt og kurver
-  const [startLatitude, setStartLatitude] = useState<number | null>(null);
-  const [startLongitude, setStartLongitude] = useState<number | null>(null);
-  const [goalLatitude, setGoalLatitude] = useState<number | null>(null);
-  const [goalLongitude, setGoalLongitude] = useState<number | null>(null);
+  const [difficulty, setDifficulty] = useState<string>("Ukjent");
   const [holes, setHoles] = useState<{ latitude: number; longitude: number; number: number; par: number }[]>([]);
-
-  useEffect(() => {
-    fetchCourses();
-  }, []);
+  const [kurvLabel, setKurvLabel] = useState<string>("Kurv 1");
 
   if (status === "loading") {
     return <p>Laster inn...</p>;
@@ -34,151 +32,154 @@ const AdminDashboard = () => {
     return <p>Du har ikke tilgang til denne siden.</p>;
   }
 
-  // 📥 Hent alle baner fra API
-  const fetchCourses = async () => {
-    try {
-      const response = await fetch("/api/courses");
-      if (response.ok) {
-        const data = await response.json();
-        setCourses(data);
-      } else {
-        toast.error("Kunne ikke hente baner.");
-      }
-    } catch (error) {
-      console.error("Feil ved henting av baner:", error);
-      toast.error("Feil ved henting av baner.");
+  const handleImageUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
+    if (event.target.files && event.target.files[0]) {
+      setImage(event.target.files[0]);
     }
   };
 
-  // 📤 Lagre bane
   const handleSaveCourse = async () => {
-    const nameField = document.getElementById("courseName") as HTMLInputElement;
-    const locationField = document.getElementById("courseLocation") as HTMLInputElement;
-    const latField = document.getElementById("courseLat") as HTMLInputElement;
-    const lngField = document.getElementById("courseLng") as HTMLInputElement;
-    const parField = document.getElementById("coursePar") as HTMLInputElement;
-    const descriptionField = document.getElementById("courseDescription") as HTMLInputElement;
+    const name = (document.getElementById("courseName") as HTMLInputElement).value;
+    const location = (document.getElementById("courseLocation") as HTMLInputElement).value;
+    const latitude = parseFloat((document.getElementById("courseLat") as HTMLInputElement).value);
+    const longitude = parseFloat((document.getElementById("courseLng") as HTMLInputElement).value);
+    const par = parseInt((document.getElementById("coursePar") as HTMLInputElement).value, 10);
+    const description = (document.getElementById("courseDescription") as HTMLInputElement).value;
 
-    if (!nameField.value || !locationField.value || !latField.value || !lngField.value) {
-      toast.error("⚠️ Fyll ut alle feltene før du lagrer.");
+    if (!name || !location || isNaN(latitude) || isNaN(longitude) || isNaN(par) || !difficulty) {
+      toast.error("Vennligst fyll ut alle feltene!");
       return;
     }
 
-    const newCourse = {
-      name: nameField.value,
-      location: locationField.value,
-      latitude: parseFloat(latField.value),
-      longitude: parseFloat(lngField.value),
-      par: parField.value ? parseInt(parField.value) : 3, // ✅ Standardverdi 3 hvis tomt
-      description: descriptionField.value || null,
-      image: image ? URL.createObjectURL(image) : imageUrl,
-      startLatitude,
-      startLongitude,
-      goalLatitude,
-      goalLongitude,
-      holes,
-    };
+    const formData = new FormData();
+    formData.append("name", name);
+    formData.append("location", location);
+    formData.append("latitude", latitude.toString());
+    formData.append("longitude", longitude.toString());
+    formData.append("par", par.toString());
+    formData.append("description", description);
+    formData.append("difficulty", difficulty);
+    if (image) {
+      formData.append("image", image);
+    }
+
+    formData.append(
+      "holes",
+      JSON.stringify(
+        holes.map((hole) => ({
+          latitude: hole.latitude,
+          longitude: hole.longitude,
+          number: hole.number,
+          par: 3,
+        }))
+      )
+    );
 
     try {
       const response = await fetch("/api/courses", {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(newCourse),
+        body: formData,
       });
 
       if (response.ok) {
-        toast.success("✅ Banen ble lagret!");
-        fetchCourses();
-        nameField.value = "";
-        locationField.value = "";
-        latField.value = "";
-        lngField.value = "";
-        parField.value = "";
-        descriptionField.value = "";
-        setImage(null);
-        setImageUrl("");
-        setStartLatitude(null);
-        setStartLongitude(null);
-        setGoalLatitude(null);
-        setGoalLongitude(null);
-        setHoles([]);
+        toast.success("Bane lagret!");
       } else {
-        toast.error("❌ Feil ved lagring av bane.");
+        toast.error("Kunne ikke lagre bane.");
       }
     } catch (error) {
-      console.error("❌ Noe gikk galt. Prøv igjen.", error);
-      toast.error("❌ Noe gikk galt. Prøv igjen.");
+      console.error("Feil ved lagring av bane:", error);
+      toast.error("Feil ved lagring av bane.");
     }
   };
 
   return (
-    <div style={{ padding: "20px", display: "flex", flexDirection: "column", alignItems: "center" }}>
-      <h1>Admin Dashboard</h1>
-      <p>Klikk på kartet for å legge til en ny bane.</p>
+    <div className="p-6 flex flex-col items-center">
+      <h1 className="text-4xl font-bold text-gray-900">Admin Dashboard</h1>
 
-      <div style={{ display: "flex", gap: "20px", marginTop: "20px" }}>
-        {/* 📌 Velg markør */}
-        <div style={{ display: "flex", flexDirection: "column", gap: "10px" }}>
-          <h4>Velg markørtype:</h4>
-          {["bane", "start", "kurv", "mål"].map((type) => (
-            <button
-              key={type}
-              style={{
-                padding: "10px",
-                borderRadius: "5px",
-                border: "none",
-                cursor: "pointer",
-                backgroundColor: selectedType === type ? "#4CAF50" : "#ddd",
-                color: "black",
-              }}
-              onClick={() => setSelectedType(type as "bane" | "start" | "kurv" | "mål")}
-            >
-              {type.charAt(0).toUpperCase() + type.slice(1)}
-            </button>
-          ))}
+      <div className="flex gap-6 mt-6 w-full max-w-7xl">
+        <Card className="w-60">
+          <CardHeader>
+            <h4 className="text-lg font-semibold">Velg markørtype</h4>
+          </CardHeader>
+          <CardContent className="space-y-3">
+            {["bane", "start", "kurv", "mål"].map((type) => (
+              <Button
+                key={type}
+                variant={selectedType === type ? "default" : "outline"}
+                onClick={() => setSelectedType(type as "bane" | "start" | "kurv" | "mål")}
+              >
+                {type === "kurv" ? kurvLabel : type.charAt(0).toUpperCase() + type.slice(1)}
+              </Button>
+            ))}
+          </CardContent>
+          <CardContent className="mt-4">
+            <h4 className="text-lg font-semibold">Avstandsmålinger</h4>
+            <div className="bg-gray-100 p-3 rounded-md text-sm">
+              {distanceMeasurements.length > 0 ? (
+                distanceMeasurements.map((d, i) => <p key={i}>{d}</p>)
+              ) : (
+                <p>Ingen avstander beregnet ennå</p>
+              )}
+            </div>
+          </CardContent>
+        </Card>
+
+        <div className="flex-1 min-w-[600px] h-[500px] bg-gray-200 rounded-lg">
+          <MapAdminComponent
+            selectedType={selectedType}
+            setDistanceMeasurements={setDistanceMeasurements}
+            setHoles={setHoles}
+            setKurvLabel={setKurvLabel}
+          />
         </div>
 
-        {/* 🗺️ Kart */}
-        <div style={{ flex: "1", minWidth: "600px", height: "600px" }}>
-          <MapAdminComponent selectedType={selectedType} />
-        </div>
+        <Card className="w-80">
+          <CardHeader>
+            <h3 className="text-xl font-semibold">Legg til en ny bane</h3>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            <label className="block font-medium">Navn på bane:</label>
+            <Input type="text" id="courseName" />
 
-        {/* 📋 Skjema */}
-        <div style={{
-          width: "350px",
-          padding: "20px",
-          background: "#f9f9f9",
-          borderRadius: "10px",
-          boxShadow: "0px 4px 6px rgba(0, 0, 0, 0.1)",
-          display: "flex",
-          flexDirection: "column",
-          gap: "10px",
-        }}>
-          <h3>Legg til en ny bane</h3>
-          <input type="text" placeholder="Navn på bane" id="courseName" style={inputStyle} />
-          <input type="text" placeholder="Sted" id="courseLocation" style={inputStyle} />
-          <input type="number" placeholder="Latitude" id="courseLat" style={inputStyle} />
-          <input type="number" placeholder="Longitude" id="courseLng" style={inputStyle} />
-          <input type="number" placeholder="Par (standard 3)" id="coursePar" style={inputStyle} defaultValue={3} />
+            <label className="block font-medium">Sted:</label>
+            <Input type="text" id="courseLocation" />
 
-          <textarea placeholder="Beskrivelse" id="courseDescription" style={inputStyle} />
+            <label className="block font-medium">Latitude:</label>
+            <Input type="number" id="courseLat" />
 
-          {/* 📷 Bildevalg */}
-          <select onChange={(e) => setImageUrl(e.target.value)} style={inputStyle}>
-            <option value="">Velg et bilde...</option>
-            <option value="/images/bane1.jpg">Bane 1</option>
-          </select>
+            <label className="block font-medium">Longitude:</label>
+            <Input type="number" id="courseLng" />
 
-          <button onClick={handleSaveCourse} style={buttonStyle}>Legg til bane</button>
-        </div>
+            <label className="block font-medium">Par (min. 1):</label>
+            <Input type="number" id="coursePar" min={1} defaultValue={3} />
+
+            <label className="block font-medium">Beskrivelse:</label>
+            <Textarea id="courseDescription" />
+
+            <label className="block font-medium">Vanskelighetsgrad:</label>
+            <Select onValueChange={setDifficulty}>
+              <SelectTrigger>
+                <SelectValue placeholder="Velg vanskelighetsgrad" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="Lett">Lett</SelectItem>
+                <SelectItem value="Middels">Middels</SelectItem>
+                <SelectItem value="Vanskelig">Vanskelig</SelectItem>
+              </SelectContent>
+            </Select>
+
+            <label className="block font-medium">Last opp bilde:</label>
+            <Input type="file" accept="image/*" onChange={handleImageUpload} />
+
+            <Button className="w-full bg-green-600 text-white" onClick={handleSaveCourse}>
+              Legg til bane
+            </Button>
+          </CardContent>
+        </Card>
       </div>
-
       <Toaster />
     </div>
   );
 };
-
-const inputStyle = { width: "100%", padding: "10px", marginBottom: "10px", borderRadius: "5px" };
-const buttonStyle = { width: "100%", background: "#4CAF50", color: "white", padding: "12px", borderRadius: "5px", cursor: "pointer", fontSize: "16px" };
 
 export default AdminDashboard;

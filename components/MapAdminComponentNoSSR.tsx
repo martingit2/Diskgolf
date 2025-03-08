@@ -1,13 +1,13 @@
 "use client";
 
 import L from "leaflet";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { MapContainer, Marker, TileLayer, Popup, useMapEvent } from "react-leaflet";
 import "leaflet/dist/leaflet.css";
 import "leaflet.awesome-markers/dist/leaflet.awesome-markers.css";
 import "leaflet.awesome-markers";
 
-// ✅ Ikonfunksjon for markører
+// ✅ Oppretter ikon for markører
 const createIcon = (iconName: string, markerColor: "blue" | "red" | "green" | "orange" | "cadetblue") => {
   return L.AwesomeMarkers.icon({
     icon: iconName,
@@ -28,7 +28,9 @@ interface CourseMarker {
   latitude: number;
   longitude: number;
   type: MarkerType;
+  number?: number;
   location?: string;
+  par: number;
 }
 
 // ✅ Fargemapping for markører
@@ -79,9 +81,18 @@ const calculateDistance = (lat1: number, lon1: number, lat2: number, lon2: numbe
 };
 
 // ✨ Hovedkomponenten
-const MapAdminComponentNoSSR = ({ selectedType }: { selectedType: MarkerType | null }) => {
+const MapAdminComponentNoSSR = ({
+  selectedType,
+  setDistanceMeasurements,
+  setHoles,
+  setKurvLabel,
+}: {
+  selectedType: MarkerType | null;
+  setDistanceMeasurements: (distances: string[]) => void;
+  setHoles: (holes: { latitude: number; longitude: number; number: number; par: number }[]) => void;
+  setKurvLabel: (label: string) => void;
+}) => {
   const [markers, setMarkers] = useState<CourseMarker[]>([]);
-  const [distanceText, setDistanceText] = useState<string[]>([]);
 
   // 📌 Legg til en ny markør ved klikk på kartet
   const handleMapClick = async (e: L.LeafletMouseEvent) => {
@@ -91,44 +102,79 @@ const MapAdminComponentNoSSR = ({ selectedType }: { selectedType: MarkerType | n
     }
 
     const { lat, lng } = e.latlng;
+    let newMarker: CourseMarker;
 
-    let locationData = { city: "", county: "" };
+    if (selectedType === "kurv") {
+      const existingKurver = markers.filter(m => m.type === "kurv");
+      const kurvNumber = existingKurver.length + 1;
 
-    // 🔄 Hent sted og fylke hvis markørtypen er "bane"
-    if (selectedType === "bane") {
-      locationData = await fetchLocationData(lat, lng);
+      newMarker = {
+        id: Math.random().toString(),
+        name: `Kurv ${kurvNumber}`,
+        latitude: lat,
+        longitude: lng,
+        type: "kurv",
+        number: kurvNumber,
+        par: 3,
+      };
 
-      // ✅ Automatisk oppdatere input-feltene KUN for bane
+      setKurvLabel(`Kurv ${kurvNumber + 1}`);
+    } else if (selectedType === "mål") {
+      newMarker = {
+        id: Math.random().toString(),
+        name: "Mål",
+        latitude: lat,
+        longitude: lng,
+        type: "mål",
+        par: 3,
+      };
+    } else if (selectedType === "bane") {
+      const locationData = await fetchLocationData(lat, lng);
+      const location = `${locationData.city}, ${locationData.county}`;
+
       const locationField = document.getElementById("courseLocation") as HTMLInputElement;
       const latField = document.getElementById("courseLat") as HTMLInputElement;
       const lngField = document.getElementById("courseLng") as HTMLInputElement;
 
-      if (locationField) locationField.value = `${locationData.city}, ${locationData.county}`;
+      if (locationField) locationField.value = location;
       if (latField) latField.value = lat.toFixed(6);
       if (lngField) lngField.value = lng.toFixed(6);
+
+      newMarker = {
+        id: Math.random().toString(),
+        name: "Bane",
+        latitude: lat,
+        longitude: lng,
+        type: "bane",
+        location,
+        par: 3,
+      };
+    } else {
+      newMarker = {
+        id: Math.random().toString(),
+        name: selectedType.charAt(0).toUpperCase() + selectedType.slice(1),
+        latitude: lat,
+        longitude: lng,
+        type: selectedType,
+        par: 3,
+      };
     }
 
-    const newMarker: CourseMarker = {
-      id: Math.random().toString(),
-      name: selectedType.charAt(0).toUpperCase() + selectedType.slice(1),
-      latitude: lat,
-      longitude: lng,
-      type: selectedType,
-      location: selectedType === "bane" ? `${locationData.city}, ${locationData.county}` : "",
-    };
+    const updatedMarkers = [...markers, newMarker];
+    setMarkers(updatedMarkers);
+    updateDistances(updatedMarkers);
 
-    setMarkers((prev) => [...prev, newMarker]);
-
-    // 🔄 Oppdater distanser
-    updateDistances([...markers, newMarker]);
-  };
-
-  // 🗑️ Slett markør ved klikk
-  const handleMarkerClick = (id: string) => {
-    if (window.confirm("Er du sikker på at du vil slette denne markøren?")) {
-      setMarkers((prev) => prev.filter(marker => marker.id !== id));
-      updateDistances(markers.filter(marker => marker.id !== id));
-    }
+    setHoles(
+      updatedMarkers
+        .filter(m => m.type === "kurv")
+        .map((kurv, index) => ({
+          latitude: kurv.latitude,
+          longitude: kurv.longitude,
+          number: index + 1,  // 🔥 Sikrer at number ALDRI er undefined
+          par: kurv.par || 3,  // 🔥 Sikrer at par ALDRI er undefined
+        }))
+    );
+    
   };
 
   // 🔍 Oppdater avstander mellom markører
@@ -146,49 +192,24 @@ const MapAdminComponentNoSSR = ({ selectedType }: { selectedType: MarkerType | n
       distances.push(`Fra ${updatedMarkers[i].name} til ${updatedMarkers[i + 1].name}: ${distance.toFixed(2)} km`);
     }
 
-    setDistanceText(distances);
+    setDistanceMeasurements(distances);
   };
 
   return (
-    <div style={{ display: "flex", alignItems: "flex-start" }}>
-      {/* 📌 Konsoll for avstandsmålinger under markørvalg */}
-      <div style={{
-        display: "flex",
-        flexDirection: "column",
-        alignItems: "center",
-        width: "250px",
-      }}>
-        <div style={{
-          width: "100%",
-          height: "200px",
-          overflowY: "auto",
-          backgroundColor: "#f9f9f9",
-          padding: "10px",
-          borderRadius: "10px",
-          textAlign: "left",
-          boxShadow: "0px 4px 6px rgba(0, 0, 0, 0.1)",
-          marginTop: "10px"
-        }}>
-          <strong>Avstandsmålinger:</strong>
-          <pre style={{ whiteSpace: "pre-line", fontSize: "12px", marginTop: "5px" }}>
-            {distanceText.length > 0 ? distanceText.join("\n") : "Ingen avstander beregnet ennå"}
-          </pre>
-        </div>
-      </div>
+    <MapContainer center={adminCenter} zoom={6} scrollWheelZoom style={{ height: "600px", width: "100%", borderRadius: "12px" }}>
+      <TileLayer url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" attribution='&copy; OpenStreetMap contributors' />
+      <MapClickHandler onMapClick={handleMapClick} />
 
-      {/* 🗺️ Kart */}
-      <MapContainer center={adminCenter} zoom={6} scrollWheelZoom style={{ height: "600px", width: "100%", borderRadius: "12px" }}>
-        <TileLayer url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" attribution='&copy; OpenStreetMap contributors' />
-        <MapClickHandler onMapClick={handleMapClick} />
-
-        {markers.map((marker) => (
-          <Marker key={marker.id} position={[marker.latitude, marker.longitude]} icon={createIcon("map-marker", markerColors[marker.type])}
-            eventHandlers={{ click: () => handleMarkerClick(marker.id) }}>
-            <Popup>{marker.name} - {marker.location || "Ukjent sted"}</Popup>
-          </Marker>
-        ))}
-      </MapContainer>
-    </div>
+      {markers.map(marker => (
+        <Marker
+          key={marker.id}
+          position={[marker.latitude, marker.longitude]}
+          icon={createIcon("map-marker", markerColors[marker.type])}
+        >
+          <Popup>{marker.name}</Popup>
+        </Marker>
+      ))}
+    </MapContainer>
   );
 };
 

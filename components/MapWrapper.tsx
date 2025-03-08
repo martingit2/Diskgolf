@@ -9,6 +9,11 @@ const DynamicMap = dynamic(() => import("./MapAdminComponentNoSSR"), { ssr: fals
 const MapAdminWrapper = () => {
   const [isClient, setIsClient] = useState(false);
   const [selectedType, setSelectedType] = useState<"bane" | "start" | "kurv" | "mål" | null>(null);
+  
+  // ✅ Add states for missing props
+  const [distanceMeasurements, setDistanceMeasurements] = useState<string[]>([]);
+  const [holes, setHoles] = useState<{ latitude: number; longitude: number; number: number; par: number; }[]>([]);
+  const [kurvLabel, setKurvLabel] = useState<string>("");
 
   useEffect(() => {
     setIsClient(true);
@@ -20,14 +25,12 @@ const MapAdminWrapper = () => {
 
   return (
     <div style={pageContainer}>
-      {/* ✅ Midtstilt tittel */}
       <div style={headerStyle}>
         <h1>Admin Dashboard</h1>
         <p>Klikk på kartet for å legge til en ny bane.</p>
       </div>
 
       <div style={contentContainer}>
-        {/* 📌 Valg for Bane, Start, Kurv, Sluttmål */}
         <div style={iconMenuStyle}>
           <h4>Velg markør</h4>
           {["bane", "start", "kurv", "mål"].map((type) => (
@@ -41,12 +44,16 @@ const MapAdminWrapper = () => {
           ))}
         </div>
 
-        {/* 🗺️ Kart til venstre */}
         <div style={mapContainerStyle}>
-          <DynamicMap selectedType={selectedType} />
+          {/* ✅ Pass all necessary props */}
+          <DynamicMap
+            selectedType={selectedType}
+            setDistanceMeasurements={setDistanceMeasurements}
+            setHoles={setHoles}
+            setKurvLabel={setKurvLabel}
+          />
         </div>
 
-        {/* 📋 Skjema til høyre */}
         <div style={formContainerStyle}>
           <h3>Legg til en ny bane</h3>
           <input type="text" placeholder="Navn på bane" id="courseName" style={inputStyle} />
@@ -54,8 +61,7 @@ const MapAdminWrapper = () => {
           <textarea placeholder="Beskrivelse" id="courseDescription" style={{ ...inputStyle, height: "80px" }} />
           <input type="number" placeholder="Latitude" id="courseLat" style={inputStyle} />
           <input type="number" placeholder="Longitude" id="courseLng" style={inputStyle} />
-          
-          {/* 📷 Bildevalg */}
+
           <select id="courseImage" style={inputStyle}>
             <option value="">Velg et bilde...</option>
             <option value="/images/bane1.jpg">Bane 1</option>
@@ -70,7 +76,7 @@ const MapAdminWrapper = () => {
   );
 };
 
-/* ✅ CSS-in-JS styling */
+/* ✅ CSS-in-JS styling (unchanged) */
 const pageContainer: CSSProperties = {
   padding: "20px",
   display: "flex",

@@ -47,13 +47,13 @@ export const publicRoutes = [
     "/turnering/ny",
     "/turnering",
     "/dashboard/user/stats",
+    "/map",
     "/weather",
     "/api/weather",
     "/api/courses",
     "/find-course",
     "/courses/[id]",
     "/courses",
-    "/map",
 ];
 
 /** 

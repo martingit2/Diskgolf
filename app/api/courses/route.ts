@@ -15,12 +15,11 @@ export async function GET() {
       },
     });
 
-    // ✅ Beregn gjennomsnittlig vurdering og antall anmeldelser
     const coursesWithRatings = courses.map(course => {
       const totalReviews = course.reviews.length;
       const averageRating =
         totalReviews > 0
-          ? course.reviews.reduce((sum: number, review: { rating: number }) => sum + review.rating, 0) / totalReviews
+          ? course.reviews.reduce((sum, review) => sum + review.rating, 0) / totalReviews
           : 0;
 
       return {
@@ -40,52 +39,62 @@ export async function GET() {
 // ✅ Lagrer en ny bane med startposisjon, kurver og sluttmål
 export async function POST(req: Request) {
   try {
-    const { 
-      name, 
-      location, 
-      latitude, 
-      longitude, 
-      description, 
-      par, 
-      image, 
-      difficulty, 
-      startLatitude, 
-      startLongitude, 
-      goalLatitude, 
-      goalLongitude, 
-      holes 
-    } = await req.json();
+    const formData = await req.formData();
 
-    if (!name || !location || !latitude || !longitude) {
+    const name = formData.get("name") as string;
+    const location = formData.get("location") as string;
+    const latitude = parseFloat(formData.get("latitude") as string);
+    const longitude = parseFloat(formData.get("longitude") as string);
+    const description = formData.get("description") as string | null;
+    const par = parseInt(formData.get("par") as string, 10);
+    let difficulty = formData.get("difficulty") as string;
+    const image = formData.get("image") as File | null;
+    const startLatitude = formData.get("startLatitude") ? parseFloat(formData.get("startLatitude") as string) : null;
+    const startLongitude = formData.get("startLongitude") ? parseFloat(formData.get("startLongitude") as string) : null;
+    const goalLatitude = formData.get("goalLatitude") ? parseFloat(formData.get("goalLatitude") as string) : null;
+    const goalLongitude = formData.get("goalLongitude") ? parseFloat(formData.get("goalLongitude") as string) : null;
+    const holes = formData.get("holes") ? JSON.parse(formData.get("holes") as string) : [];
+
+    // ✅ Sikrer at `difficulty` er gyldig
+    const validDifficulties = ["Lett", "Middels", "Vanskelig"];
+    if (!validDifficulties.includes(difficulty)) {
+      difficulty = "Ukjent"; // Setter standardverdi hvis ugyldig input
+    }
+
+    // ✅ Valider at essensielle felt er til stede
+    if (!name || !location || isNaN(latitude) || isNaN(longitude) || isNaN(par) || !difficulty) {
       return NextResponse.json({ error: "Manglende data" }, { status: 400 });
     }
 
+    // ✅ Sjekker om bilde eksisterer og lagrer riktig URL
+    let imageUrl: string | null = null;
+    if (image) {
+      imageUrl = `/courses/${image.name}`;  // ✅ Riktig URL
+    }
+
+    // ✅ Lagre til databasen
     const newCourse = await prisma.course.create({
       data: {
         name,
         location,
         latitude,
         longitude,
-        startLatitude: startLatitude || null, 
-        startLongitude: startLongitude || null,
-        goalLatitude: goalLatitude || null, 
-        goalLongitude: goalLongitude || null,
-        description: description || null, // ✅ Sikrer at den ikke er undefined
-        par: par ?? 3, // ✅ Standardverdi 3 hvis tomt
-        image: image || "", // ✅ Unngår null-feil
-        difficulty: difficulty || null,
-        ...(holes?.length
-          ? {
-              holes: {
-                create: holes.map((hole: { latitude: number; longitude: number; number: number; par: number }) => ({
-                  latitude: hole.latitude,
-                  longitude: hole.longitude,
-                  number: hole.number,
-                  par: hole.par,
-                })),
-              },
-            }
-          : {}), // ✅ Ikke legg til `holes` hvis ingen kurver er valgt
+        startLatitude,
+        startLongitude,
+        goalLatitude,
+        goalLongitude,
+        description,
+        par,
+        difficulty,
+        image: imageUrl,
+        holes: {
+          create: holes.map((hole: { latitude: number; longitude: number; number: number; par: number }) => ({
+            latitude: hole.latitude,
+            longitude: hole.longitude,
+            number: hole.number,
+            par: hole.par,
+          })),
+        },
       },
     });
 
