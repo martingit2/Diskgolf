@@ -47,6 +47,7 @@ const MapClickHandler = ({ onMapClick }: { onMapClick: (e: L.LeafletMouseEvent) 
   return null;
 };
 
+
 // 🌍 Hent sted og fylke basert på koordinater (kun for Bane)
 const fetchLocationData = async (lat: number, lng: number) => {
   try {
@@ -195,21 +196,59 @@ const MapAdminComponentNoSSR = ({
     setDistanceMeasurements(distances);
   };
 
+  // 🗑️ Slett markør ved klikk
+  const handleMarkerClick = (id: string) => {
+    if (window.confirm("Er du sikker på at du vil slette denne markøren?")) {
+      const updatedMarkers = markers.filter(marker => marker.id !== id);
+      setMarkers(updatedMarkers);
+
+      updateDistances(updatedMarkers);
+
+      setHoles(
+        updatedMarkers
+          .filter(m => m.type === "kurv")
+          .map((kurv, index) => ({
+            latitude: kurv.latitude,
+            longitude: kurv.longitude,
+            number: index + 1,
+            par: kurv.par || 3,
+          }))
+      );
+    }
+  };
+
   return (
+    <div className="flex flex-col items-center">
     <MapContainer center={adminCenter} zoom={6} scrollWheelZoom style={{ height: "600px", width: "100%", borderRadius: "12px" }}>
       <TileLayer url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" attribution='&copy; OpenStreetMap contributors' />
       <MapClickHandler onMapClick={handleMapClick} />
 
       {markers.map(marker => (
-        <Marker
-          key={marker.id}
-          position={[marker.latitude, marker.longitude]}
-          icon={createIcon("map-marker", markerColors[marker.type])}
-        >
-          <Popup>{marker.name}</Popup>
-        </Marker>
-      ))}
+  <Marker
+    key={marker.id}
+    position={[marker.latitude, marker.longitude]}
+    icon={createIcon("map-marker", markerColors[marker.type])}
+    eventHandlers={{ click: () => handleMarkerClick(marker.id) }} // 🔥 Nå kan markører slettes igjen!
+  >
+    <Popup>{marker.name} (Klikk for å slette)</Popup>
+  </Marker>
+))}
     </MapContainer>
+          {/* 📌 Info-tekst og reset-knapp */}
+          <p className="mt-4 text-gray-600 text-sm">Dobbeltklikk på markører for å slette dem.</p>
+          <button
+            className="mt-2 px-4 py-2 bg-red-500 text-white rounded hover:bg-red-700 transition"
+            onClick={() => {
+              setMarkers([]);
+              setHoles([]);
+              setKurvLabel("Kurv 1");
+            }}
+          >
+            Reset bane
+          </button>
+        </div>
+
+    
   );
 };
 
