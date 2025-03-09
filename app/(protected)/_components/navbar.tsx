@@ -22,7 +22,7 @@ export const Navbar = () => {
       {/* Øverste rad: Velkomstmelding (midtstilt) + Brukerknapp (høyre) */}
       <div className="flex justify-between items-center w-full mb-3 relative">
         <p className="text-sm font-semibold text-gray-700 absolute left-1/2 transform -translate-x-1/2">
-          Hei! <span className="text-blue-700">{userName}</span> du er logget inn som <span className="text-green-600">{userRole}</span>
+          Hei <span className="text-blue-700">{userName}</span>! Du er logget inn som <span className="text-green-600">{userRole}.</span>
         </p>
         <div className="ml-auto">
           <UserButton />
