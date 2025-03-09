@@ -1,8 +1,8 @@
 "use client";
 
 import L from "leaflet";
-import { useState, useEffect } from "react";
-import { MapContainer, Marker, TileLayer, Popup, useMapEvent } from "react-leaflet";
+import { useState } from "react";
+import { MapContainer, Marker, TileLayer, Popup, useMapEvent, Circle, Polygon } from "react-leaflet";
 import "leaflet/dist/leaflet.css";
 import "leaflet.awesome-markers/dist/leaflet.awesome-markers.css";
 import "leaflet.awesome-markers";
@@ -20,7 +20,7 @@ const createIcon = (iconName: string, markerColor: "blue" | "red" | "green" | "o
 const adminCenter: [number, number] = [59.9127, 10.7461];
 
 // 📌 Typing for markører
-type MarkerType = "bane" | "start" | "kurv" | "mål";
+type MarkerType = "bane" | "start" | "kurv" | "mål" | "ob"; // Legg til "ob"
 
 interface CourseMarker {
   id: string;
@@ -31,14 +31,16 @@ interface CourseMarker {
   number?: number;
   location?: string;
   par: number;
+  polygon?: [number, number][]; // Legg til polygon for OB-områder
 }
 
 // ✅ Fargemapping for markører
-const markerColors: Record<MarkerType, "blue" | "green" | "orange" | "red"> = {
+const markerColors: Record<MarkerType, "blue" | "red" | "green" | "orange" | "cadetblue"> = {
   bane: "blue",
   start: "green",
   kurv: "orange",
   mål: "red",
+  ob: "red", // Farge for OB-områder
 };
 
 // 🔄 Håndter klikk på kartet
@@ -46,7 +48,6 @@ const MapClickHandler = ({ onMapClick }: { onMapClick: (e: L.LeafletMouseEvent) 
   useMapEvent("click", onMapClick);
   return null;
 };
-
 
 // 🌍 Hent sted og fylke basert på koordinater (kun for Bane)
 const fetchLocationData = async (lat: number, lng: number) => {
@@ -94,8 +95,37 @@ const MapAdminComponentNoSSR = ({
   setKurvLabel: (label: string) => void;
 }) => {
   const [markers, setMarkers] = useState<CourseMarker[]>([]);
+  const [polygonPoints, setPolygonPoints] = useState<[number, number][]>([]); // Tilstand for polygonpunkter
+  const [editingPolygonId, setEditingPolygonId] = useState<string | null>(null); // Tilstand for redigering av polygon
 
-  // 📌 Legg til en ny markør ved klikk på kartet
+  // 🔍 Oppdater avstander mellom markører (inkludert OB-områder)
+  const updateDistances = (updatedMarkers: CourseMarker[]) => {
+    const distances: string[] = [];
+
+    // Sorter markører basert på type for å få en logisk rekkefølge
+    const sortedMarkers = updatedMarkers.sort((a, b) => {
+      const order = ["bane", "start", "kurv", "mål", "ob"];
+      return order.indexOf(a.type) - order.indexOf(b.type);
+    });
+
+    for (let i = 0; i < sortedMarkers.length - 1; i++) {
+      const fromMarker = sortedMarkers[i];
+      const toMarker = sortedMarkers[i + 1];
+
+      const distance = calculateDistance(
+        fromMarker.latitude,
+        fromMarker.longitude,
+        toMarker.latitude,
+        toMarker.longitude
+      );
+
+      distances.push(`Fra ${fromMarker.name} til ${toMarker.name}: ${distance.toFixed(2)} km`);
+    }
+
+    setDistanceMeasurements(distances);
+  };
+
+  // 📌 Legg til en ny markør eller polygonpunkt ved klikk på kartet
   const handleMapClick = async (e: L.LeafletMouseEvent) => {
     if (!selectedType) {
       alert("Velg en markørtype først!");
@@ -103,105 +133,72 @@ const MapAdminComponentNoSSR = ({
     }
 
     const { lat, lng } = e.latlng;
-    let newMarker: CourseMarker;
 
-    if (selectedType === "kurv") {
-      const existingKurver = markers.filter(m => m.type === "kurv");
-      const kurvNumber = existingKurver.length + 1;
-
-      newMarker = {
-        id: Math.random().toString(),
-        name: `Kurv ${kurvNumber}`,
-        latitude: lat,
-        longitude: lng,
-        type: "kurv",
-        number: kurvNumber,
-        par: 3,
-      };
-
-      setKurvLabel(`Kurv ${kurvNumber + 1}`);
-    } else if (selectedType === "mål") {
-      newMarker = {
-        id: Math.random().toString(),
-        name: "Mål",
-        latitude: lat,
-        longitude: lng,
-        type: "mål",
-        par: 3,
-      };
-    } else if (selectedType === "bane") {
-      const locationData = await fetchLocationData(lat, lng);
-      const location = `${locationData.city}, ${locationData.county}`;
-
-      const locationField = document.getElementById("courseLocation") as HTMLInputElement;
-      const latField = document.getElementById("courseLat") as HTMLInputElement;
-      const lngField = document.getElementById("courseLng") as HTMLInputElement;
-
-      if (locationField) locationField.value = location;
-      if (latField) latField.value = lat.toFixed(6);
-      if (lngField) lngField.value = lng.toFixed(6);
-
-      newMarker = {
-        id: Math.random().toString(),
-        name: "Bane",
-        latitude: lat,
-        longitude: lng,
-        type: "bane",
-        location,
-        par: 3,
-      };
+    if (selectedType === "ob") {
+      // Legg til punkt i polygon
+      setPolygonPoints([...polygonPoints, [lat, lng]]);
     } else {
-      newMarker = {
-        id: Math.random().toString(),
-        name: selectedType.charAt(0).toUpperCase() + selectedType.slice(1),
-        latitude: lat,
-        longitude: lng,
-        type: selectedType,
-        par: 3,
-      };
-    }
+      // Resten av logikken for andre markørtyper
+      let newMarker: CourseMarker;
 
-    const updatedMarkers = [...markers, newMarker];
-    setMarkers(updatedMarkers);
-    updateDistances(updatedMarkers);
+      if (selectedType === "kurv") {
+        const existingKurver = markers.filter(m => m.type === "kurv");
+        const kurvNumber = existingKurver.length + 1;
 
-    setHoles(
-      updatedMarkers
-        .filter(m => m.type === "kurv")
-        .map((kurv, index) => ({
-          latitude: kurv.latitude,
-          longitude: kurv.longitude,
-          number: index + 1,  // 🔥 Sikrer at number ALDRI er undefined
-          par: kurv.par || 3,  // 🔥 Sikrer at par ALDRI er undefined
-        }))
-    );
-    
-  };
+        newMarker = {
+          id: Math.random().toString(),
+          name: `Kurv ${kurvNumber}`,
+          latitude: lat,
+          longitude: lng,
+          type: "kurv",
+          number: kurvNumber,
+          par: 3,
+        };
 
-  // 🔍 Oppdater avstander mellom markører
-  const updateDistances = (updatedMarkers: CourseMarker[]) => {
-    const distances: string[] = [];
+        setKurvLabel(`Kurv ${kurvNumber + 1}`);
+      } else if (selectedType === "mål") {
+        newMarker = {
+          id: Math.random().toString(),
+          name: "Mål",
+          latitude: lat,
+          longitude: lng,
+          type: "mål",
+          par: 3,
+        };
+      } else if (selectedType === "bane") {
+        const locationData = await fetchLocationData(lat, lng);
+        const location = `${locationData.city}, ${locationData.county}`;
 
-    for (let i = 0; i < updatedMarkers.length - 1; i++) {
-      const distance = calculateDistance(
-        updatedMarkers[i].latitude,
-        updatedMarkers[i].longitude,
-        updatedMarkers[i + 1].latitude,
-        updatedMarkers[i + 1].longitude
-      );
+        const locationField = document.getElementById("courseLocation") as HTMLInputElement;
+        const latField = document.getElementById("courseLat") as HTMLInputElement;
+        const lngField = document.getElementById("courseLng") as HTMLInputElement;
 
-      distances.push(`Fra ${updatedMarkers[i].name} til ${updatedMarkers[i + 1].name}: ${distance.toFixed(2)} km`);
-    }
+        if (locationField) locationField.value = location;
+        if (latField) latField.value = lat.toFixed(6);
+        if (lngField) lngField.value = lng.toFixed(6);
 
-    setDistanceMeasurements(distances);
-  };
+        newMarker = {
+          id: Math.random().toString(),
+          name: "Bane",
+          latitude: lat,
+          longitude: lng,
+          type: "bane",
+          location,
+          par: 3,
+        };
+      } else {
+        newMarker = {
+          id: Math.random().toString(),
+          name: selectedType.charAt(0).toUpperCase() + selectedType.slice(1),
+          latitude: lat,
+          longitude: lng,
+          type: selectedType,
+          par: 3,
+        };
+      }
 
-  // 🗑️ Slett markør ved klikk
-  const handleMarkerClick = (id: string) => {
-    if (window.confirm("Er du sikker på at du vil slette denne markøren?")) {
-      const updatedMarkers = markers.filter(marker => marker.id !== id);
+      const updatedMarkers = [...markers, newMarker];
       setMarkers(updatedMarkers);
-
       updateDistances(updatedMarkers);
 
       setHoles(
@@ -217,38 +214,158 @@ const MapAdminComponentNoSSR = ({
     }
   };
 
+  // 🟢 Fullfør polygon og legg til som en markør
+  const completePolygon = () => {
+    if (polygonPoints.length < 3) {
+      alert("Et polygon må ha minst 3 punkter!");
+      return;
+    }
+
+    const newMarker: CourseMarker = {
+      id: editingPolygonId || Math.random().toString(), // Bruk eksisterende ID hvis redigering
+      name: "OB-område",
+      latitude: polygonPoints[0][0], // Bruk første punkt som "hovedposisjon"
+      longitude: polygonPoints[0][1],
+      type: "ob",
+      polygon: polygonPoints, // Lagre polygonpunktene
+      par: 0, // OB har ingen par
+    };
+
+    // Oppdater eller legg til nytt OB-område
+    if (editingPolygonId) {
+      const updatedMarkers = markers.map(marker =>
+        marker.id === editingPolygonId ? newMarker : marker
+      );
+      setMarkers(updatedMarkers);
+      setEditingPolygonId(null); // Avslutt redigeringsmodus
+    } else {
+      setMarkers([...markers, newMarker]);
+    }
+
+    setPolygonPoints([]); // Tilbakestill polygonpunkter
+    updateDistances([...markers, newMarker]); // Oppdater avstander
+  };
+
+  // 🔴 Slett polygon
+  const deletePolygon = (id: string) => {
+    if (window.confirm("Er du sikker på at du vil slette dette OB-området?")) {
+      const updatedMarkers = markers.filter(marker => marker.id !== id);
+      setMarkers(updatedMarkers);
+      updateDistances(updatedMarkers); // Oppdater avstander etter sletting
+    }
+  };
+
+  // ✏️ Rediger polygon
+  const editPolygon = (id: string) => {
+    const polygonToEdit = markers.find(marker => marker.id === id);
+    if (polygonToEdit?.polygon) {
+      setPolygonPoints(polygonToEdit.polygon);
+      setEditingPolygonId(id);
+    }
+  };
+
   return (
     <div className="flex flex-col items-center">
-    <MapContainer center={adminCenter} zoom={6} scrollWheelZoom style={{ height: "600px", width: "100%", borderRadius: "12px" }}>
-      <TileLayer url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" attribution='&copy; OpenStreetMap contributors' />
-      <MapClickHandler onMapClick={handleMapClick} />
+      <MapContainer center={adminCenter} zoom={6} scrollWheelZoom style={{ height: "600px", width: "100%", borderRadius: "12px" }}>
+        <TileLayer url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" attribution='&copy; OpenStreetMap contributors' />
+        <MapClickHandler onMapClick={handleMapClick} />
 
-      {markers.map(marker => (
-  <Marker
-    key={marker.id}
-    position={[marker.latitude, marker.longitude]}
-    icon={createIcon("map-marker", markerColors[marker.type])}
-    eventHandlers={{ click: () => handleMarkerClick(marker.id) }} // 🔥 Nå kan markører slettes igjen!
-  >
-    <Popup>{marker.name} (Klikk for å slette)</Popup>
-  </Marker>
-))}
-    </MapContainer>
-          {/* 📌 Info-tekst og reset-knapp */}
-          <p className="mt-4 text-gray-600 text-sm">Dobbeltklikk på markører for å slette dem.</p>
+        {markers.map(marker => {
+          if (marker.type === "start") {
+            return (
+              <Circle
+                key={marker.id}
+                center={[marker.latitude, marker.longitude]}
+                radius={10}
+                color={markerColors[marker.type]}
+                eventHandlers={{ click: () => deletePolygon(marker.id) }}
+              >
+                <Popup>{marker.name} (Klikk for å slette)</Popup>
+              </Circle>
+            );
+          } else if (marker.type === "kurv") {
+            return (
+              <Circle
+                key={marker.id}
+                center={[marker.latitude, marker.longitude]}
+                radius={10}
+                color={markerColors[marker.type]}
+                eventHandlers={{ click: () => deletePolygon(marker.id) }}
+              >
+                <Popup>{marker.name} (Klikk for å slette)</Popup>
+              </Circle>
+            );
+          } else if (marker.type === "ob" && marker.polygon) {
+            return (
+              <Polygon
+                key={marker.id}
+                positions={marker.polygon}
+                color={markerColors[marker.type]}
+                eventHandlers={{ click: () => editPolygon(marker.id) }}
+              >
+                <Popup>
+                  OB-område
+                  <button onClick={() => deletePolygon(marker.id)}>Slett</button>
+                  <button onClick={() => editPolygon(marker.id)}>Rediger</button>
+                </Popup>
+              </Polygon>
+            );
+          } else {
+            return (
+              <Marker
+                key={marker.id}
+                position={[marker.latitude, marker.longitude]}
+                icon={createIcon("map-marker", markerColors[marker.type])}
+                eventHandlers={{ click: () => deletePolygon(marker.id) }}
+              >
+                <Popup>{marker.name} (Klikk for å slette)</Popup>
+              </Marker>
+            );
+          }
+        })}
+
+        {/* Tegn polygonlinjer mens brukeren velger punkter */}
+        {polygonPoints.length > 0 && (
+          <Polygon
+            positions={polygonPoints}
+            color={markerColors["ob"]}
+            fillOpacity={0.2}
+          />
+        )}
+      </MapContainer>
+
+      {selectedType === "ob" && (
+        <div className="mt-4 space-x-2">
           <button
-            className="mt-2 px-4 py-2 bg-red-500 text-white rounded hover:bg-red-700 transition"
-            onClick={() => {
-              setMarkers([]);
-              setHoles([]);
-              setKurvLabel("Kurv 1");
-            }}
+            className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-700 transition"
+            onClick={completePolygon}
           >
-            Reset bane
+            {editingPolygonId ? "Oppdater OB-område" : "Fullfør OB-område"}
+          </button>
+          <button
+            className="px-4 py-2 bg-red-500 text-white rounded hover:bg-red-700 transition"
+            onClick={() => setPolygonPoints([])}
+          >
+            Tilbakestill polygon
           </button>
         </div>
+      )}
 
-    
+      {/* 📌 Info-tekst og reset-knapp */}
+      <p className="mt-4 text-gray-600 text-sm">Dobbeltklikk på markører for å slette dem.</p>
+      <button
+        className="mt-2 px-4 py-2 bg-red-500 text-white rounded hover:bg-red-700 transition"
+        onClick={() => {
+          setMarkers([]);
+          setHoles([]);
+          setKurvLabel("Kurv 1");
+          setPolygonPoints([]);
+          setEditingPolygonId(null);
+        }}
+      >
+        Reset bane
+      </button>
+    </div>
   );
 };
 

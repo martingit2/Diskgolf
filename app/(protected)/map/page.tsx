@@ -17,7 +17,7 @@ const MapAdminComponent = dynamic(
 
 const AdminDashboard = () => {
   const { data: session, status } = useSession();
-  const [selectedType, setSelectedType] = useState<"bane" | "start" | "kurv" | "mål" | null>(null);
+  const [selectedType, setSelectedType] = useState<"bane" | "start" | "kurv" | "mål" | "ob" | null>(null);
   const [distanceMeasurements, setDistanceMeasurements] = useState<string[]>([]);
   const [image, setImage] = useState<File | null>(null);
   const [difficulty, setDifficulty] = useState<string>("Ukjent");
@@ -102,16 +102,22 @@ const AdminDashboard = () => {
             <h4 className="text-lg font-semibold">Velg markørtype</h4>
           </CardHeader>
           <CardContent className="space-y-3">
-            {["bane", "tee", "kurv", "slutt"].map((type) => (
-              <Button
-                key={type}
-                variant={selectedType === type ? "default" : "outline"}
-                onClick={() => setSelectedType(type as "bane" | "start" | "kurv" | "mål")}
-              >
-                {type === "kurv" ? kurvLabel : type.charAt(0).toUpperCase() + type.slice(1)}
-              </Button>
-            ))}
-          </CardContent>
+  {[
+    { type: "bane", label: "Bane" },
+    { type: "start", label: "Tee" },
+    { type: "kurv", label: kurvLabel },
+    { type: "mål", label: "Mål" },
+    { type: "ob", label: "OB" }, // Legg til OB-knapp
+  ].map(({ type, label }) => (
+    <Button
+      key={type}
+      variant={selectedType === type ? "default" : "outline"}
+      onClick={() => setSelectedType(type as "bane" | "start" | "kurv" | "mål" | "ob")}
+    >
+      {label}
+    </Button>
+  ))}
+</CardContent>
           <CardContent className="mt-4">
             <h4 className="text-lg font-semibold">Avstandsmålinger</h4>
             <div className="bg-gray-100 p-3 rounded-md text-sm">
