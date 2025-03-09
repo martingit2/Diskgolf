@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useSession } from "next-auth/react";
 import TabNavigation from "../_components/TabNavigation";
 import CreateClubForm from "../_components/CreateClubForm"; // Importere CreateClubForm
@@ -9,9 +9,7 @@ import ClubMembers from "../_components/ClubMembers";
 import UserClubsList from "../_components/UserClubList"; // Importere UserClubsList
 import toast from "react-hot-toast"; // Importere toast for tilbakemeldinger
 import { updateClubSettings } from "@/app/actions/update-club-settings";
-
-// Server action import
-
+import CreateClubNewsForm from "../_components/CreateClubNewsForm"; // Importere CreateClubNewsForm
 
 const ClubSettingsPage = () => {
   const { data: session } = useSession();
@@ -19,6 +17,7 @@ const ClubSettingsPage = () => {
   const [isCreatingClub, setIsCreatingClub] = useState(false);
   const [clubSettings, setClubSettings] = useState<any>(null); // Hold klubbinnstillinger her
   const [selectedClubId, setSelectedClubId] = useState<string | null>(null); // For å holde styr på valgt klubb
+  const [clubNews, setClubNews] = useState<any[]>([]); // For å lagre klubbnyheter
 
   // Fallback for userRole hvis session?.user?.role er undefined
   const userRole = session?.user?.role || "guest"; // Setter en standardverdi ("guest")
@@ -60,17 +59,38 @@ const ClubSettingsPage = () => {
     }
   };
 
+  // Funksjon for å hente klubbnyheter
+  const fetchClubNews = async () => {
+    try {
+      const response = await fetch(`/api/get-club-news?clubId=${selectedClubId}`);
+      const data = await response.json();
+
+      if (response.ok) {
+        setClubNews(data.clubNews || []); // Sett klubbnyheter i state
+      } else {
+        toast.error(data.error || "Kunne ikke hente nyheter.");
+      }
+    } catch (error) {
+      console.error("Feil ved henting av klubbnyheter:", error);
+      toast.error("Noe gikk galt med å hente nyhetene.");
+    }
+  };
+
   return (
     <div className="flex flex-col items-center">
       {/* TabNavigation viser de valgte tabbene med visuell stil */}
-      <TabNavigation selectedTab={selectedTab} setSelectedTab={setSelectedTab} userRole={userRole} />
+      <TabNavigation
+        selectedTab={selectedTab}
+        setSelectedTab={setSelectedTab}
+        userRole={userRole}
+        clubId={selectedClubId || ""}  // Passer på at clubId sendes riktig
+      />
 
       {/* Innholdet som vises basert på valgt tab */}
       <div className="py-4 w-full max-w-4xl">
         <div className="tab-content">
           {selectedTab === "minKlubb" && (
             <div>
-              <h2>Klubbene du er medlem av:</h2>
               <UserClubsList onEditClub={onEditClub} />
             </div>
           )}
@@ -83,6 +103,9 @@ const ClubSettingsPage = () => {
           {selectedTab === "klubbMedlemmer" && <ClubMembers />}
           {selectedTab === "opprettKlubb" && (
             <CreateClubForm onCreateClubSubmit={onCreateClubSubmit} isCreatingClub={isCreatingClub} />
+          )}
+          {selectedTab === "redigerKlubb" && (userRole === "ADMIN" || userRole === "CLUB_LEADER") && (
+            <CreateClubNewsForm clubId={selectedClubId || ""} />
           )}
         </div>
       </div>

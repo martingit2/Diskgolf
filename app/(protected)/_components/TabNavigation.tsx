@@ -1,13 +1,18 @@
-// components/TabNavigation.tsx
+"use client";
+
 import { FC } from "react";
+import CreateClubNewsForm from "./CreateClubNewsForm"; // Importer skjemaet for klubbnyheter
 
 interface TabNavigationProps {
   selectedTab: string;
   setSelectedTab: (tab: string) => void;
   userRole: string;
+  clubId: string; // Sørg for at clubId er inkludert her som en valid prop
 }
 
-const TabNavigation: FC<TabNavigationProps> = ({ selectedTab, setSelectedTab, userRole }) => {
+const TabNavigation: FC<TabNavigationProps> = ({ selectedTab, setSelectedTab, userRole, clubId }) => {
+  console.log("Current clubId:", clubId); // Logg clubId for å se verdien
+  
   return (
     <div className="flex flex-col items-center">
       <div className="flex justify-center space-x-6 mt-4">
@@ -38,14 +43,14 @@ const TabNavigation: FC<TabNavigationProps> = ({ selectedTab, setSelectedTab, us
         </button>
         <span className="text-gray-400">|</span>
 
-        {/* Rediger Klubb - kun for ADMIN eller CLUB_LEADER */}
+        {/* Klubbnyheter - kun for ADMIN eller CLUB_LEADER */}
         {userRole === "ADMIN" || userRole === "CLUB_LEADER" ? (
           <>
             <button
               onClick={() => setSelectedTab("redigerKlubb")}
               className={`py-2 px-4 text-sm font-semibold ${selectedTab === "redigerKlubb" ? "text-green-700" : "text-gray-600 hover:text-blue-950"}`}
             >
-              Rediger Klubb
+              Legg til klubbnyheter
             </button>
             <span className="text-gray-400">|</span>
           </>
@@ -62,6 +67,15 @@ const TabNavigation: FC<TabNavigationProps> = ({ selectedTab, setSelectedTab, us
 
       {/* Horisontal linje under tabbene (hele bredden) */}
       <hr className="mt-4 border-t-2 border-green-700 w-full" />
+
+      {/* Skjema for å legge til klubbnyheter */}
+      {selectedTab === "redigerKlubb" && (userRole === "ADMIN" || userRole === "CLUB_LEADER") ? (
+        clubId ? (
+          <CreateClubNewsForm clubId={clubId} />  // Kun hvis clubId er tilgjengelig
+        ) : (
+          <p>Vennligst velg en klubb før du kan legge til nyheter.</p>  // Hvis ingen klubb er valgt
+        )
+      ) : null}
     </div>
   );
 };

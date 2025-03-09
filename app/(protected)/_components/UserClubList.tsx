@@ -126,7 +126,7 @@ const UserClubsList = ({ onEditClub }: { onEditClub: (club: Club) => void }) => 
 
   return (
     <div>
-      <h3 className="text-2xl font-semibold mb-4">Klubbene du er medlem av:</h3>
+      <h3 className="text-2xl font-semibold mb-4">Klubber du er medlem av:</h3>
       {userClubs.length === 0 ? (
         <p>Du er ikke medlem av noen klubb ennå.</p>
       ) : (
@@ -152,7 +152,7 @@ const UserClubsList = ({ onEditClub }: { onEditClub: (club: Club) => void }) => 
                 <Button size="sm" onClick={() => handleEditClub(club)}>
                   Rediger
                 </Button>
-                <Button size="sm" onClick={() => handleLeaveClub(club.id)} className="bg-red-500">
+                <Button size="sm" onClick={() => handleLeaveClub(club.id)} className="bg-red-500 hover:bg-red-900">
                   Forlat klubb
                 </Button>
               </div>
