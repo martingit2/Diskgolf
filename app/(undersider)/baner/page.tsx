@@ -1,12 +1,8 @@
-/**
- * Filnavn: page.tsx
+/* Filnavn: page.tsx
  * Beskrivelse: Viser en oversikt over disc golf baner med kart, søkefunksjon og filter.
  *
- * Utvikler: Said Hussain Khawajazada
- * Opprettet: 3. februar 2025
- * Teknologier: Next.js, Supabase, OpenLayers, Tailwind CSS
+ * Utvikler: Said Hussain Khawajazada, Martin Pettersen
  */
-
 
 "use client";
 
@@ -15,18 +11,20 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import Image from "next/image";
-import Map from "@/components/Map"; 
+import Map from "@/components/Map";
 import ReviewForm from "@/app/(protected)/_components/ReviewForm";
 import Link from "next/link";
-
+import { Heart } from "lucide-react"; // Importer et hjerte-ikon for favoritter
+import { toggleFavorite } from "@/app/actions/favorites";
+import { currentUser } from "@/app/lib/auth";
 
 
 export default function BaneoversiktPage() {
   const [courses, setCourses] = useState<Course[]>([]);
   const [searchTerm, setSearchTerm] = useState("");
   const [difficultyFilter, setDifficultyFilter] = useState("");
+  const [favorites, setFavorites] = useState<string[]>([]); // Tilstand for favorittbaner
 
-  // Fetch courses using Next.js API instead of Supabase directly
   type Course = {
     id: string;
     name: string;
@@ -35,8 +33,11 @@ export default function BaneoversiktPage() {
     par: number;
     image?: string;
     difficulty?: string;
-    averageRating: number;  
-    totalReviews: number;   
+    averageRating: number;
+    totalReviews: number;
+    holes: { distance: number }[]; // Antall kurver og avstand
+    totalDistance?: number; // Total avstand for banen
+    club?: { name: string; logoUrl: string }; // Klubbinformasjon
   };
 
   useEffect(() => {
@@ -50,8 +51,14 @@ export default function BaneoversiktPage() {
           throw new Error(data.error || "Failed to fetch courses");
         }
 
-        console.log("✅ Kursdata hentet fra API:", data);
-        setCourses(data);
+        // Beregn total avstand for hver bane
+        const coursesWithDistance = data.map((course: Course) => ({
+          ...course,
+          totalDistance: course.holes.reduce((sum, hole) => sum + (hole.distance || 0), 0),
+        }));
+
+        console.log("✅ Kursdata hentet fra API:", coursesWithDistance);
+        setCourses(coursesWithDistance);
       } catch (err) {
         console.error("❌ Feil ved henting av kurs:", err);
       }
@@ -59,6 +66,28 @@ export default function BaneoversiktPage() {
 
     fetchCourses();
   }, []);
+
+  // Hent favorittbaner fra brukerens profil
+  useEffect(() => {
+    const fetchFavorites = async () => {
+      const user = await currentUser();
+      if (user) {
+        setFavorites(user.favoriteCourses || []);
+      }
+    };
+
+    fetchFavorites();
+  }, []);
+
+  // Bruk Server Action for å legge til/fjerne favoritt
+  const handleToggleFavorite = async (courseId: string) => {
+    const result = await toggleFavorite(courseId);
+    if (result.success) {
+      setFavorites(result.favorites); // Oppdater tilstanden med nye favoritter
+    } else {
+      console.error(result.error);
+    }
+  };
 
   // Filter courses based on search and difficulty
   const filteredCourses = courses.filter(
@@ -95,41 +124,80 @@ export default function BaneoversiktPage() {
 
       {/* Course List */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mt-6">
-      {filteredCourses.map((course) => (
-        <Card key={course.id} className="shadow-lg border border-gray-200 flex flex-col h-[615px]">
-          <CardHeader>
-            <CardTitle className="text-xl font-semibold">{course.name}</CardTitle>
-          </CardHeader>
-          <CardContent className="flex flex-col flex-grow justify-between">
-            <Image
-              src={course.image || "/courses/default-course.png"}
-              alt={course.name}
-              width={300}
-              height={200}
-              className="rounded-lg object-cover mb-3"
-            />
-
-            {/* Clicking on stars opens the review modal */}
-            <ReviewForm courseId={course.id} totalReviews={course.totalReviews} averageRating={course.averageRating} />
-            {/* Keep description fixed height */}
-            <div className="flex-grow">
-              <p><strong>Sted:</strong> {course.location}</p>
-              <p><strong>Par:</strong> {course.par}</p>
-              <p><strong>Vanskelighetsgrad:</strong> {course.difficulty || "Ukjent"}</p>
-              <p className="h-[60px] overflow-hidden"><strong>Beskrivelse:</strong> {course.description}</p>
+        {filteredCourses.map((course) => (
+          <Card key={course.id} className="shadow-lg border border-gray-200 flex flex-col">
+            {/* Bilde med blå/grå border og favoritt-hjerte */}
+            <div className="relative">
+              <div className="border-4 border-gray-900 rounded-lg overflow-hidden">
+                <Image
+                  src={course.image || "/courses/default-course.png"}
+                  alt={course.name}
+                  width={300}
+                  height={200}
+                  className="w-full h-48 object-cover"
+                />
+              </div>
+              <button
+                onClick={() => handleToggleFavorite(course.id)}
+                className="absolute top-3 right-3 p-2 bg-white/80 rounded-full backdrop-blur-sm hover:bg-white/90 transition"
+              >
+                <Heart
+                  className={`w-5 h-5 ${
+                    favorites.includes(course.id) ? "text-red-500 fill-red-500" : "text-gray-400"
+                  }`}
+                />
+              </button>
             </div>
 
-            {/* Button stays at the exact same position in all cards */}
-            <div className="mt-4">
-            <Link href={`/courses/${course.id}`} passHref>
-              <Button className="w-full">Se detaljer</Button>
-            </Link>
+            {/* Innhold i kortet */}
+            <CardContent className="flex flex-col flex-grow p-6">
+              {/* Tittel og klubbinformasjon */}
+              <CardHeader className="p-0 mb-4">
+                <CardTitle className="text-xl font-semibold">{course.name}</CardTitle>
+                {course.club && (
+                  <div className="flex items-center gap-2 mt-2">
+                    <Image
+                      src={course.club.logoUrl || "/clubs/default-club.png"}
+                      alt={course.club.name}
+                      width={24}
+                      height={24}
+                      className="rounded-full"
+                    />
+                    <span className="text-sm text-gray-600">{course.club.name}</span>
+                  </div>
+                )}
+              </CardHeader>
 
-            </div>
-          </CardContent>
-        </Card>
-      ))}
+              {/* Banedetaljer */}
+              <div className="space-y-2 flex-grow">
+                <p><strong>Sted:</strong> {course.location}</p>
+                <p><strong>Par:</strong> {course.par}</p>
+                <p><strong>Vanskelighetsgrad:</strong> {course.difficulty || "Ukjent"}</p>
+                <p><strong>Antall kurver:</strong> {course.holes.length}</p>
+                <p><strong>Total avstand:</strong> {course.totalDistance ? `${course.totalDistance} m` : "Ukjent"}</p>
+                <p className="line-clamp-3"><strong>Beskrivelse:</strong> {course.description}</p>
+              </div>
 
+              {/* ReviewForm */}
+              <div className="mt-4">
+                <ReviewForm
+                  courseId={course.id}
+                  totalReviews={course.totalReviews}
+                  averageRating={course.averageRating}
+                />
+              </div>
+
+              {/* Knapp for å se detaljer */}
+              <div className="mt-4">
+                <Link href={`/courses/${course.id}`} passHref>
+                  <Button className="w-full">
+                    Se detaljer
+                  </Button>
+                </Link>
+              </div>
+            </CardContent>
+          </Card>
+        ))}
       </div>
     </div>
   );
