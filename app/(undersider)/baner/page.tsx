@@ -68,7 +68,7 @@ export default function BaneoversiktPage() {
   }, []);
 
   // Hent favorittbaner fra brukerens profil
-  useEffect(() => {
+ /* useEffect(() => {
     const fetchFavorites = async () => {
       const user = await currentUser();
       if (user) {
@@ -78,6 +78,7 @@ export default function BaneoversiktPage() {
 
     fetchFavorites();
   }, []);
+  */
 
   // Bruk Server Action for å legge til/fjerne favoritt
   const handleToggleFavorite = async (courseId: string) => {
