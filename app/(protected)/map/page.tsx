@@ -102,7 +102,7 @@ const AdminDashboard = () => {
             <h4 className="text-lg font-semibold">Velg markørtype</h4>
           </CardHeader>
           <CardContent className="space-y-3">
-            {["bane", "start", "kurv", "mål"].map((type) => (
+            {["bane", "tee", "kurv", "slutt"].map((type) => (
               <Button
                 key={type}
                 variant={selectedType === type ? "default" : "outline"}
