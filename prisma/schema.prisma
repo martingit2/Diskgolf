@@ -43,6 +43,7 @@ model User {
   accounts Account[]
   rounds   Round[]
   reviews  Review[]
+  memberships     Membership[] // Relasjon til Membership
 
   isTwoFactorEnable     Boolean                @default(false)
   twoFactorConfirmation TwoFactorConfirmation?
@@ -68,6 +69,7 @@ model Club {
 
   admins      User[]   @relation("ClubAdmins") // Relasjon til brukere som er admins for klubben
   courses     Course[] @relation("ClubToCourses") // Relasjon til klubbens baner
+  memberships Membership[] // Relasjon til medlemskapene i klubben
 
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
@@ -196,4 +198,13 @@ model Tournament {
   participants User[]        @relation("TournamentParticipants") // Relasjon til brukere som deltar
   createdAt   DateTime       @default(now()) // Tidsstempel for opprettelse
   updatedAt   DateTime       @updatedAt // Automatisk oppdatert tidsstempel
+}
+
+model Membership {
+  userId  String
+  clubId  String
+  user    User   @relation(fields: [userId], references: [id])
+  club    Club   @relation(fields: [clubId], references: [id])
+  isPrimary Boolean @default(false) 
+  @@id([userId, clubId]) // Sett en sammensatt primærnøkkel
 }

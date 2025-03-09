@@ -2,7 +2,6 @@
 import { z } from "zod";
 
 export const ClubSettingsSchema = z.object({
-  clubId: z.string(), // Legg til clubId som et obligatorisk felt
   name: z.string().min(1, "Klubbens navn er påkrevd"), // Klubbens navn
   email: z.string().email("Ugyldig e-postadresse").optional(), // E-post (valgfritt)
   description: z.string().max(500, "Beskrivelsen kan ikke være lengre enn 500 tegn").optional(), // Beskrivelse (valgfritt)

@@ -1,65 +1,58 @@
 import { PrismaClient } from "@prisma/client";
 import { NextRequest, NextResponse } from "next/server";
-import { writeFile } from "fs/promises";
-import path from "path";
+import { currentUser } from "@/app/lib/auth"; // Importere currentUser for å hente den nåværende brukeren
 
 const prisma = new PrismaClient();
 
-// ✅ Lagrer en ny klubb
 export async function POST(req: NextRequest) {
   try {
     const formData = await req.formData();
-
-    // Hent verdiene fra formData
     const name = formData.get("name") as string;
-    const sted = formData.get("sted") as string;
-    const description = formData.get("description") as string | null;
     const email = formData.get("email") as string | null;
+    const description = formData.get("description") as string | null;
+    const sted = formData.get("sted") as string;
     const address = formData.get("address") as string;
     const phone = formData.get("phone") as string;
     const postalCode = formData.get("postalCode") as string;
-    const logo = formData.get("logoUrl") as File | null;
 
-    // Vi antar at frontend har validert de obligatoriske feltene
-    // Håndter tomme felter på serveren, men tillat tomme strenger for valgfrie felt
-    if (!name || !sted || !address || !phone || !postalCode) {
-      return NextResponse.json({ error: "Alle obligatoriske felter må fylles ut." }, { status: 400 });
+    // Hent nåværende bruker (brukeren som oppretter klubben) fra currentUser() funksjonen
+    const user = await currentUser(); // Henter den nåværende brukeren
+    if (!user) {
+      console.error("Ingen bruker er logget inn.");
+      return NextResponse.json({ error: "Brukeren er ikke autentisert." }, { status: 401 });
     }
 
-    // Sjekk om klubben allerede finnes
-    const existingClub = await prisma.club.findUnique({
-      where: { name: name },
-    });
-
-    if (existingClub) {
-      return NextResponse.json({ error: "Klubben eksisterer allerede!" }, { status: 400 });
-    }
-
-    // Behandle bildeopplastning for logo
-    let logoUrl: string | null = null;
-    if (logo) {
-      const filePath = path.join(process.cwd(), "public/uploads", logo.name);
-      await writeFile(filePath, Buffer.from(await logo.arrayBuffer())); // Lagrer bildet på serveren
-      logoUrl = `/uploads/${logo.name}`; // Lager en offentlig URL til bildet
-    }
-
-    // Opprett klubben i databasen
+    // Generere clubId automatisk når klubben opprettes
     const newClub = await prisma.club.create({
       data: {
         name,
-        location: sted,
-        description: description || "Ingen beskrivelse", // Standardbeskrivelse hvis ingen er gitt
         email: email || null,
+        description: description || null,
+        location: sted,
         address,
         phone,
         postalCode,
-        logoUrl, // Lagret logo URL (eller null hvis ingen logo)
       },
     });
 
-    return NextResponse.json(newClub, { status: 201 });
+    // Legg til den nåværende brukeren som medlem i den nye klubben
+    await prisma.membership.create({
+      data: {
+        userId: user.id, // Brukerens ID
+        clubId: newClub.id, // ID til klubben som ble opprettet
+      },
+    });
+
+    // Bekreft at klubben ble opprettet og brukeren ble lagt til som medlem
+    console.log("Klubb opprettet og bruker lagt til:", newClub);
+
+    return NextResponse.json({
+      success: "Klubben ble opprettet, og du er automatisk medlem!",
+      clubId: newClub.id, // Returner den genererte clubId
+    }, { status: 201 });
+
   } catch (error) {
-    console.error("Feil ved opprettelse av klubb:", error);
-    return NextResponse.json({ error: "Feil ved opprettelse av klubb" }, { status: 500 });
+    console.error("Feil under opprettelse av klubb:", error);
+    return NextResponse.json({ error: "Kunne ikke opprette klubben, prøv igjen senere." }, { status: 500 });
   }
 }

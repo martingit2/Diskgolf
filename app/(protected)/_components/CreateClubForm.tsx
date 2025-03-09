@@ -6,7 +6,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { ClubSettingsSchema } from "@/schemas/ClubSettingsSchema";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
-import toast from "react-hot-toast";
+import toast from "react-hot-toast"; // Importere toast
 
 interface CreateClubFormProps {
   onCreateClubSubmit: (values: any) => void;
@@ -32,11 +32,10 @@ const CreateClubForm: FC<CreateClubFormProps> = ({ onCreateClubSubmit, isCreatin
   // Håndter skjemainnsendelse
   const handleSubmit = async (values: any) => {
     setSubmitting(true);
-  
+
     try {
-      // Legg til clubId i formData før sending
+      // Lag FormData for å sende bilde og tekst
       const formData = new FormData();
-      formData.append("clubId", values.clubId); // Pass clubId til backend
       formData.append("name", values.name);
       formData.append("email", values.email || ''); // Set empty string if email is optional
       formData.append("description", values.description || ''); // Set empty string if description is optional
@@ -44,24 +43,24 @@ const CreateClubForm: FC<CreateClubFormProps> = ({ onCreateClubSubmit, isCreatin
       formData.append("address", values.address);
       formData.append("phone", values.phone);
       formData.append("postalCode", values.postalCode);
-  
+
       // Only append logoUrl if it's not empty
       if (values.logoUrl && values.logoUrl[0]) {
         formData.append("logoUrl", values.logoUrl[0]);
       }
-  
+
       // Send data til API-et
       const response = await fetch("/api/create-club", {
         method: "POST",
         body: formData,
       });
-  
+
       const data = await response.json();
       if (data.error) {
         toast.error(data.error);
       } else {
-        toast.success("Klubben ble opprettet!");
-        onCreateClubSubmit(values);
+        // Kall på onCreateClubSubmit her, uten å vise toast i denne komponenten
+        onCreateClubSubmit(data); // Call the function passed from the parent
       }
     } catch (error) {
       toast.error("Noe gikk galt, prøv igjen senere.");
@@ -70,7 +69,6 @@ const CreateClubForm: FC<CreateClubFormProps> = ({ onCreateClubSubmit, isCreatin
       setSubmitting(false);
     }
   };
-  
 
   return (
     <div className="min-h-screen bg-gray-100 flex justify-center items-start py-4">
@@ -157,17 +155,6 @@ const CreateClubForm: FC<CreateClubFormProps> = ({ onCreateClubSubmit, isCreatin
                   {...createClubForm.register("phone")}
                   placeholder="Telefonnummer"
                   className="input w-full mt-2 p-2 rounded-lg border border-gray-300"
-                />
-              </div>
-
-              {/* Logo URL */}
-              <div>
-                <label className="block text-center">Logo (valgfritt)</label>
-                <input
-                  type="file"
-                  accept="image/*"
-                  {...createClubForm.register("logoUrl")}
-                  className="w-full mt-2 p-2 border rounded-lg"
                 />
               </div>
 

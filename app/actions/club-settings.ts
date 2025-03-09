@@ -1,20 +1,20 @@
-/**
- * Filnavn: club-settings.ts
- * Beskrivelse: Serverfunksjon for å håndtere oppdatering av klubbinnstillinger.
- * Håndterer oppdatering av klubbens navn, e-post, beskrivelse og andre klubbrelaterte innstillinger.
- * Utvikler: Martin Pettersen
- */
 
-"use server";
-
-import * as z from "zod";
-  // Lag et skjema for klubbinnstillinger
 import { currentUser } from "../lib/auth";
 import client from "../lib/prismadb";
-import { ClubSettingsSchema } from "@/schemas/ClubSettingsSchema";
+
+
+// Definer ClubSettings-typen
+interface ClubSettings {
+  clubId: string;
+  name: string;
+  address: string;
+  phone: string;
+  postalCode: string;
+  logoUrl?: string;
+}
 
 // Serverfunksjon for å oppdatere klubbinnstillinger
-export const updateClubSettings = async (values: z.infer<typeof ClubSettingsSchema>) => {
+export const updateClubSettings = async (values: ClubSettings) => {
   console.log("Mottatte verdier fra frontend:", values);
 
   const user = await currentUser();
@@ -29,7 +29,7 @@ export const updateClubSettings = async (values: z.infer<typeof ClubSettingsSche
     return { error: "Du har ikke tilgang til klubbinnstillinger" };
   }
 
-  // Hent klubbens nåværende innstillinger fra databasen (erstatte med reell databaselogikk)
+  // Hent klubbens nåværende innstillinger fra databasen
   try {
     const club = await client.club.findUnique({
       where: { id: values.clubId }, // Forutsetter at du har en `clubId` i verdiene
@@ -43,9 +43,10 @@ export const updateClubSettings = async (values: z.infer<typeof ClubSettingsSche
     // Forbered oppdateringsdata
     const updatedData = {
       name: values.name || club.name,
-      email: values.email || club.email,
-      description: values.description || club.description,
-      // Legg til flere klubbrelaterte innstillinger her
+      address: values.address || club.address,
+      phone: values.phone || club.phone,
+      postalCode: values.postalCode || club.postalCode,
+      logoUrl: values.logoUrl || club.logoUrl,
     };
 
     console.log("Oppdaterer klubbinnstillinger i databasen...");
