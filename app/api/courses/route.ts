@@ -38,11 +38,22 @@ export async function GET() {
           ? course.reviews.reduce((sum, review) => sum + review.rating, 0) / totalReviews
           : 0;
 
-      // **Håndter nullverdier for start og sluttpunkter**
+      // Beregn total avstand basert på start- og målpunkt ELLER hullene
       let totalDistance = 0;
 
+      // Hvis start- og målpunkt er definert, bruk disse til å beregne avstanden
       if (course.startLatitude && course.startLongitude && course.goalLatitude && course.goalLongitude) {
         totalDistance = calculateDistance(course.startLatitude, course.startLongitude, course.goalLatitude, course.goalLongitude);
+      } else if (course.holes.length > 1) {
+        // Hvis ikke, beregn avstanden mellom hullene
+        for (let i = 0; i < course.holes.length - 1; i++) {
+          const hole1 = course.holes[i];
+          const hole2 = course.holes[i + 1];
+
+          if (hole1.latitude && hole1.longitude && hole2.latitude && hole2.longitude) {
+            totalDistance += calculateDistance(hole1.latitude, hole1.longitude, hole2.latitude, hole2.longitude);
+          }
+        }
       }
 
       return {

@@ -37,12 +37,12 @@ export default function BaneoversiktPage() {
           throw new Error(data.error || "Failed to fetch courses");
         }
 
-        const coursesWithDistance = data.map((course: Course) => ({
+        const formattedData = data.map((course: Course) => ({
           ...course,
-          totalDistance: course.holes.reduce((sum, hole) => sum + (hole.distance || 0), 0),
+          holes: course.holes.map(hole => ({ distance: hole.distance ?? 0 })), // Sikrer at distance aldri er undefined
         }));
 
-        setCourses(coursesWithDistance);
+        setCourses(formattedData); // Bruker totalDistance direkte fra API-et
       } catch (err) {
         console.error("Feil ved henting av kurs:", err);
       }
@@ -54,7 +54,7 @@ export default function BaneoversiktPage() {
   const handleToggleFavorite = async (courseId: string) => {
     const result = await toggleFavorite(courseId);
     if (result.success) {
-      setFavorites(result.favorites); 
+      setFavorites(result.favorites);
     } else {
       console.error(result.error);
     }
@@ -68,9 +68,7 @@ export default function BaneoversiktPage() {
 
   return (
     <div className="max-w-6xl mx-auto py-10 px-4">
-      <h1 className="text-3xl font-bold mb-6 text-center">
-        Baneoversikt
-      </h1>
+      <h1 className="text-3xl font-bold mb-6 text-center">Baneoversikt</h1>
 
       <div className="flex gap-4 mb-6">
         <Input
@@ -84,15 +82,16 @@ export default function BaneoversiktPage() {
           onChange={(e) => setDifficultyFilter(e.target.value)}
         >
           <option value="">Alle vanskelighetsgrader</option>
-          <option value="Beginner">Lett</option>
-          <option value="Intermediate">Middels</option>
-          <option value="Advanced">Vanskelig</option>
+          <option value="Lett">Lett</option>
+          <option value="Middels">Middels</option>
+          <option value="Vanskelig">Vanskelig</option>
         </select>
       </div>
 
       <Map />
 
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mt-6">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mt-6 items-start">
+
         {filteredCourses.map((course) => (
           <CourseCard
             key={course.id}

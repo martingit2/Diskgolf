@@ -35,90 +35,76 @@ export function CourseCard({ course, isFavorite, onToggleFavorite }: CourseCardP
   const [showFullDescription, setShowFullDescription] = useState(false);
   const router = useRouter();
 
-  // Sjekk om beskrivelsen er lang nok til å trenge en "Les mer"-knapp
   const shouldShowReadMore = course.description.length > 100;
 
   return (
-    <Card className="shadow-2xl border border-solid border-gray-200 flex flex-col transform transition-all duration-300 hover:scale-105 hover:shadow-xl">
+    <Card className="shadow-lg border border-gray-200 flex flex-col transform transition-all duration-300 hover:scale-105 hover:shadow-2xl rounded-xl overflow-hidden">
+      
+      {/* 📌 Bildeseksjon med fancy effekter */}
       <div className="relative">
-        <div className="border-4 border-gray-100 rounded-lg overflow-hidden">
-          <Image
-            src={course.image || "/courses/default-course.png"}
-            alt={course.name}
-            width={300}
-            height={200}
-            className="w-full h-48 object-cover"
-          />
-        </div>
+        {/* 🔥 Gradient-overlay og myk skygge */}
+        <div className="absolute inset-0 bg-gradient-to-t from-black/10 via-black/5 to-transparent rounded-t-xl pointer-events-none"></div>
+
+        <Image
+          src={course.image || "/courses/default-course.png"}
+          alt={course.name}
+          width={300}
+          height={200}
+          className="w-full h-48 object-cover rounded-t-xl shadow-lg"
+        />
+
+        {/* 💎 Fancy favoritt-knapp med glass-effekt */}
         <button
           onClick={() => onToggleFavorite(course.id)}
-          className="absolute top-3 right-3 p-2 bg-white/80 rounded-full backdrop-blur-sm hover:bg-white/90 transition"
+          className="absolute top-3 right-3 p-2 bg-white/80 rounded-full backdrop-blur-md hover:bg-white transition shadow-md"
         >
           <Heart className={`w-5 h-5 ${isFavorite ? "text-red-500 fill-red-500" : "text-gray-400"}`} />
         </button>
       </div>
 
-      <CardContent className="flex flex-col flex-grow p-6">
+      <CardContent className="flex flex-col flex-grow p-6 bg-white">
+        {/* 📌 Tittel + Styling */}
         <CardHeader className="p-0 mb-4">
-          <CardTitle className="text-2xl font-bold text-transparent bg-gradient-to-r from-green-600 via-green-500 to-green-600 bg-clip-text">
-            {course.name}
-          </CardTitle>
-          <hr className="my-3 border-t-2 border-gray-900" />
-          {course.club && (
-            <div className="flex items-center gap-2 mt-2">
-              <Image
-                src={course.club.logoUrl || "/clubs/default-club.png"}
-                alt={course.club.name}
-                width={24}
-                height={24}
-                className="rounded-full"
-              />
-              <span className="text-sm text-gray-600">{course.club.name}</span>
-            </div>
-          )}
+          <CardTitle className="text-2xl font-bold text-gray-900">{course.name}</CardTitle>
+          <hr className="my-3 border-t-2 border-gray-300" />
         </CardHeader>
 
+        {/* 📌 Informasjon */}
         <div className="space-y-2 flex-grow">
-          <div className="flex text-sm justify-between">
-            <p><strong>Sted:</strong></p>
+          <div className="flex text-sm justify-between text-gray-600">
+            <p className="font-medium">Sted:</p>
             <p>{course.location}</p>
           </div>
-          <div className="flex text-sm justify-between">
-            <p><strong>Par:</strong></p>
+          <div className="flex text-sm justify-between text-gray-600">
+            <p className="font-medium">Par:</p>
             <p>{course.par}</p>
           </div>
-          <div className="flex text-sm justify-between">
-            <p><strong>Vanskelighetsgrad:</strong></p>
-            <p
-              className={`italic ${
-                course.difficulty === "Lett"
-                  ? "text-green-500"
-                  : course.difficulty === "Middels"
-                  ? "text-yellow-500"
-                  : "text-red-500"
-              }`}
-            >
+          <div className="flex text-sm justify-between text-gray-600">
+            <p className="font-medium">Vanskelighetsgrad:</p>
+            <p className={course.difficulty === "Lett" ? "text-green-500" : course.difficulty === "Middels" ? "text-yellow-500" : "text-red-500"}>
               {course.difficulty || "Ukjent"}
             </p>
           </div>
-          <div className="flex text-sm justify-between">
-            <p><strong>Antall kurver:</strong></p>
+          <div className="flex text-sm justify-between text-gray-600">
+            <p className="font-medium">Antall kurver:</p>
             <p>{course.holes.length}</p>
           </div>
-          <div className="flex text-sm justify-between">
-            <p><strong>Total avstand:</strong></p>
-            <p>{course.totalDistance ? `${course.totalDistance} m` : "Ukjent"}</p>
+          <div className="flex text-sm justify-between text-gray-600">
+            <p className="font-medium">Total avstand:</p>
+            <p>{course.totalDistance !== undefined ? `${course.totalDistance.toFixed(2)} m` : "Ukjent"}</p>
           </div>
-          <div className="flex text-sm justify-between">
-            <p><strong>Beskrivelse:</strong></p>
-            <div>
-              <p className={`italic ${!showFullDescription && shouldShowReadMore ? "line-clamp-3" : ""}`}>
+
+          {/* 📌 Beskrivelse – Bedre mellomrom + lesbarhet */}
+          <div className="flex text-sm mt-3">
+            <p className="mr-2 font-medium">Beskrivelse:</p>
+            <div className="flex flex-col">
+              <p className={`text-gray-700 ${!showFullDescription && shouldShowReadMore ? "line-clamp-2" : ""}`}>
                 {course.description}
               </p>
               {shouldShowReadMore && (
                 <button
                   onClick={() => setShowFullDescription(!showFullDescription)}
-                  className="text-blue-500 hover:underline"
+                  className="text-blue-500 hover:underline text-sm mt-1"
                 >
                   {showFullDescription ? "Vis mindre" : "Les mer"}
                 </button>
@@ -127,24 +113,22 @@ export function CourseCard({ course, isFavorite, onToggleFavorite }: CourseCardP
           </div>
         </div>
 
-        <div className="mt-4">
-          <ReviewForm
-            courseId={course.id}
-            totalReviews={course.totalReviews}
-            averageRating={course.averageRating}
-          />
+        {/* 📌 Sentralisert anmeldelser */}
+        <div className="mt-6 flex flex-col items-center text-center">
+          <ReviewForm courseId={course.id} totalReviews={course.totalReviews} averageRating={course.averageRating} />
         </div>
 
-        <div className="mt-4">
+        {/* 📌 Knapper med bedre spacing */}
+        <div className="mt-6">
           <div className="flex flex-col gap-4">
             <Link href={`/courses/${course.id}`} passHref>
-              <Button className="w-full py-4 px-10 bg-gray-900 text-white font-semibold rounded-full text-lg shadow-xl hover:scale-105 transition-all duration-300">
+              <Button className="w-full py-4 px-10 bg-gray-900 text-white font-semibold rounded-lg text-lg shadow-md hover:bg-gray-800 transition-all duration-300">
                 Se detaljer
               </Button>
             </Link>
             <Button
               onClick={() => router.push(`/spill?course=${course.id}`)}
-              className="w-full py-4 px-10 bg-gradient-to-r from-green-500 to-green-600 text-white font-semibold rounded-full text-lg shadow-xl hover:scale-105 transition-all duration-300 flex items-center gap-3 mx-auto"
+              className="w-full py-4 px-10 bg-green-500 text-white font-semibold rounded-lg text-lg shadow-md hover:bg-green-600 transition-all duration-300 flex items-center gap-3 mx-auto"
             >
               <FaPlay className="animate-pulse" /> Start banespill
             </Button>
