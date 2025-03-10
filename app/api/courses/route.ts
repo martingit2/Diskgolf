@@ -5,33 +5,55 @@ import path from "path";
 
 const prisma = new PrismaClient();
 
+// Haversine-formel for å beregne avstand mellom to geografiske punkter
+function calculateDistance(lat1: number, lon1: number, lat2: number, lon2: number): number {
+  const R = 6371; // Jordens radius i kilometer
+  const dLat = (lat2 - lat1) * (Math.PI / 180); // Endring i breddegrad
+  const dLon = (lon2 - lon1) * (Math.PI / 180); // Endring i lengdegrad
+  const a =
+    Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+    Math.cos(lat1 * (Math.PI / 180)) * Math.cos(lat2 * (Math.PI / 180)) *
+    Math.sin(dLon / 2) * Math.sin(dLon / 2);
+  const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+  const distance = R * c; // Avstanden i kilometer
+  return distance * 1000; // Returner avstanden i meter
+}
+
 // ✅ Henter alle baner inkludert start, mål, kurver og anmeldelser
 export async function GET() {
   try {
     const courses = await prisma.course.findMany({
       include: {
-        holes: true, // ✅ Henter alle kurver (baskets)
+        holes: true, // Henter alle kurver (baskets)
         reviews: {
           select: { rating: true },
         },
       },
     });
 
-    const coursesWithRatings = courses.map(course => {
+    const coursesWithRatingsAndDistance = courses.map(course => {
       const totalReviews = course.reviews.length;
       const averageRating =
         totalReviews > 0
           ? course.reviews.reduce((sum, review) => sum + review.rating, 0) / totalReviews
           : 0;
 
+      // **Håndter nullverdier for start og sluttpunkter**
+      let totalDistance = 0;
+
+      if (course.startLatitude && course.startLongitude && course.goalLatitude && course.goalLongitude) {
+        totalDistance = calculateDistance(course.startLatitude, course.startLongitude, course.goalLatitude, course.goalLongitude);
+      }
+
       return {
         ...course,
         averageRating: parseFloat(averageRating.toFixed(1)),
         totalReviews,
+        totalDistance, // Legg til totalDistance
       };
     });
 
-    return NextResponse.json(coursesWithRatings);
+    return NextResponse.json(coursesWithRatingsAndDistance);
   } catch (error) {
     console.error("Feil ved henting av baner:", error);
     return NextResponse.json({ error: "Kunne ikke hente baner" }, { status: 500 });

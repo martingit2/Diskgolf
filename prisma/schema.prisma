@@ -113,6 +113,13 @@ model Course {
   reviews Review[]
   rounds  Round[]
 
+// Relasjoner
+  start       Start[]  @relation  // Flere tees per bane
+  goal        Goal?    @relation  // Ett sluttpunkt per bane
+  baskets     Basket[] @relation  // Flere kurver per bane
+  obZones     OB[]     @relation  // Flere OB-soner per bane
+
+
   clubId String?
   club   Club?   @relation("ClubToCourses", fields: [clubId], references: [id])
 }
@@ -222,4 +229,37 @@ model Membership {
   club    Club   @relation(fields: [clubId], references: [id])
   isPrimary Boolean @default(false) 
   @@id([userId, clubId]) // Sett en sammensatt primærnøkkel
+}
+
+
+model Start {  // Flere tees per bane
+  id        String   @id @default(uuid())
+  courseId  String   // Relasjon til Course
+  latitude  Float
+  longitude Float
+  course    Course   @relation(fields: [courseId], references: [id])
+}
+
+model Goal {  // Ett sluttpunkt per bane
+  id        String   @id @default(uuid())
+  courseId  String   @unique  // Unik, fordi en bane kan ha kun ett sluttpunkt
+  latitude  Float
+  longitude Float
+  course    Course   @relation(fields: [courseId], references: [id])
+}
+
+model Basket {  // Flere kurver per bane
+  id        String   @id @default(uuid())
+  courseId  String   // Relasjon til Course
+  latitude  Float
+  longitude Float
+  course    Course   @relation(fields: [courseId], references: [id])
+}
+
+model OB {  // Flere OB-soner per bane
+  id        String   @id @default(uuid())
+  courseId  String   // Relasjon til Course
+  latitude  Float
+  longitude Float
+  course    Course   @relation(fields: [courseId], references: [id])
 }

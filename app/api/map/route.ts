@@ -2,19 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { PrismaClient } from "@prisma/client";
 import { currentRole } from "@/app/lib/auth";
 
-
 const prisma = new PrismaClient();
-
-// ✅ Håndter GET-forespørsel (Hent alle baner)
-export async function GET() {
-  try {
-    const courses = await prisma.course.findMany();
-    return NextResponse.json(courses, { status: 200 });
-  } catch (error) {
-    console.error("Error fetching courses:", error);
-    return NextResponse.json({ error: "Failed to fetch courses" }, { status: 500 });
-  }
-}
 
 // ✅ Håndter POST-forespørsel (Legg til en ny bane)
 export async function POST(req: NextRequest) {
@@ -33,13 +21,40 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: "Invalid request data" }, { status: 400 });
     }
 
+    // Opprett kurs med relasjoner
     const newCourse = await prisma.course.create({
       data: {
         name: body.name,
-        latitude: body.coords.lat, // ✅ Bruk riktig feltnavn
+        location: body.location,
+        latitude: body.coords.lat, // Bruk riktig feltnavn
         longitude: body.coords.lng,
         description: body.description || "Ingen beskrivelse",
-        par: 3, // Standard par
+        par: body.par || 3, // Standard par
+        difficulty: body.difficulty || "Ukjent",
+        image: body.image || "",
+
+        // Legg til start, mål, kurv og OB-områder
+        start: {
+          create: body.start.map((startPoint: { lat: number; lng: number }) => ({
+            latitude: startPoint.lat,
+            longitude: startPoint.lng
+          }))
+        },
+        goal: {
+          create: { latitude: body.goal.lat, longitude: body.goal.lng }
+        },
+        baskets: {
+          create: body.baskets.map((basket: { lat: number, lng: number }) => ({
+            latitude: basket.lat,
+            longitude: basket.lng
+          }))
+        },
+        obZones: {
+          create: body.obZones.map((ob: { lat: number, lng: number }) => ({
+            latitude: ob.lat,
+            longitude: ob.lng
+          }))
+        }
       },
     });
 
@@ -48,9 +63,4 @@ export async function POST(req: NextRequest) {
     console.error("Error creating course:", error);
     return NextResponse.json({ error: "Failed to create course" }, { status: 500 });
   }
-}
-
-// ❌ Håndterer alle andre metoder med en 405-feil
-export async function DELETE() {
-  return NextResponse.json({ error: "Method Not Allowed" }, { status: 405 });
 }
