@@ -10,10 +10,13 @@ const MapAdminWrapper = () => {
   const [isClient, setIsClient] = useState(false);
   const [selectedType, setSelectedType] = useState<"bane" | "start" | "kurv" | "mål" | null>(null);
   
-  // ✅ Add states for missing props
+  // ✅ Legg til alle nødvendige states
   const [distanceMeasurements, setDistanceMeasurements] = useState<string[]>([]);
   const [holes, setHoles] = useState<{ latitude: number; longitude: number; number: number; par: number; }[]>([]);
   const [kurvLabel, setKurvLabel] = useState<string>("");
+  const [startPoints, setStartPoints] = useState<{ lat: number; lng: number }[]>([]);
+  const [goalPoint, setGoalPoint] = useState<{ lat: number; lng: number } | null>(null);
+  const [obZones, setObZones] = useState<{ lat: number; lng: number }[]>([]);
 
   useEffect(() => {
     setIsClient(true);
@@ -45,12 +48,15 @@ const MapAdminWrapper = () => {
         </div>
 
         <div style={mapContainerStyle}>
-          {/* ✅ Pass all necessary props */}
+          {/* ✅ Send alle nødvendige props til DynamicMap */}
           <DynamicMap
             selectedType={selectedType}
             setDistanceMeasurements={setDistanceMeasurements}
             setHoles={setHoles}
             setKurvLabel={setKurvLabel}
+            setStartPoints={setStartPoints} // Legg til denne
+            setGoalPoint={setGoalPoint}     // Legg til denne
+            setObZones={setObZones}         // Legg til denne
           />
         </div>
 
@@ -76,7 +82,7 @@ const MapAdminWrapper = () => {
   );
 };
 
-/* ✅ CSS-in-JS styling (unchanged) */
+/* ✅ CSS-in-JS styling (uendret) */
 const pageContainer: CSSProperties = {
   padding: "20px",
   display: "flex",

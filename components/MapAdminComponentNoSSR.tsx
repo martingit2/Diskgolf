@@ -1,7 +1,7 @@
 "use client";
 
 import L from "leaflet";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { MapContainer, Marker, TileLayer, Popup, useMapEvent, Circle, Polygon } from "react-leaflet";
 import "leaflet/dist/leaflet.css";
 import "leaflet.awesome-markers/dist/leaflet.awesome-markers.css";
@@ -88,15 +88,42 @@ const MapAdminComponentNoSSR = ({
   setDistanceMeasurements,
   setHoles,
   setKurvLabel,
+  setStartPoints, // Legg til denne
+  setGoalPoint,  // Legg til denne
+  setObZones,    // Legg til denne
 }: {
   selectedType: MarkerType | null;
   setDistanceMeasurements: (distances: string[]) => void;
   setHoles: (holes: { latitude: number; longitude: number; number: number; par: number }[]) => void;
   setKurvLabel: (label: string) => void;
+  setStartPoints: (startPoints: { lat: number; lng: number }[]) => void; // Legg til denne
+  setGoalPoint: (goalPoint: { lat: number; lng: number } | null) => void; // Legg til denne
+  setObZones: (obZones: { lat: number; lng: number }[]) => void; // Legg til denne
 }) => {
   const [markers, setMarkers] = useState<CourseMarker[]>([]);
   const [polygonPoints, setPolygonPoints] = useState<[number, number][]>([]); // Tilstand for polygonpunkter
   const [editingPolygonId, setEditingPolygonId] = useState<string | null>(null); // Tilstand for redigering av polygon
+
+  // 🔄 Oppdater startpunkter, målpunkt og OB-soner når markører endres
+  useEffect(() => {
+    if (typeof setStartPoints !== "function") {
+      console.error("setStartPoints er ikke en funksjon");
+      return;
+    }
+  
+    const startPoints = markers
+      .filter(marker => marker.type === "start")
+      .map(marker => ({ lat: marker.latitude, lng: marker.longitude }));
+
+    const goalPoint = markers.find(marker => marker.type === "mål");
+    const obZones = markers
+      .filter(marker => marker.type === "ob")
+      .map(marker => ({ lat: marker.latitude, lng: marker.longitude }));
+
+    setStartPoints(startPoints);
+    setGoalPoint(goalPoint ? { lat: goalPoint.latitude, lng: goalPoint.longitude } : null);
+    setObZones(obZones);
+  }, [markers]);
 
   // 🔍 Oppdater avstander mellom markører (inkludert OB-områder)
   const updateDistances = (updatedMarkers: CourseMarker[]) => {

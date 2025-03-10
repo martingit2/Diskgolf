@@ -10,10 +10,7 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 
-const MapAdminComponent = dynamic(
-  () => import("@/components/MapAdminComponentNoSSR"),
-  { ssr: false }
-);
+const MapAdminComponent = dynamic(() => import("@/components/MapAdminComponentNoSSR"), { ssr: false });
 
 const AdminDashboard = () => {
   const { data: session, status } = useSession();
@@ -23,6 +20,11 @@ const AdminDashboard = () => {
   const [difficulty, setDifficulty] = useState<string>("Ukjent");
   const [holes, setHoles] = useState<{ latitude: number; longitude: number; number: number; par: number }[]>([]);
   const [kurvLabel, setKurvLabel] = useState<string>("Kurv 1");
+
+  // For start, goal, baskets og OB
+  const [startPoints, setStartPoints] = useState<{ lat: number; lng: number }[]>([]);
+  const [goalPoint, setGoalPoint] = useState<{ lat: number; lng: number } | null>(null);
+  const [obZones, setObZones] = useState<{ lat: number; lng: number }[]>([]);
 
   if (status === "loading") {
     return <p>Laster inn...</p>;
@@ -51,6 +53,12 @@ const AdminDashboard = () => {
       return;
     }
 
+    // For start, goal, baskets og OB
+    if (!goalPoint || startPoints.length === 0) {
+      toast.error("Vennligst sett startpunkt (Tee) og sluttpunkt (mål)!");
+      return;
+    }
+
     const formData = new FormData();
     formData.append("name", name);
     formData.append("location", location);
@@ -59,21 +67,17 @@ const AdminDashboard = () => {
     formData.append("par", par.toString());
     formData.append("description", description);
     formData.append("difficulty", difficulty);
+
+    // Send bilde hvis valgt
     if (image) {
       formData.append("image", image);
     }
 
-    formData.append(
-      "holes",
-      JSON.stringify(
-        holes.map((hole) => ({
-          latitude: hole.latitude,
-          longitude: hole.longitude,
-          number: hole.number,
-          par: 3,
-        }))
-      )
-    );
+    // Legg til start, mål, kurver og OB
+    formData.append("start", JSON.stringify(startPoints));
+    formData.append("goal", JSON.stringify(goalPoint));
+    formData.append("baskets", JSON.stringify(holes));
+    formData.append("obZones", JSON.stringify(obZones));
 
     try {
       const response = await fetch("/api/courses", {
@@ -102,22 +106,22 @@ const AdminDashboard = () => {
             <h4 className="text-lg font-semibold">Velg markørtype</h4>
           </CardHeader>
           <CardContent className="space-y-3">
-  {[
-    { type: "bane", label: "Bane" },
-    { type: "start", label: "Tee" },
-    { type: "kurv", label: kurvLabel },
-    { type: "mål", label: "Mål" },
-    { type: "ob", label: "OB" }, // Legg til OB-knapp
-  ].map(({ type, label }) => (
-    <Button
-      key={type}
-      variant={selectedType === type ? "default" : "outline"}
-      onClick={() => setSelectedType(type as "bane" | "start" | "kurv" | "mål" | "ob")}
-    >
-      {label}
-    </Button>
-  ))}
-</CardContent>
+            {[
+              { type: "bane", label: "Bane" },
+              { type: "start", label: "Tee" },
+              { type: "kurv", label: kurvLabel },
+              { type: "mål", label: "Mål" },
+              { type: "ob", label: "OB" },
+            ].map(({ type, label }) => (
+              <Button
+                key={type}
+                variant={selectedType === type ? "default" : "outline"}
+                onClick={() => setSelectedType(type as "bane" | "start" | "kurv" | "mål" | "ob")}
+              >
+                {label}
+              </Button>
+            ))}
+          </CardContent>
           <CardContent className="mt-4">
             <h4 className="text-lg font-semibold">Avstandsmålinger</h4>
             <div className="bg-gray-100 p-3 rounded-md text-sm">
@@ -136,6 +140,9 @@ const AdminDashboard = () => {
             setDistanceMeasurements={setDistanceMeasurements}
             setHoles={setHoles}
             setKurvLabel={setKurvLabel}
+            setStartPoints={setStartPoints}
+            setGoalPoint={setGoalPoint}
+            setObZones={setObZones}
           />
         </div>
 

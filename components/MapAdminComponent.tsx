@@ -9,9 +9,9 @@ interface MapAdminProps {
   setDistanceMeasurements: (distances: string[]) => void;
   setHoles: (holes: { latitude: number; longitude: number; number: number; par: number }[]) => void;
   setKurvLabel: (label: string) => void;
-  // setStartPoints: (startPoints: { lat: number; lng: number }[]) => void; // Kommenter ut for nå
-  // setGoalPoint: (goalPoint: { lat: number; lng: number } | null) => void; // Kommenter ut for nå
-  // setObZones: (obZones: { lat: number; lng: number }[]) => void; // Kommenter ut for nå
+  setStartPoints: (startPoints: { lat: number; lng: number }[]) => void; // Legg til denne linjen
+  setGoalPoint: (goalPoint: { lat: number; lng: number } | null) => void; // Legg til denne linjen
+  setObZones: (obZones: { lat: number; lng: number }[]) => void; // Legg til denne linjen
 }
 
 // Dynamisk import av kart for å unngå SSR-problemer
@@ -22,9 +22,9 @@ const MapAdminComponent: React.FC<MapAdminProps> = ({
   setDistanceMeasurements,
   setHoles,
   setKurvLabel,
-  // setStartPoints,  // Passer startpunktene, kommentert ut
-  // setGoalPoint,   // Passer målpunktet, kommentert ut
-  // setObZones,      // Passer OB-soner, kommentert ut
+  setStartPoints,  // Mottar props for startpunktene
+  setGoalPoint,   // Mottar props for målpunktet
+  setObZones      // Mottar props for OB-soner
 }) => {
   const [isClient, setIsClient] = useState(false);
 
@@ -43,9 +43,9 @@ const MapAdminComponent: React.FC<MapAdminProps> = ({
         setDistanceMeasurements={setDistanceMeasurements}
         setHoles={setHoles}
         setKurvLabel={setKurvLabel}
-        // setStartPoints={setStartPoints}  // Kommenter ut for nå
-        // setGoalPoint={setGoalPoint}   // Kommenter ut for nå
-        // setObZones={setObZones}      // Kommenter ut for nå
+        setStartPoints={setStartPoints}  // Passer startpunktene
+        setGoalPoint={setGoalPoint}   // Passer målpunktet
+        setObZones={setObZones}      // Passer OB-soner
       />
     </div>
   );
