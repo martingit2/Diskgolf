@@ -47,18 +47,12 @@ const AdminDashboard = () => {
     const longitude = parseFloat((document.getElementById("courseLng") as HTMLInputElement).value);
     const par = parseInt((document.getElementById("coursePar") as HTMLInputElement).value, 10);
     const description = (document.getElementById("courseDescription") as HTMLInputElement).value;
-
+  
     if (!name || !location || isNaN(latitude) || isNaN(longitude) || isNaN(par) || !difficulty) {
       toast.error("Vennligst fyll ut alle feltene!");
       return;
     }
-
-    // For start, goal, baskets og OB
-    if (!goalPoint || startPoints.length === 0) {
-      toast.error("Vennligst sett startpunkt (Tee) og sluttpunkt (mål)!");
-      return;
-    }
-
+  
     const formData = new FormData();
     formData.append("name", name);
     formData.append("location", location);
@@ -67,24 +61,37 @@ const AdminDashboard = () => {
     formData.append("par", par.toString());
     formData.append("description", description);
     formData.append("difficulty", difficulty);
-
-    // Send bilde hvis valgt
+    formData.append("start", JSON.stringify(startPoints)); // Legg til startpunkter (Tee)
+    formData.append("goal", JSON.stringify(goalPoint)); // Legg til målpunkt
+    formData.append("baskets", JSON.stringify(holes)); // Legg til kurver
+    formData.append("obZones", JSON.stringify(obZones)); // Legg til OB-soner
+  
+    // Legg til bilde hvis det er valgt
     if (image) {
       formData.append("image", image);
     }
-
-    // Legg til start, mål, kurver og OB
-    formData.append("start", JSON.stringify(startPoints));
-    formData.append("goal", JSON.stringify(goalPoint));
-    formData.append("baskets", JSON.stringify(holes));
-    formData.append("obZones", JSON.stringify(obZones));
-
+  
+    console.log("Data som sendes til API:", {
+      name,
+      location,
+      latitude,
+      longitude,
+      par,
+      description,
+      difficulty,
+      startPoints,
+      goalPoint,
+      holes,
+      obZones,
+      image,
+    });
+  
     try {
       const response = await fetch("/api/courses", {
         method: "POST",
         body: formData,
       });
-
+  
       if (response.ok) {
         toast.success("Bane lagret!");
       } else {

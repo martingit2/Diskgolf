@@ -106,11 +106,6 @@ const MapAdminComponentNoSSR = ({
 
   // 🔄 Oppdater startpunkter, målpunkt og OB-soner når markører endres
   useEffect(() => {
-    if (typeof setStartPoints !== "function") {
-      console.error("setStartPoints er ikke en funksjon");
-      return;
-    }
-  
     const startPoints = markers
       .filter(marker => marker.type === "start")
       .map(marker => ({ lat: marker.latitude, lng: marker.longitude }));

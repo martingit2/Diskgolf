@@ -19,17 +19,23 @@ function calculateDistance(lat1: number, lon1: number, lat2: number, lon2: numbe
   return distance * 1000; // Returner avstanden i meter
 }
 
-// ✅ Henter alle baner inkludert start, mål, kurver og anmeldelser
+// ✅ Henter alle baner inkludert start, mål, kurver, anmeldelser og klubb
 export async function GET() {
   try {
     const courses = await prisma.course.findMany({
       include: {
-        holes: true, // Henter alle kurver (baskets)
+        start: true, // Henter alle startpunkter (Tee)
+        goal: true, // Henter målpunkt
+        baskets: true, // Henter alle kurver
+        obZones: true, // Henter alle OB-soner
         reviews: {
           select: { rating: true },
         },
+        club: true, // Inkluder klubb-data
       },
     });
+
+    console.log("Data hentet fra databasen:", courses); // Debugging: Logg data fra databasen
 
     const coursesWithRatingsAndDistance = courses.map(course => {
       const totalReviews = course.reviews.length;
@@ -38,21 +44,19 @@ export async function GET() {
           ? course.reviews.reduce((sum, review) => sum + review.rating, 0) / totalReviews
           : 0;
 
-      // Beregn total avstand basert på start- og målpunkt ELLER hullene
+      // Beregn total avstand basert på start- og målpunkt ELLER kurvene
       let totalDistance = 0;
 
       // Hvis start- og målpunkt er definert, bruk disse til å beregne avstanden
-      if (course.startLatitude && course.startLongitude && course.goalLatitude && course.goalLongitude) {
-        totalDistance = calculateDistance(course.startLatitude, course.startLongitude, course.goalLatitude, course.goalLongitude);
-      } else if (course.holes.length > 1) {
-        // Hvis ikke, beregn avstanden mellom hullene
-        for (let i = 0; i < course.holes.length - 1; i++) {
-          const hole1 = course.holes[i];
-          const hole2 = course.holes[i + 1];
-
-          if (hole1.latitude && hole1.longitude && hole2.latitude && hole2.longitude) {
-            totalDistance += calculateDistance(hole1.latitude, hole1.longitude, hole2.latitude, hole2.longitude);
-          }
+      if (course.start.length > 0 && course.goal) {
+        const startPoint = course.start[0]; // Første startpunkt (Tee)
+        totalDistance = calculateDistance(startPoint.latitude, startPoint.longitude, course.goal.latitude, course.goal.longitude);
+      } else if (course.baskets.length > 1) {
+        // Hvis ikke, beregn avstanden mellom kurvene
+        for (let i = 0; i < course.baskets.length - 1; i++) {
+          const basket1 = course.baskets[i];
+          const basket2 = course.baskets[i + 1];
+          totalDistance += calculateDistance(basket1.latitude, basket1.longitude, basket2.latitude, basket2.longitude);
         }
       }
 
@@ -71,69 +75,135 @@ export async function GET() {
   }
 }
 
-// ✅ Lagrer en ny bane med startposisjon, kurver og sluttmål
+// ✅ Lagrer en ny bane med startposisjon, kurver, sluttmål og klubb
 export async function POST(req: Request) {
   try {
-    const formData = await req.formData();
+    let name: string, location: string, latitude: number, longitude: number, description: string | null, par: number, difficulty: string, image: File | null, start: { lat: number; lng: number }[], goal: { lat: number; lng: number }, baskets: { latitude: number; longitude: number }[], obZones: { lat: number; lng: number }[], clubId: string | null;
 
-    const name = formData.get("name") as string;
-    const location = formData.get("location") as string;
-    const latitude = parseFloat(formData.get("latitude") as string);
-    const longitude = parseFloat(formData.get("longitude") as string);
-    const description = formData.get("description") as string | null;
-    const par = parseInt(formData.get("par") as string, 10);
-    let difficulty = formData.get("difficulty") as string;
-    const image = formData.get("image") as File | null;
-    const startLatitude = formData.get("startLatitude") ? parseFloat(formData.get("startLatitude") as string) : null;
-    const startLongitude = formData.get("startLongitude") ? parseFloat(formData.get("startLongitude") as string) : null;
-    const goalLatitude = formData.get("goalLatitude") ? parseFloat(formData.get("goalLatitude") as string) : null;
-    const goalLongitude = formData.get("goalLongitude") ? parseFloat(formData.get("goalLongitude") as string) : null;
-    const holes = formData.get("holes") ? JSON.parse(formData.get("holes") as string) : [];
+    const contentType = req.headers.get("content-type");
 
-    // ✅ Sikrer at `difficulty` er gyldig
-    const validDifficulties = ["Lett", "Middels", "Vanskelig"];
-    if (!validDifficulties.includes(difficulty)) {
-      difficulty = "Ukjent"; // Setter standardverdi hvis ugyldig input
+    if (contentType?.includes("multipart/form-data")) {
+      // Håndter FormData (fra AdminDashboard)
+      const formData = await req.formData();
+
+      name = formData.get("name") as string;
+      location = formData.get("location") as string;
+      latitude = parseFloat(formData.get("latitude") as string);
+      longitude = parseFloat(formData.get("longitude") as string);
+      description = formData.get("description") as string | null;
+      par = parseInt(formData.get("par") as string, 10);
+      difficulty = formData.get("difficulty") as string;
+      image = formData.get("image") as File | null;
+      start = JSON.parse(formData.get("start") as string); // Startpunkter (Tee)
+      goal = JSON.parse(formData.get("goal") as string); // Målpunkt
+      baskets = JSON.parse(formData.get("baskets") as string); // Kurver
+      obZones = JSON.parse(formData.get("obZones") as string); // OB-soner
+      clubId = formData.get("clubId") as string | null;
+
+      console.log("FormData mottatt:", {
+        name,
+        location,
+        latitude,
+        longitude,
+        description,
+        par,
+        difficulty,
+        image,
+        start,
+        goal,
+        baskets,
+        obZones,
+        clubId,
+      });
+    } else if (contentType?.includes("application/json")) {
+      // Håndter JSON (fra kartet)
+      const body = await req.json();
+
+      name = body.name;
+      location = body.location;
+      latitude = body.coords.lat;
+      longitude = body.coords.lng;
+      description = body.description || null;
+      par = body.par || 3;
+      difficulty = body.difficulty || "Ukjent";
+      image = null; // Kartet sender ikke bilder
+      start = body.start || [];
+      goal = body.goal || null;
+      baskets = body.baskets || [];
+      obZones = body.obZones || [];
+      clubId = body.clubId || null;
+
+      console.log("JSON-data mottatt:", {
+        name,
+        location,
+        latitude,
+        longitude,
+        description,
+        par,
+        difficulty,
+        image,
+        start,
+        goal,
+        baskets,
+        obZones,
+        clubId,
+      });
+    } else {
+      return NextResponse.json({ error: "Ugyldig forespørselstype" }, { status: 400 });
     }
 
-    // ✅ Valider at essensielle felt er til stede
+    // Validering av data
     if (!name || !location || isNaN(latitude) || isNaN(longitude) || isNaN(par) || !difficulty) {
+      console.error("Manglende data:", { name, location, latitude, longitude, par, difficulty });
       return NextResponse.json({ error: "Manglende data" }, { status: 400 });
     }
 
-    // ✅ Sjekker om bilde eksisterer og lagrer riktig URL
+    // Lagre bilde hvis det finnes
     let imageUrl: string | null = null;
     if (image) {
-      const filePath = path.join(process.cwd(), "public/uploads", image.name);
-      await writeFile(filePath, Buffer.from(await image.arrayBuffer())); // Lagrer bildet på serveren
-      imageUrl = `/uploads/${image.name}`; // Lager en offentlig URL til bildet
+      const fileName = `${Date.now()}-${image.name}`;
+      const filePath = path.join(process.cwd(), "public/uploads", fileName);
+      await writeFile(filePath, Buffer.from(await image.arrayBuffer()));
+      imageUrl = `/uploads/${fileName}`;
     }
 
-    // ✅ Lagre til databasen
+    // Opprett bane i databasen
     const newCourse = await prisma.course.create({
       data: {
         name,
         location,
         latitude,
         longitude,
-        startLatitude,
-        startLongitude,
-        goalLatitude,
-        goalLongitude,
         description,
         par,
         difficulty,
         image: imageUrl,
-        holes: {
-          create: holes.map((hole: { latitude: number; longitude: number; number: number; par: number }) => ({
-            latitude: hole.latitude,
-            longitude: hole.longitude,
-            number: hole.number,
-            par: hole.par,
+        start: {
+          create: start.map((point: { lat: number; lng: number }) => ({
+            latitude: point.lat,
+            longitude: point.lng,
           })),
         },
+        goal: {
+          create: goal ? { latitude: goal.lat, longitude: goal.lng } : undefined,
+        },
+        baskets: {
+          create: baskets.map((basket: { latitude: number; longitude: number }) => ({
+            latitude: basket.latitude,
+            longitude: basket.longitude,
+          })),
+        },
+        obZones: {
+          create: obZones.map((ob: { lat: number; lng: number }) => ({
+            latitude: ob.lat,
+            longitude: ob.lng,
+          })),
+        },
+        clubId: clubId || null,
       },
     });
+
+    console.log("Ny bane opprettet:", newCourse);
 
     return NextResponse.json(newCourse, { status: 201 });
   } catch (error) {

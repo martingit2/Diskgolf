@@ -20,9 +20,11 @@ type Course = {
   difficulty?: string;
   averageRating: number;
   totalReviews: number;
-  holes: { distance: number }[];
+  holes?: { distance: number }[]; // Valgfritt felt for avstander mellom kurver
   totalDistance?: number;
+  numHoles?: number; // Nytt felt for antall kurver
   club?: { name: string; logoUrl: string };
+  baskets?: { latitude: number; longitude: number }[]; // Legg til baskets-arrayet
 };
 
 type CourseCardProps = {
@@ -37,9 +39,11 @@ export function CourseCard({ course, isFavorite, onToggleFavorite }: CourseCardP
 
   const shouldShowReadMore = course.description.length > 100;
 
+  // Beregn antall kurver basert på baskets-arrayet
+  const numHoles = course.baskets?.length ?? 0;
+
   return (
     <Card className="shadow-lg border border-gray-200 flex flex-col transform transition-all duration-300 hover:scale-105 hover:shadow-2xl rounded-xl overflow-hidden">
-      
       {/* 📌 Bildeseksjon med fancy effekter */}
       <div className="relative">
         {/* 🔥 Gradient-overlay og myk skygge */}
@@ -87,7 +91,7 @@ export function CourseCard({ course, isFavorite, onToggleFavorite }: CourseCardP
           </div>
           <div className="flex text-sm justify-between text-gray-600">
             <p className="font-medium">Antall kurver:</p>
-            <p>{course.holes.length}</p>
+            <p>{numHoles}</p> {/* Vis antall kurver basert på baskets-arrayet */}
           </div>
           <div className="flex text-sm justify-between text-gray-600">
             <p className="font-medium">Total avstand:</p>

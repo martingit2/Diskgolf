@@ -22,8 +22,9 @@ export default function BaneoversiktPage() {
     difficulty?: string;
     averageRating: number;
     totalReviews: number;
-    holes: { distance: number }[];
+    holes?: { distance: number }[]; // Legg til "?" for å indikere at dette feltet er valgfritt
     totalDistance?: number;
+    baskets?: { latitude: number; longitude: number }[]; // Legg til baskets-arrayet
     club?: { name: string; logoUrl: string };
   };
 
@@ -37,9 +38,12 @@ export default function BaneoversiktPage() {
           throw new Error(data.error || "Failed to fetch courses");
         }
 
+        console.log("Data fra API:", data); // Debugging: Logg data fra API
+
         const formattedData = data.map((course: Course) => ({
           ...course,
-          holes: course.holes.map(hole => ({ distance: hole.distance ?? 0 })), // Sikrer at distance aldri er undefined
+          holes: course.holes?.map(hole => ({ distance: hole.distance ?? 0 })) ?? [], // Sikrer at distance aldri er undefined
+          numHoles: course.baskets?.length ?? 0, // Legg til antall kurver basert på baskets-arrayet
         }));
 
         setCourses(formattedData); // Bruker totalDistance direkte fra API-et
@@ -91,7 +95,6 @@ export default function BaneoversiktPage() {
       <Map />
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mt-6 items-start">
-
         {filteredCourses.map((course) => (
           <CourseCard
             key={course.id}
