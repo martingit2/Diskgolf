@@ -3,11 +3,11 @@
 import { useState, useEffect } from "react";
 import { useSession } from "next-auth/react";
 import TabNavigation from "../_components/TabNavigation";
-import CreateClubForm from "../_components/CreateClubForm"; // Importere CreateClubForm
+import CreateClubForm from "../_components/CreateClubForm";
 import ClubSettingsForm from "../_components/ClubSettingsForm";
 import ClubMembers from "../_components/ClubMembers";
-import UserClubsList from "../_components/UserClubList"; // Importere UserClubsList
-import toast from "react-hot-toast"; // Importere toast for tilbakemeldinger
+import UserClubsList from "../_components/UserClubList";
+import toast from "react-hot-toast";
 import { updateClubSettings } from "@/app/actions/update-club-settings";
 import CreateClubNewsForm from "../_components/CreateClubNewsForm"; // Importere CreateClubNewsForm
 
@@ -22,7 +22,7 @@ const ClubSettingsPage = () => {
   // Fallback for userRole hvis session?.user?.role er undefined
   const userRole = session?.user?.role || "guest"; // Setter en standardverdi ("guest")
 
-  // Funksjon som håndterer skjemaets innsending og suksessmelding
+  // Funksjon som håndterer skjemaets innsending og suksessmelding.
   const onCreateClubSubmit = (values: any) => {
     setIsCreatingClub(false);
     toast.success("Klubben ble opprettet!"); // Vis en enkelt suksessmelding etter innsending
@@ -83,7 +83,7 @@ const ClubSettingsPage = () => {
         selectedTab={selectedTab}
         setSelectedTab={setSelectedTab}
         userRole={userRole}
-        clubId={selectedClubId || ""}  // Passer på at clubId sendes riktig
+        clubId={selectedClubId || ""}  // Sørg for at clubId sendes riktig
       />
 
       {/* Innholdet som vises basert på valgt tab */}
