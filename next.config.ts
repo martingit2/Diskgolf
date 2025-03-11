@@ -13,7 +13,8 @@ const nextConfig: NextConfig = {
     domains: [
       "localhost",
       "diskgolf.app",  // Oppdater til det endelige domenet
-      "spill.diskgolf.app", 
+      "spill.diskgolf.app",
+      "res.cloudinary.com", 
     ],
   },
 

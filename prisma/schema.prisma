@@ -237,15 +237,15 @@ model Start {  // Flere tees per bane
   courseId  String   // Relasjon til Course
   latitude  Float
   longitude Float
-  course    Course   @relation(fields: [courseId], references: [id])
+  course    Course   @relation(fields: [courseId], references: [id], onDelete: Cascade)
 }
 
 model Goal {  // Ett sluttpunkt per bane
   id        String   @id @default(uuid())
-  courseId  String   @unique  // Unik, fordi en bane kan ha kun ett sluttpunkt
+  courseId  String   @unique  // En bane kan kun ha ett sluttpunkt
   latitude  Float
   longitude Float
-  course    Course   @relation(fields: [courseId], references: [id])
+  course    Course   @relation(fields: [courseId], references: [id], onDelete: Cascade)
 }
 
 model Basket {  // Flere kurver per bane
@@ -253,7 +253,7 @@ model Basket {  // Flere kurver per bane
   courseId  String   // Relasjon til Course
   latitude  Float
   longitude Float
-  course    Course   @relation(fields: [courseId], references: [id])
+  course    Course   @relation(fields: [courseId], references: [id], onDelete: Cascade)
 }
 
 model OB {  // Flere OB-soner per bane
@@ -261,5 +261,5 @@ model OB {  // Flere OB-soner per bane
   courseId  String   // Relasjon til Course
   latitude  Float
   longitude Float
-  course    Course   @relation(fields: [courseId], references: [id])
+  course    Course   @relation(fields: [courseId], references: [id], onDelete: Cascade)
 }

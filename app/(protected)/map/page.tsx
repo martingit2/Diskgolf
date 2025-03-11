@@ -3,7 +3,7 @@
 import { useSession } from "next-auth/react";
 import { useState } from "react";
 import dynamic from "next/dynamic";
-import { toast, Toaster } from "react-hot-toast";
+import { toast } from "react-hot-toast";
 import { Card, CardHeader, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -20,89 +20,104 @@ const AdminDashboard = () => {
   const [difficulty, setDifficulty] = useState<string>("Ukjent");
   const [holes, setHoles] = useState<{ latitude: number; longitude: number; number: number; par: number }[]>([]);
   const [kurvLabel, setKurvLabel] = useState<string>("Kurv 1");
-
-  // For start, goal, baskets og OB
   const [startPoints, setStartPoints] = useState<{ lat: number; lng: number }[]>([]);
   const [goalPoint, setGoalPoint] = useState<{ lat: number; lng: number } | null>(null);
   const [obZones, setObZones] = useState<{ lat: number; lng: number }[]>([]);
 
-  if (status === "loading") {
-    return <p>Laster inn...</p>;
-  }
+  if (status === "loading") return <p>Laster inn...</p>;
+  if (!session || session.user.role !== "ADMIN") return <p>Du har ikke tilgang til denne siden.</p>;
 
-  if (!session || session.user.role !== "ADMIN") {
-    return <p>Du har ikke tilgang til denne siden.</p>;
-  }
+  const handleImageUpload = async (file: File) => {
+    try {
+      const formData = new FormData();
+      formData.append("file", file);
 
-  const handleImageUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
-    if (event.target.files && event.target.files[0]) {
-      setImage(event.target.files[0]);
+      const response = await fetch("/api/upload", {
+        method: "POST",
+        body: formData,
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.error || "Bildeopplasting feilet");
+      }
+
+      return await response.json();
+    } catch (error) {
+      console.error("Feil under bildeopplasting:", error);
+      toast.error(error instanceof Error ? error.message : "Ukjent feil");
+      return null;
     }
   };
 
   const handleSaveCourse = async () => {
-    const name = (document.getElementById("courseName") as HTMLInputElement).value;
-    const location = (document.getElementById("courseLocation") as HTMLInputElement).value;
-    const latitude = parseFloat((document.getElementById("courseLat") as HTMLInputElement).value);
-    const longitude = parseFloat((document.getElementById("courseLng") as HTMLInputElement).value);
-    const par = parseInt((document.getElementById("coursePar") as HTMLInputElement).value, 10);
-    const description = (document.getElementById("courseDescription") as HTMLInputElement).value;
+    // Hent verdier fra DOM
+    const getValue = (id: string) => (document.getElementById(id) as HTMLInputElement).value;
+    
+    const courseData = {
+      name: getValue("courseName"),
+      location: getValue("courseLocation"),
+      latitude: parseFloat(getValue("courseLat")),
+      longitude: parseFloat(getValue("courseLng")),
+      par: parseInt(getValue("coursePar"), 10),
+      description: getValue("courseDescription"),
+      difficulty,
+      start: startPoints,
+      goal: goalPoint,
+      baskets: holes,
+      obZones,
+      image: null as string | null,
+    };
   
-    if (!name || !location || isNaN(latitude) || isNaN(longitude) || isNaN(par) || !difficulty) {
-      toast.error("Vennligst fyll ut alle feltene!");
+    if (!courseData.name || !courseData.location || isNaN(courseData.latitude) || 
+        isNaN(courseData.longitude) || isNaN(courseData.par) || !difficulty) {
+      toast.error("Vennligst fyll ut alle påkrevde feltene!");
       return;
     }
   
-    const formData = new FormData();
-    formData.append("name", name);
-    formData.append("location", location);
-    formData.append("latitude", latitude.toString());
-    formData.append("longitude", longitude.toString());
-    formData.append("par", par.toString());
-    formData.append("description", description);
-    formData.append("difficulty", difficulty);
-    formData.append("start", JSON.stringify(startPoints)); // Legg til startpunkter (Tee)
-    formData.append("goal", JSON.stringify(goalPoint)); // Legg til målpunkt
-    formData.append("baskets", JSON.stringify(holes)); // Legg til kurver
-    formData.append("obZones", JSON.stringify(obZones)); // Legg til OB-soner
-  
-    // Legg til bilde hvis det er valgt
-    if (image) {
-      formData.append("image", image);
-    }
-  
-    console.log("Data som sendes til API:", {
-      name,
-      location,
-      latitude,
-      longitude,
-      par,
-      description,
-      difficulty,
-      startPoints,
-      goalPoint,
-      holes,
-      obZones,
-      image,
-    });
-  
     try {
+      let imageUrl = null;
+      // Legg til logg for å se verdien av image før opplasting
+      console.log("Image file state før opplasting:", image);
+  
+      if (image) {
+        const uploadResult = await handleImageUpload(image);
+        console.log("Upload result:", uploadResult);
+        if (!uploadResult?.secure_url) {
+          throw new Error("Kunne ikke laste opp bildet");
+        }
+        imageUrl = uploadResult.secure_url;
+        console.log("Secure URL fra Cloudinary:", imageUrl);
+      }
+  
       const response = await fetch("/api/courses", {
         method: "POST",
-        body: formData,
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          ...courseData,
+          image: imageUrl,
+        }),
       });
+  
+      const responseData = await response.json();
   
       if (response.ok) {
         toast.success("Bane lagret!");
+        setStartPoints([]);
+        setGoalPoint(null);
+        setObZones([]);
+        setHoles([]);
+        setImage(null);
+        ["courseName", "courseLocation", "courseLat", "courseLng", "coursePar", "courseDescription"]
+          .forEach(id => ((document.getElementById(id) as HTMLInputElement).value = ""));
       } else {
-        toast.error("Kunne ikke lagre bane.");
+        throw new Error(responseData.error || "Kunne ikke lagre bane");
       }
     } catch (error) {
-      console.error("Feil ved lagring av bane:", error);
-      toast.error("Feil ved lagring av bane.");
+      console.error("Lagringsfeil:", error);
+      toast.error(error instanceof Error ? error.message : "Ukjent feil");
     }
   };
-
   return (
     <div className="p-6 flex flex-col items-center">
       <h1 className="text-4xl font-bold text-gray-900">Admin Dashboard</h1>
@@ -123,12 +138,13 @@ const AdminDashboard = () => {
               <Button
                 key={type}
                 variant={selectedType === type ? "default" : "outline"}
-                onClick={() => setSelectedType(type as "bane" | "start" | "kurv" | "mål" | "ob")}
+                onClick={() => setSelectedType(type as any)}
               >
                 {label}
               </Button>
             ))}
           </CardContent>
+          
           <CardContent className="mt-4">
             <h4 className="text-lg font-semibold">Avstandsmålinger</h4>
             <div className="bg-gray-100 p-3 rounded-md text-sm">
@@ -155,49 +171,90 @@ const AdminDashboard = () => {
 
         <Card className="w-80">
           <CardHeader>
-            <h3 className="text-xl font-semibold">Legg til en ny bane</h3>
+            <h3 className="text-xl font-semibold">Legg til ny bane</h3>
           </CardHeader>
           <CardContent className="space-y-4">
-            <label className="block font-medium">Navn på bane:</label>
-            <Input type="text" id="courseName" />
+            <div className="space-y-2">
+              <label className="block font-medium">Navn på bane:</label>
+              <Input type="text" id="courseName" required />
+            </div>
 
-            <label className="block font-medium">Sted:</label>
-            <Input type="text" id="courseLocation" />
+            <div className="space-y-2">
+              <label className="block font-medium">Sted:</label>
+              <Input type="text" id="courseLocation" required />
+            </div>
 
-            <label className="block font-medium">Latitude:</label>
-            <Input type="number" id="courseLat" />
+            <div className="grid grid-cols-2 gap-4">
+              <div className="space-y-2">
+                <label className="block font-medium">Latitude:</label>
+                <Input type="number" id="courseLat" step="any" required />
+              </div>
+              <div className="space-y-2">
+                <label className="block font-medium">Longitude:</label>
+                <Input type="number" id="courseLng" step="any" required />
+              </div>
+            </div>
 
-            <label className="block font-medium">Longitude:</label>
-            <Input type="number" id="courseLng" />
+            <div className="space-y-2">
+              <label className="block font-medium">Par:</label>
+              <Input type="number" id="coursePar" min={1} defaultValue={3} required />
+            </div>
 
-            <label className="block font-medium">Par (min. 1):</label>
-            <Input type="number" id="coursePar" min={1} defaultValue={3} />
+            <div className="space-y-2">
+              <label className="block font-medium">Beskrivelse:</label>
+              <Textarea id="courseDescription" />
+            </div>
 
-            <label className="block font-medium">Beskrivelse:</label>
-            <Textarea id="courseDescription" />
+            <div className="space-y-2">
+              <label className="block font-medium">Vanskelighetsgrad:</label>
+              <Select onValueChange={setDifficulty} required>
+                <SelectTrigger>
+                  <SelectValue placeholder="Velg vanskelighetsgrad" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="Lett">Lett</SelectItem>
+                  <SelectItem value="Middels">Middels</SelectItem>
+                  <SelectItem value="Vanskelig">Vanskelig</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
 
-            <label className="block font-medium">Vanskelighetsgrad:</label>
-            <Select onValueChange={setDifficulty}>
-              <SelectTrigger>
-                <SelectValue placeholder="Velg vanskelighetsgrad" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="Lett">Lett</SelectItem>
-                <SelectItem value="Middels">Middels</SelectItem>
-                <SelectItem value="Vanskelig">Vanskelig</SelectItem>
-              </SelectContent>
-            </Select>
+            <div className="space-y-2">
+              <label className="block font-medium">Bilde:</label>
+              <Input 
+                type="file" 
+                accept="image/*" 
+                onChange={(e) => {
+                  if (!e.target.files?.[0]) return;
+                  const file = e.target.files[0];
+                  if (file.size > 5 * 1024 * 1024) {
+                    toast.error("Maks filstørrelse er 5MB");
+                    return;
+                  }
+                  if (!["image/jpeg", "image/png", "image/webp"].includes(file.type)) {
+                    toast.error("Kun JPG, PNG og WEBP er tillatt");
+                    return;
+                  }
+                  setImage(file);
+                }}
+                className="cursor-pointer"
+              />
+              {image && (
+                <p className="text-sm text-gray-500 mt-1">
+                  Valgt bilde: {image.name} ({Math.round(image.size / 1024)} KB)
+                </p>
+              )}
+            </div>
 
-            <label className="block font-medium">Last opp bilde:</label>
-            <Input type="file" accept="image/*" onChange={handleImageUpload} />
-
-            <Button className="w-full bg-green-600 text-white" onClick={handleSaveCourse}>
-              Legg til bane
+            <Button 
+              className="w-full bg-green-600 hover:bg-green-700 text-white"
+              onClick={handleSaveCourse}
+            >
+              Lagre bane
             </Button>
           </CardContent>
         </Card>
       </div>
-      <Toaster />
     </div>
   );
 };

@@ -50,12 +50,13 @@ export function CourseCard({ course, isFavorite, onToggleFavorite }: CourseCardP
         <div className="absolute inset-0 bg-gradient-to-t from-black/10 via-black/5 to-transparent rounded-t-xl pointer-events-none"></div>
 
         <Image
-          src={course.image || "/courses/default-course.png"}
-          alt={course.name}
-          width={300}
-          height={200}
-          className="w-full h-48 object-cover rounded-t-xl shadow-lg"
-        />
+  src={course.image || "https://res.cloudinary.com/dmuhg7btj/image/upload/v1741665222/discgolf/courses/file_d2gyo0.webp"}
+  alt={course.name}
+  width={300}
+  height={200}
+  className="w-full h-48 object-cover rounded-t-xl shadow-lg"
+/>
+
 
         {/* 💎 Fancy favoritt-knapp med glass-effekt */}
         <button
@@ -94,7 +95,7 @@ export function CourseCard({ course, isFavorite, onToggleFavorite }: CourseCardP
             <p>{numHoles}</p> {/* Vis antall kurver basert på baskets-arrayet */}
           </div>
           <div className="flex text-sm justify-between text-gray-600">
-            <p className="font-medium">Total avstand:</p>
+            <p className="font-medium">Banelengde:</p>
             <p>{course.totalDistance !== undefined ? `${course.totalDistance.toFixed(2)} m` : "Ukjent"}</p>
           </div>
 
