@@ -50,18 +50,11 @@ export const authOptions: AuthOptions = {
 
         // Håndter tofaktorautentisering
         if (existingUser.isTwoFactorEnable) {
-          const twoFactorConfirmation = await getTwoFactorConfirmationByUserId(
-            existingUser.id
-          );
-
+          const twoFactorConfirmation = await getTwoFactorConfirmationByUserId(existingUser.id);
           if (!twoFactorConfirmation) {
-            console.error(
-              "Tofaktorautentisering mangler bekreftelse for bruker:",
-              user.id
-            );
+            console.error("Tofaktorautentisering mangler bekreftelse for bruker:", user.id);
             return false;
           }
-
           // Slett bekreftelsen etter vellykket validering
           await client.twoFactorConfirmation.delete({
             where: { id: twoFactorConfirmation.id },
@@ -78,13 +71,17 @@ export const authOptions: AuthOptions = {
     async session({ token, session }) {
       if (token.sub && session.user) {
         session.user.id = token.sub;
-        session.user.role = token.role as UserRole || "USER"; // 🎯 Fallback til "USER" hvis `role` er undefined
+        session.user.role = (token.role as UserRole) || "USER"; // Fallback til "USER" hvis role mangler
         session.user.isTwoFactorEnable = token.isTwoFactorEnable as boolean;
         session.user.name = token.name || "Ukjent navn";
         session.user.email = token.email || "Ukjent e-post";
         session.user.isOAuth = token.isOAuth as boolean;
-
-        console.log("🔍 Session returnerer:", session); // Debugging
+        // Sjekk om token.image er en streng
+        session.user.image =
+          typeof token.image === "string" && token.image.trim() !== ""
+            ? token.image
+            : null;
+        console.log("🔍 Session returnerer:", session);
       }
       return session;
     },
@@ -94,7 +91,6 @@ export const authOptions: AuthOptions = {
 
       try {
         const existingUser = await getUserById(token.sub);
-
         if (!existingUser) {
           console.error("Fant ikke bruker for token.sub:", token.sub);
           return token;
@@ -105,10 +101,15 @@ export const authOptions: AuthOptions = {
         token.isOAuth = !!existingAccount;
         token.name = existingUser.name;
         token.email = existingUser.email;
-        token.role = existingUser.role as UserRole || "USER"; // 🎯 Sørger for at `role` alltid er satt
+        token.role = (existingUser.role as UserRole) || "USER";
         token.isTwoFactorEnable = existingUser.isTwoFactorEnable;
+        // Sett token.image kun hvis den er en streng og ikke tom
+        token.image =
+          typeof existingUser.image === "string" && existingUser.image.trim() !== ""
+            ? existingUser.image
+            : null;
 
-        console.log("🔍 JWT returnerer token:", token); // Debugging
+        console.log("🔍 JWT returnerer token:", token);
         return token;
       } catch (error) {
         console.error("Feil i JWT callback:", error);
@@ -125,7 +126,7 @@ export default NextAuth(authOptions);
 export const auth = async () => {
   try {
     const session = await getServerSession(authOptions);
-    console.log("🔍 Server-session:", session); // Debugging
+    console.log("🔍 Server-session:", session);
     return session || null;
   } catch (error) {
     console.error("Feil ved henting av server-sesjon:", error);

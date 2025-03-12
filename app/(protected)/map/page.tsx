@@ -227,8 +227,8 @@ const AdminDashboard = () => {
                 onChange={(e) => {
                   if (!e.target.files?.[0]) return;
                   const file = e.target.files[0];
-                  if (file.size > 5 * 1024 * 1024) {
-                    toast.error("Maks filstørrelse er 5MB");
+                  if (file.size > 10 * 1024 * 1024) {
+                    toast.error("Maks filstørrelse er 10MB");
                     return;
                   }
                   if (!["image/jpeg", "image/png", "image/webp"].includes(file.type)) {

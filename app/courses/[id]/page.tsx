@@ -20,6 +20,10 @@ import {
   Wind,
   Cloud,
 } from "lucide-react";
+import WriteReview from "@/components/WriteReview";
+
+// Importer WriteReview-komponenten (juster stien etter hvor den ligger)
+
 
 export const dynamic = "force-dynamic";
 
@@ -55,7 +59,6 @@ export default async function CoursePage({
     }
     const reviews = await reviewsResponse.json();
 
-
     function translateCondition(condition: string): string {
       const mapping: Record<string, string> = {
         lightsnow: "Lett snøfall",
@@ -67,7 +70,7 @@ export default async function CoursePage({
         showers: "Byger",
         // legg til flere oversettelser etter behov
       };
-    
+
       return mapping[condition] || condition;
     }
 
@@ -190,29 +193,26 @@ export default async function CoursePage({
                     <span>{course.totalDistance.toFixed(2)} m</span>
                   </div>
                 )}
-               {course.averageRating !== undefined && (
-  <div className="flex items-center gap-2">
-    <Star className="w-5 h-5 text-gray-500" />
-    <span className="font-medium">Gj.snittvurdering:</span>
-    <div className="flex items-center gap-1">
-      <span className="text-yellow-500">
-        {'★'.repeat(Math.round(course.averageRating))}
-      </span>
-      <span className="text-gray-700">
-        {course.averageRating} {course.totalReviews ? `(${course.totalReviews} anmeldelser)` : ""}
-      </span>
-    </div>
-  </div>
-)}
-
-                
-                
-
+                {course.averageRating !== undefined && (
+                  <div className="flex items-center gap-2">
+                    <Star className="w-5 h-5 text-gray-500" />
+                    <span className="font-medium">Gj.snittvurdering:</span>
+                    <div className="flex items-center gap-1 whitespace-nowrap">
+                      <span className="text-yellow-500">
+                        {"★".repeat(Math.round(course.averageRating))}
+                      </span>
+                      <span className="text-gray-700">
+                        {course.averageRating}
+                        {course.totalReviews ? ` (${course.totalReviews} anmeldelser)` : ""}
+                      </span>
+                    </div>
+                  </div>
+                )}
                 {/* Separator */}
                 <hr className="my-4 border-t border-gray-300" />
-
                 {/* Tilleggsinfo */}
                 <div>
+                  <h4 className="font-semibold text-gray-900 mb-2">Tilleggsinfo</h4>
                   <div className="space-y-2 text-sm">
                     <div className="flex items-center gap-2">
                       <User className="w-5 h-5 text-gray-500" />
@@ -236,62 +236,108 @@ export default async function CoursePage({
 
             {/* Værdata-boks */}
             {weatherData && (
-  <div className="p-6 bg-white border border-gray-100 rounded-lg shadow-md text-gray-800">
-    <h3 className="text-xl font-semibold mb-3 text-gray-900">
-      Banens værforhold
-    </h3>
-    <div className="flex items-center gap-2">
-      <Sun className="w-6 h-6 text-yellow-500" />
-      <p className="text-sm">
-        Temperatur: <span className="font-medium">{weatherData.temperature} °C</span>
-      </p>
-    </div>
-    <div className="flex items-center gap-2 mt-1">
-      <Wind className="w-6 h-6 text-blue-500" />
-      <p className="text-sm">
-        Vind: <span className="font-medium">{weatherData.windSpeed} m/s</span>
-      </p>
-    </div>
-    <div className="flex items-center gap-2 mt-1">
-      <Cloud className="w-6 h-6 text-gray-500" />
-      <p className="text-sm">
-        Forhold:{" "}
-        <span className="font-medium">
-          {translateCondition(weatherData.condition)}
-        </span>
-      </p>
-    </div>
-    <p className="text-xs text-gray-500 mt-2">
-      Oppdatert: {new Date(weatherData.updatedAt).toLocaleString()}
-    </p>
-  </div>
-)}
+              <div className="p-6 bg-white border border-gray-100 rounded-lg shadow-md text-gray-800">
+                <h3 className="text-xl font-semibold mb-3 text-gray-900">
+                  Banens værforhold
+                </h3>
+                <div className="flex items-center gap-2">
+                  <Sun className="w-6 h-6 text-yellow-500" />
+                  <p className="text-sm">
+                    Temperatur:{" "}
+                    <span className="font-medium">{weatherData.temperature} °C</span>
+                  </p>
+                </div>
+                <div className="flex items-center gap-2 mt-1">
+                  <Wind className="w-6 h-6 text-blue-500" />
+                  <p className="text-sm">
+                    Vind:{" "}
+                    <span className="font-medium">{weatherData.windSpeed} m/s</span>
+                  </p>
+                </div>
+                <div className="flex items-center gap-2 mt-1">
+                  <Cloud className="w-6 h-6 text-gray-500" />
+                  <p className="text-sm">
+                    Forhold:{" "}
+                    <span className="font-medium">
+                      {translateCondition(weatherData.condition)}
+                    </span>
+                  </p>
+                </div>
+                <p className="text-xs text-gray-500 mt-2">
+                  Oppdatert: {new Date(weatherData.updatedAt).toLocaleString()}
+                </p>
+              </div>
+            )}
           </div>
         </div>
 
-        {/* Anmeldelser */}
-        <div className="mt-8">
-          <h2 className="text-xl font-semibold mb-4">Anmeldelser</h2>
-          {reviews.length > 0 ? (
-            <div className="space-y-4">
-              {reviews.map(
-                (review: { id: string; rating: number; comment: string }) => (
-                  <div
-                    key={review.id}
-                    className="border rounded p-4 shadow-md bg-white"
-                  >
-                    <p className="text-yellow-500">
-                      {"★".repeat(review.rating)}
-                    </p>
-                    <p className="italic text-gray-700">{review.comment}</p>
+                 {/* Anmeldelser */}
+<div className="mt-8">
+  <h2 className="text-2xl font-bold mb-6 text-gray-900">Anmeldelser</h2>
+  {reviews.length > 0 ? (
+    <div className="space-y-6">
+      {reviews.map(
+        (review: {
+          id: string;
+          rating: number;
+          comment: string;
+          user?: {
+            name?: string;
+            image?: string;
+          };
+        }) => (
+          <div
+            key={review.id}
+            className="border border-gray-300 rounded-xl p-5 shadow-lg bg-white space-y-4 transition-transform duration-200 hover:scale-105"
+          >
+            {/* Stjerner og navn */}
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-4">
+                {/* Profilbilde */}
+                {review.user?.image ? (
+                  <img
+                    src={review.user.image}
+                    alt={review.user.name || "Bruker"}
+                    className="w-12 h-12 rounded-full object-cover border-2 border-gray-300 shadow-md"
+                  />
+                ) : (
+                  <div className="w-12 h-12 rounded-full bg-gray-200 flex items-center justify-center text-gray-500 border border-gray-300 shadow-md">
+                    <User className="w-6 h-6" />
                   </div>
-                )
-              )}
+                )}
+
+                {/* Navn */}
+                <span className="font-semibold text-lg text-gray-800">
+                  {review.user?.name || "Ukjent bruker"}
+                </span>
+              </div>
+
+              {/* Stjerner */}
+              <span className="text-yellow-500 text-xl font-bold">
+                {"★".repeat(review.rating)}
+              </span>
             </div>
-          ) : (
-            <p className="text-gray-500">Ingen anmeldelser enda.</p>
-          )}
-        </div>
+
+            {/* Kommentar */}
+            <p className="text-gray-700 italic leading-relaxed border-l-4 border-green-500 pl-4">
+              {review.comment}
+            </p>
+          </div>
+        )
+      )}
+    </div>
+  ) : (
+    <p className="text-gray-500">Ingen anmeldelser enda.</p>
+  )}
+
+  {/* Skriv ny anmeldelse */}
+  <div className="mt-8">
+    <WriteReview courseId={course.id} />
+  </div>
+</div>
+
+
+
       </div>
     );
   } catch (error) {

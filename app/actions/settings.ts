@@ -1,11 +1,9 @@
-/** 
+/**
  * Filnavn: settings.ts
- * Beskrivelse: Serverfunksjon for å håndtere oppdatering av brukerinnstillinger. 
- * Håndterer oppdatering av navn, e-post, rolle og passord, samt e-postverifisering for nye adresser.
+ * Beskrivelse: Serverfunksjon for å håndtere oppdatering av brukerinnstillinger,
+ * inkludert opplasting av profilbilde.
  * Utvikler: Martin Pettersen
  */
-
-
 
 "use server";
 
@@ -18,6 +16,7 @@ import { generateVerificationToken } from "../lib/tokens";
 import { sendVerificationEmail } from "../lib/mail";
 import client from "../lib/prismadb";
 
+// ✅ Oppdater SettingsSchema til å inkludere image (valgfritt)
 export const settings = async (values: z.infer<typeof SettingsSchema>) => {
   console.log("Mottatte verdier fra frontend:", values);
 
@@ -37,15 +36,15 @@ export const settings = async (values: z.infer<typeof SettingsSchema>) => {
 
   console.log("Bruker i databasen:", dbUser);
 
+  // Hvis brukeren logger inn via OAuth, ikke oppdater e-post/passord
   if (user.isOAuth) {
     values.email = undefined;
     values.password = undefined;
     values.newPassword = undefined;
-  
   }
 
   try {
-    // Håndter e-postoppdatering
+    // Oppdater e-post
     if (values.email && values.email !== dbUser.email) {
       console.log("Oppdaterer e-post...");
       const existingUser = await getUserByEmail(values.email);
@@ -61,7 +60,7 @@ export const settings = async (values: z.infer<typeof SettingsSchema>) => {
       return { success: "Verifikasjons-e-post sendt!" };
     }
 
-    // Håndter passordoppdatering
+    // Oppdater passord
     if (values.password && values.newPassword) {
       console.log("Validerer passord...");
 
@@ -82,8 +81,11 @@ export const settings = async (values: z.infer<typeof SettingsSchema>) => {
 
       console.log("Oppdaterer passord...");
       const hashedPassword = await bcrypt.hash(values.newPassword, 10);
-      dbUser.hashedPassword = hashedPassword; // Oppdaterer passordet
+      dbUser.hashedPassword = hashedPassword;
     }
+
+    // Oppdater image: Hvis values.image er tom streng, sett det til null
+    const updatedImage = values.image && values.image.trim() !== "" ? values.image : null;
 
     // Forbered oppdateringsdata
     const updatedData = {
@@ -91,6 +93,7 @@ export const settings = async (values: z.infer<typeof SettingsSchema>) => {
       email: values.email || dbUser.email,
       role: values.role || dbUser.role,
       hashedPassword: dbUser.hashedPassword,
+      image: updatedImage, // Oppdater profilbilde til URL eller null
     };
 
     console.log("Oppdaterer bruker i databasen...");

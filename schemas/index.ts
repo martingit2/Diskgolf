@@ -34,6 +34,7 @@ const passwordValidation = z
     isTwoFactorEnabled: z.optional(z.boolean()),
     password: z.optional(z.string()), // Ingen forhåndsvalidering her
     newPassword: z.optional(z.string()), // Ingen forhåndsvalidering her
+    image: z.string().url().optional(), // <-- Nytt felt
   })
   .superRefine((data, ctx) => {
     // Hvis brukeren forsøker å oppdatere passord, må begge feltene være oppgitt og valide

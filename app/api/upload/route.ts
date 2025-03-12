@@ -12,8 +12,8 @@ export async function POST(request: Request) {
     }
 
     // Valider filstørrelse (maks 5MB)
-    if (file.size > 5 * 1024 * 1024) {
-      return NextResponse.json({ error: "Maks filstørrelse er 5MB" }, { status: 400 });
+    if (file.size > 10 * 1024 * 1024) {
+      return NextResponse.json({ error: "Maks filstørrelse er 10MB" }, { status: 400 });
     }
 
     // Valider filtype
