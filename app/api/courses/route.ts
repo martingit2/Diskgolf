@@ -36,7 +36,7 @@ export async function GET() {
         start: true,
         goal: true,
         baskets: true,
-        obZones: true,
+        obZones: true, // Inkluder OB-soner
         reviews: { select: { rating: true } },
         club: true,
       },
@@ -71,11 +71,21 @@ export async function GET() {
         }
       }
 
+      // Formater OB-soner
+      const obZones = course.obZones.map(obZone => {
+        if (obZone.points) {
+          return { type: "polygon", points: obZone.points }; // Polygon
+        } else {
+          return { type: "circle", latitude: obZone.latitude, longitude: obZone.longitude }; // Sirkel
+        }
+      });
+
       return {
         ...course,
         averageRating: parseFloat(averageRating.toFixed(1)),
         totalReviews,
         totalDistance,
+        obZones, // Legg til formaterte OB-soner
       };
     });
 
@@ -99,7 +109,7 @@ export async function POST(req: Request) {
         start: { lat: number; lng: number }[],
         goal: { lat: number; lng: number } | null,
         baskets: { latitude: number; longitude: number }[],
-        obZones: { lat: number; lng: number }[],
+        obZones: { type: "circle" | "polygon", points?: number[][], latitude?: number, longitude?: number }[],
         clubId: string | null;
 
     const contentType = req.headers.get("content-type");
@@ -202,8 +212,9 @@ export async function POST(req: Request) {
         },
         obZones: {
           create: obZones.map((ob: any) => ({
-            latitude: ob.lat,
-            longitude: ob.lng,
+            latitude: ob.type === "circle" ? ob.latitude : null,
+            longitude: ob.type === "circle" ? ob.longitude : null,
+            points: ob.type === "polygon" ? ob.points : null,
           })),
         },
         clubId,

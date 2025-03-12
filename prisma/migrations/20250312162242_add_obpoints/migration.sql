@@ -1,0 +1,4 @@
+-- AlterTable
+ALTER TABLE "OB" ADD COLUMN     "points" JSONB,
+ALTER COLUMN "latitude" DROP NOT NULL,
+ALTER COLUMN "longitude" DROP NOT NULL;

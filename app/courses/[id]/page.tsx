@@ -21,8 +21,11 @@ import {
   Cloud,
 } from "lucide-react";
 import WriteReview from "@/components/WriteReview";
+import { FaStar } from "react-icons/fa";
+import MapModal from "@/components/MapModal";
 
-// Importer WriteReview-komponenten (juster stien etter hvor den ligger)
+// Importer MapModal-komponenten
+
 
 
 export const dynamic = "force-dynamic";
@@ -143,6 +146,9 @@ export default async function CoursePage({
                   <FaPlay className="animate-pulse" /> Start banespill
                 </Button>
               </Link>
+              {/* Kart-knapp */}
+              <MapModal courseId={course.id} />
+
               <Link href={`/meld-feil/${course.id}`} passHref>
                 <Button className="bg-red-500 hover:bg-red-600 text-white font-semibold py-3 px-8 rounded-lg shadow-md transition-all duration-300">
                   Meld Feil på Bane
@@ -271,73 +277,82 @@ export default async function CoursePage({
           </div>
         </div>
 
-                 {/* Anmeldelser */}
-<div className="mt-8">
-  <h2 className="text-2xl font-bold mb-6 text-gray-900">Anmeldelser</h2>
-  {reviews.length > 0 ? (
-    <div className="space-y-6">
-      {reviews.map(
-        (review: {
-          id: string;
-          rating: number;
-          comment: string;
-          user?: {
-            name?: string;
-            image?: string;
-          };
-        }) => (
-          <div
-            key={review.id}
-            className="border border-gray-300 rounded-xl p-5 shadow-lg bg-white space-y-4 transition-transform duration-200 hover:scale-105"
-          >
-            {/* Stjerner og navn */}
-            <div className="flex items-center justify-between">
-              <div className="flex items-center gap-4">
-                {/* Profilbilde */}
-                {review.user?.image ? (
-                  <img
-                    src={review.user.image}
-                    alt={review.user.name || "Bruker"}
-                    className="w-12 h-12 rounded-full object-cover border-2 border-gray-300 shadow-md"
-                  />
-                ) : (
-                  <div className="w-12 h-12 rounded-full bg-gray-200 flex items-center justify-center text-gray-500 border border-gray-300 shadow-md">
-                    <User className="w-6 h-6" />
+        {/* Anmeldelser */}
+        <div className="mt-8">
+          <h2 className="text-2xl font-bold mb-6 text-gray-900">Anmeldelser</h2>
+          {reviews.length > 0 ? (
+            <div className="space-y-6">
+              {reviews.map(
+                (review: {
+                  id: string;
+                  rating: number;
+                  comment: string;
+                  createdAt?: string;
+                  user?: {
+                    name?: string;
+                    image?: string;
+                  };
+                }) => (
+                  <div
+                    key={review.id}
+                    className="border border-gray-300 rounded-xl p-5 shadow-lg bg-white space-y-4 transition-transform duration-200 hover:scale-105"
+                  >
+                    {/* Stjerner og navn */}
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center gap-4">
+                        {/* Profilbilde */}
+                        {review.user?.image ? (
+                          <img
+                            src={review.user.image}
+                            alt={review.user.name || "Bruker"}
+                            className="w-12 h-12 rounded-full object-cover border-2 border-gray-300 shadow-md"
+                          />
+                        ) : (
+                          <div className="w-12 h-12 rounded-full bg-gray-200 flex items-center justify-center text-gray-500 border border-gray-300 shadow-md">
+                            <User className="w-6 h-6" />
+                          </div>
+                        )}
+
+                        {/* Navn */}
+                        <span className="font-semibold text-lg text-gray-800">
+                          {review.user?.name || "Ukjent bruker"}
+                        </span>
+                      </div>
+
+                      {/* Stjerner */}
+                      <div className="flex text-yellow-500">
+                        {Array.from({ length: 5 }).map((_, index) => (
+                          <FaStar
+                            key={index}
+                            className={`text-lg ${index < review.rating ? "text-yellow-400" : "text-gray-300"}`}
+                          />
+                        ))}
+                      </div>
+                    </div>
+
+                    {/* Kommentar */}
+                    <p className="text-gray-700 italic leading-relaxed border-l-4 border-green-500 pl-4">
+                      {review.comment}
+                    </p>
+
+                    {/* Dato for anmeldelse */}
+                    {review.createdAt && (
+                      <p className="text-xs text-gray-500 mt-2 text-right">
+                        {new Date(review.createdAt).toLocaleDateString("no-NO")}
+                      </p>
+                    )}
                   </div>
-                )}
-
-                {/* Navn */}
-                <span className="font-semibold text-lg text-gray-800">
-                  {review.user?.name || "Ukjent bruker"}
-                </span>
-              </div>
-
-              {/* Stjerner */}
-              <span className="text-yellow-500 text-xl font-bold">
-                {"★".repeat(review.rating)}
-              </span>
+                )
+              )}
             </div>
-
-            {/* Kommentar */}
-            <p className="text-gray-700 italic leading-relaxed border-l-4 border-green-500 pl-4">
-              {review.comment}
-            </p>
+          ) : (
+            <p className="text-gray-500">Ingen anmeldelser enda.</p>
+          )}
+          {/* Skriv ny anmeldelse */}
+          <div className="mt-8">
+            <WriteReview courseId={course.id} />
           </div>
-        )
-      )}
-    </div>
-  ) : (
-    <p className="text-gray-500">Ingen anmeldelser enda.</p>
-  )}
-
-  {/* Skriv ny anmeldelse */}
-  <div className="mt-8">
-    <WriteReview courseId={course.id} />
-  </div>
-</div>
-
-
-
+        </div>
       </div>
     );
   } catch (error) {

@@ -5,10 +5,13 @@ import dynamic from "next/dynamic";
 import { Button } from "@/components/ui/button";
 import { X } from "lucide-react";
 
-// Dynamisk import av Leaflet kart for å unngå SSR-problemer
-const MapComponent = dynamic(() => import("@/components/MapComponent"), { ssr: false });
+// Dynamisk import av CourseMap og spesifiser props
+const CourseMap = dynamic(() => import("@/components/CourseMap"), {
+  ssr: false,
+  loading: () => <p>Laster inn kart...</p>,
+}) as React.FC<{ courseId: string }>;
 
-const MapModal = () => {
+const MapModal = ({ courseId }: { courseId: string }) => {
   const [isOpen, setIsOpen] = useState(false);
 
   const toggleModal = () => {
@@ -22,7 +25,7 @@ const MapModal = () => {
         onClick={toggleModal} 
         className="bg-blue-500 hover:bg-blue-600 text-white font-semibold py-3 px-8 rounded-lg shadow-md transition-all duration-300"
       >
-        Se Kart
+        Bane Kart
       </Button>
 
       {/* Modal */}
@@ -42,7 +45,7 @@ const MapModal = () => {
 
             {/* Leaflet Kart */}
             <div className="w-full h-[500px]">
-              <MapComponent />
+              <CourseMap courseId={courseId} />
             </div>
           </div>
         </div>

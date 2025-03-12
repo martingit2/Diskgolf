@@ -256,10 +256,11 @@ model Basket {  // Flere kurver per bane
   course    Course   @relation(fields: [courseId], references: [id], onDelete: Cascade)
 }
 
-model OB {  // Flere OB-soner per bane
+model OB {
   id        String   @id @default(uuid())
   courseId  String   // Relasjon til Course
-  latitude  Float
-  longitude Float
+  latitude  Float?   // Valgfritt: For enkle OB-soner (sirkler)
+  longitude Float?   // Valgfritt: For enkle OB-soner (sirkler)
+  points    Json?    // Valgfritt: Array av koordinater for polygoner
   course    Course   @relation(fields: [courseId], references: [id], onDelete: Cascade)
 }

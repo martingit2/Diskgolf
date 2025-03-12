@@ -24,7 +24,7 @@ export default function JoinClub() {
 
         {/* CTA Knapp */}
         <Button
-          onClick={() => router.push("/clubs")}
+          onClick={() => router.push("/klubber")}
           className="mt-8 bg-gradient-to-r from-green-500 to-green-600 text-white font-semibold py-4 px-10 rounded-full text-lg shadow-xl hover:scale-105 transition-all duration-300 flex items-center gap-3 mx-auto"
         >
           <Users className="w-6 h-6" /> Finn en klubb
