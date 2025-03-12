@@ -2,7 +2,7 @@
 
 import L from "leaflet";
 import { useEffect, useState } from "react";
-import { MapContainer, Marker, TileLayer, Popup, Circle } from "react-leaflet";
+import { MapContainer, Marker, TileLayer, Popup, Polygon } from "react-leaflet";
 import "leaflet/dist/leaflet.css";
 import "leaflet.awesome-markers/dist/leaflet.awesome-markers.css";
 import "leaflet.awesome-markers";
@@ -82,17 +82,18 @@ const CourseMap = ({ courseId }: { courseId: string }) => {
         </Marker>
       )}
 
-      {/* OB-områder */}
+      {/* OB-områder som polygoner */}
       {courseData.obZones?.map((obZone: any, index: number) => (
-        <Circle
-          key={index}
-          center={[obZone.latitude, obZone.longitude]}
-          radius={10}
-          color="red"
-          fillOpacity={0.4}
-        >
-          <Popup>OB-område</Popup>
-        </Circle>
+        obZone.coordinates && obZone.coordinates.length > 2 ? (
+          <Polygon
+            key={index}
+            positions={obZone.coordinates.map((coord: any) => [coord.latitude, coord.longitude])}
+            color="red"
+            fillOpacity={0.3}
+          >
+            <Popup>OB-område</Popup>
+          </Polygon>
+        ) : null
       ))}
     </MapContainer>
   );
