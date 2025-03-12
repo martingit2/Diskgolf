@@ -80,14 +80,21 @@ export async function GET(
         ? course.reviews.reduce((sum, r) => sum + r.rating, 0) / totalReviews
         : 0;
 
-    const computedCourse = {
-      ...course,
-      totalDistance,
-      totalReviews,
-      averageRating: parseFloat(averageRating.toFixed(1)),
-      numHoles: course.baskets.length,
-    };
-
+        const computedCourse = {
+          ...course,
+          totalDistance,
+          totalReviews,
+          averageRating: parseFloat(averageRating.toFixed(1)),
+          numHoles: course.baskets.length,
+          obZones: course.obZones.map(obZone => {
+            if (obZone.points) {
+              return { type: "polygon", points: obZone.points }; // Polygon
+            } else {
+              return { type: "circle", latitude: obZone.latitude, longitude: obZone.longitude }; // Sirkel
+            }
+          }),
+        };
+        
     return NextResponse.json(computedCourse, { status: 200 });
   } catch (error) {
     console.error("Feil ved henting av bane:", error);

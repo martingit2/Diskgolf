@@ -109,7 +109,7 @@ export async function POST(req: Request) {
         start: { lat: number; lng: number }[],
         goal: { lat: number; lng: number } | null,
         baskets: { latitude: number; longitude: number }[],
-        obZones: { type: "circle" | "polygon", points?: number[][], latitude?: number, longitude?: number }[],
+        obZones: { type: "circle" | "polygon", latitude?: number, longitude?: number, points?: number[][] }[],
         clubId: string | null;
 
     const contentType = req.headers.get("content-type");
@@ -228,3 +228,4 @@ export async function POST(req: Request) {
     return NextResponse.json({ error: "Kunne ikke lagre kurs" }, { status: 500 });
   }
 }
+

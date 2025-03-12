@@ -57,7 +57,7 @@ const CourseMap = ({ courseId }: { courseId: string }) => {
           position={[startPoint.latitude, startPoint.longitude]}
           icon={createIcon("flag", "green")}
         >
-          <Popup>Startpunkt {index + 1}</Popup>
+          <Popup>Tee {index + 1}</Popup>
         </Marker>
       ))}
 
@@ -78,16 +78,16 @@ const CourseMap = ({ courseId }: { courseId: string }) => {
           position={[courseData.goal.latitude, courseData.goal.longitude]}
           icon={createIcon("flag-checkered", "red")}
         >
-          <Popup>Mål</Popup>
+          <Popup>Sluttkurv</Popup>
         </Marker>
       )}
 
       {/* OB-områder som polygoner */}
       {courseData.obZones?.map((obZone: any, index: number) => (
-        obZone.coordinates && obZone.coordinates.length > 2 ? (
+        obZone.points && obZone.points.length > 2 ? (
           <Polygon
             key={index}
-            positions={obZone.coordinates.map((coord: any) => [coord.latitude, coord.longitude])}
+            positions={obZone.points} // Bruk `points` direkte fra API-responsen
             color="red"
             fillOpacity={0.3}
           >
