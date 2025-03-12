@@ -1,254 +1,174 @@
-/** 
- * Filnavn: MapComponent.tsx
- * Beskrivelse: Interaktiv kartkomponent for å vise diskgolfbaner med Leaflet-biblioteket.
- * Inneholder dynamiske markører med popup-informasjon og bruker "Leaflet Awesome Markers" for tilpassede ikoner.
- * Utvikler: Martin Pettersen
- */
-
-
-
 "use client";
 
+import { useEffect, useState } from "react";
+import Link from "next/link";
+import { useRouter } from "next/navigation";
 import L from "leaflet";
 import { MapContainer, Marker, TileLayer, Popup } from "react-leaflet";
 import "leaflet/dist/leaflet.css";
-import "leaflet.awesome-markers/dist/leaflet.awesome-markers.css";
-import "leaflet.awesome-markers";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import Image from "next/image";
+import { Button } from "@/components/ui/button";
+import { FaMapMarkedAlt, FaInfoCircle } from "react-icons/fa";
 
-// Sett opp Leaflet Awesome Markers
-const createIcon = (
-  iconName: string,
-  markerColor:
-    | "red"
-    | "darkred"
-    | "orange"
-    | "green"
-    | "darkgreen"
-    | "blue"
-    | "purple"
-    | "darkpurple"
-    | "cadetblue"
-) => {
-  return L.AwesomeMarkers.icon({
-    icon: iconName,
-    markerColor: markerColor,
-    prefix: "fa",
-  });
-};
+// 📌 Bruk en grønn Leaflet markør
+const greenMarkerIcon = new L.Icon({
+  iconUrl: "https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-2x-green.png", 
+  iconSize: [25, 41],
+  iconAnchor: [12, 41],
+  popupAnchor: [1, -34],
+});
 
-// Startposisjon for USN Bø
-const usnCenter: [number, number] = [59.4125, 9.0658];
 
-// Bilde for USN Bø
-const usnImage = "/dummybaner/dummy_bane_9.webp";
 
-// Baner med navn, koordinater, bilder og stjerner
-const courses = [
-  {
-    id: 1,
-    name: "Dummy Bane 1 - Oslo",
-    coords: [59.9139, 10.7522],
-    color: "blue" as const,
-    image: "/dummybaner/dummy_bane_1.webp",
-    stars: 5,
-  },
-  {
-    id: 2,
-    name: "Dummy Bane 2 - Bergen",
-    coords: [60.3913, 5.3221],
-    color: "red" as const,
-    image: "/dummybaner/dummy_bane_2.webp",
-    stars: 4,
-  },
-  {
-    id: 3,
-    name: "Dummy Bane 3 - Stavanger",
-    coords: [58.969, 5.7331],
-    color: "green" as const,
-    image: "/dummybaner/dummy_bane_3.webp",
-    stars: 3,
-  },
-  {
-    id: 4,
-    name: "Dummy Bane 4 - Trondheim",
-    coords: [63.4305, 10.3951],
-    color: "purple" as const,
-    image: "/dummybaner/dummy_bane_4.webp",
-    stars: 5,
-  },
-  {
-    id: 5,
-    name: "Dummy Bane 5 - Kristiansand",
-    coords: [58.1467, 7.9956],
-    color: "orange" as const,
-    image: "/dummybaner/dummy_bane_5.webp",
-    stars: 4,
-  },
-  {
-    id: 6,
-    name: "Dummy Bane 6 - Ålesund",
-    coords: [62.4722, 6.1549],
-    color: "cadetblue" as const,
-    image: "/dummybaner/dummy_bane_6.webp",
-    stars: 3,
-  },
-  {
-    id: 7,
-    name: "Dummy Bane 7 - Tromsø",
-    coords: [69.6496, 18.956],
-    color: "darkpurple" as const,
-    image: "/dummybaner/dummy_bane_7.webp",
-    stars: 5,
-  },
-  {
-    id: 8,
-    name: "Dummy Bane 8 - Bodø",
-    coords: [67.2804, 14.4049],
-    color: "darkgreen" as const,
-    image: "/dummybaner/dummy_bane_8.webp",
-    stars: 4,
-  },
-];
+interface Course {
+  id: string;
+  name: string;
+  location: string;
+  latitude: number;
+  longitude: number;
+  image?: string;
+  difficulty?: string;
+  averageRating?: number;
+  totalReviews?: number;
+  totalDistance?: number;
+}
 
-const MapComponent = () => (
-  <MapContainer
-    center={usnCenter}
-    zoom={5}
-    scrollWheelZoom
-    style={{ height: "100%", width: "100%", borderRadius: "12px" }}
-  >
-    <TileLayer
-      url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
-      attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-    />
+const MapComponent = () => {
+  const [courses, setCourses] = useState<Course[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+  const router = useRouter();
 
-    {/* Markør for hovedposisjon */}
-    <Marker
-      position={usnCenter}
-      icon={createIcon("university", "orange")}
-    >
-      <Popup>
-        <div
-          style={{
-            textAlign: "center",
-            padding: "10px",
-            borderRadius: "10px",
-            backgroundColor: "#f9f9f9",
-            boxShadow: "0 4px 8px rgba(0, 0, 0, 0.1)",
-          }}
+  useEffect(() => {
+    const fetchCourses = async () => {
+      try {
+        const res = await fetch("/api/courses");
+        if (!res.ok) throw new Error("Kunne ikke hente baneinformasjon");
+        const data = await res.json();
+        setCourses(data);
+      } catch (err) {
+        console.error("Feil ved henting av kursdata:", err);
+        setError("Kunne ikke laste inn baner");
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchCourses();
+  }, []);
+
+  // Genererer stjerner basert på rating
+  const renderStars = (rating: number) => (
+    <div className="flex">
+      {Array.from({ length: 5 }, (_, i) => (
+        <svg
+          key={i}
+          xmlns="http://www.w3.org/2000/svg"
+          fill={i < rating ? "#FFD700" : "#E0E0E0"}
+          viewBox="0 0 24 24"
+          className="h-4 w-4"
         >
-          <h2
-            style={{
-              fontSize: "18px",
-              fontWeight: "bold",
-              marginBottom: "5px",
-            }}
-          >
-            USN Sør-Øst Norge
-          </h2>
-          <img
-            src={usnImage}
-            alt="USN Bø"
-            style={{
-              width: "100%",
-              height: "120px",
-              objectFit: "cover",
-              borderRadius: "8px",
-              marginBottom: "10px",
-            }}
-          />
-          <div
-            style={{
-              display: "flex",
-              justifyContent: "center",
-              alignItems: "center",
-              marginBottom: "10px",
-            }}
-          >
-            {Array.from({ length: 5 }, (_, i) => (
-              <svg
-                key={i}
-                xmlns="http://www.w3.org/2000/svg"
-                fill="#FFD700"
-                viewBox="0 0 24 24"
-                className="h-5 w-5"
-              >
-                <path d="M12 .587l3.668 7.431 8.215 1.192-5.938 5.778 1.404 8.182L12 18.896l-7.349 3.864 1.404-8.182L.117 9.21l8.215-1.192z" />
-              </svg>
-            ))}
-          </div>
-          <p style={{ fontSize: "14px", color: "#555" }}>
-            Koordinater: {usnCenter.join(", ")}
-          </p>
-        </div>
-      </Popup>
-    </Marker>
+          <path d="M12 .587l3.668 7.431 8.215 1.192-5.938 5.778 1.404 8.182L12 18.896l-7.349 3.864 1.404-8.182L.117 9.21l8.215-1.192z" />
+        </svg>
+      ))}
+    </div>
+  );
 
-    {/* Dynamisk genererte markører for baner */}
-    {courses.map((course) => (
-      <Marker
-        key={course.id}
-        position={course.coords as L.LatLngExpression}
-        icon={createIcon("golf-ball", course.color)}
-      >
-        <Popup>
-          <div
-            style={{
-              textAlign: "center",
-              padding: "10px",
-              borderRadius: "10px",
-              backgroundColor: "#f9f9f9",
-              boxShadow: "0 4px 8px rgba(0, 0, 0, 0.1)",
-            }}
-          >
-            <h2
-              style={{
-                fontSize: "18px",
-                fontWeight: "bold",
-                marginBottom: "5px",
-              }}
-            >
-              {course.name}
-            </h2>
-            <img
-              src={course.image}
-              alt={course.name}
-              style={{
-                width: "100%",
-                height: "120px",
-                objectFit: "cover",
-                borderRadius: "8px",
-                marginBottom: "10px",
-              }}
-            />
-            <div
-              style={{
-                display: "flex",
-                justifyContent: "center",
-                alignItems: "center",
-                marginBottom: "10px",
-              }}
-            >
-              {Array.from({ length: course.stars }, (_, i) => (
-                <svg
-                  key={i}
-                  xmlns="http://www.w3.org/2000/svg"
-                  fill="#FFD700"
-                  viewBox="0 0 24 24"
-                  className="h-5 w-5"
-                >
-                  <path d="M12 .587l3.668 7.431 8.215 1.192-5.938 5.778 1.404 8.182L12 18.896l-7.349 3.864 1.404-8.182L.117 9.21l8.215-1.192z" />
-                </svg>
-              ))}
-            </div>
-            <p style={{ fontSize: "14px", color: "#555" }}>
-              Koordinater: {course.coords.join(", ")}
-            </p>
-          </div>
-        </Popup>
-      </Marker>
-    ))}
-  </MapContainer>
-);
+  return (
+    <div className="w-full h-[500px]">
+      {loading && <p className="text-center text-gray-500">Laster inn kart...</p>}
+      {error && <p className="text-center text-red-500">{error}</p>}
+
+      {!loading && !error && (
+        <MapContainer center={[59.9139, 10.7522]} zoom={6} className="w-full h-full">
+          <TileLayer url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" />
+
+          {/* Dynamisk genererte markører for baner */}
+          {courses.map((course) => (
+            <Marker key={course.id} position={[course.latitude, course.longitude]} icon={greenMarkerIcon}>
+              <Popup>
+                <Card className="w-56 shadow-md border border-gray-200 rounded-lg overflow-hidden">
+                  <div className="relative">
+                    <Image
+                      src={
+                        course.image ||
+                        "https://res.cloudinary.com/dmuhg7btj/image/upload/v1741665222/discgolf/courses/file_d2gyo0.webp"
+                      }
+                      alt={course.name}
+                      width={250}
+                      height={150}
+                      className="w-full h-28 object-cover rounded-t-lg"
+                    />
+                    <div className="absolute inset-0 bg-gradient-to-t from-black/40 to-transparent rounded-t-lg"></div>
+                  </div>
+
+                  <CardContent className="p-3">
+                    {/* Navn og lokasjon */}
+                    <CardHeader className="p-0 mb-2">
+                      <CardTitle className="text-md font-bold text-gray-900">{course.name}</CardTitle>
+                      <p className="text-xs text-gray-600">{course.location}</p>
+                      <hr className="my-2 border-gray-300" />
+                    </CardHeader>
+
+                    {/* ⭐ Stjernerating */}
+                    {course.averageRating !== undefined && (
+                      <div className="flex items-center gap-1">
+                        {renderStars(Math.round(course.averageRating))}
+                        <span className="text-xs text-gray-700">
+                          ({course.totalReviews || 0})
+                        </span>
+                      </div>
+                    )}
+
+                    {/* Info */}
+                    <div className="text-xs text-gray-600 mt-2 space-y-1">
+                      <p>
+                        <span className="font-medium">Vanskelighetsgrad:</span>{" "}
+                        <span
+                          className={
+                            course.difficulty === "Lett"
+                              ? "text-green-500"
+                              : course.difficulty === "Middels"
+                              ? "text-yellow-500"
+                              : "text-red-500"
+                          }
+                        >
+                          {course.difficulty || "Ukjent"}
+                        </span>
+                      </p>
+                      <p>
+                        <span className="font-medium">Banelengde:</span>{" "}
+                        {course.totalDistance ? `${course.totalDistance.toFixed(2)} m` : "Ukjent"}
+                      </p>
+                    </div>
+
+                    {/* Knapper med spacing */}
+                    <div className="mt-5 flex flex-col gap-3">
+  <Button
+    className="w-full bg-gray-900 text-white hover:bg-gray-700 transition-all flex items-center gap-2 justify-center"
+    onClick={() => router.push(`/courses/${course.id}`)}
+  >
+    <FaInfoCircle className="text-white" />
+    Gå til Bane
+  </Button>
+  <Link href={`/map/${course.id}`} passHref>
+    <Button className="w-full bg-green-800 text-white hover:bg-green-600 transition-all flex items-center gap-2 justify-center">
+      <FaMapMarkedAlt className="text-white" />
+      Vis Baneoversikt
+    </Button>
+  </Link>
+</div>
+                       
+                  </CardContent>
+                </Card>
+              </Popup>
+            </Marker>
+          ))}
+        </MapContainer>
+      )}
+    </div>
+  );
+};
 
 export default MapComponent;
