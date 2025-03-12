@@ -120,7 +120,7 @@ const AdminDashboard = () => {
   };
   return (
     <div className="p-6 flex flex-col items-center">
-      <h1 className="text-4xl font-bold text-gray-900">Admin Dashboard</h1>
+      <h1 className="text-4xl font-bold text-gray-900">Opprett bane</h1>
 
       <div className="flex gap-6 mt-6 w-full max-w-7xl">
         <Card className="w-60">

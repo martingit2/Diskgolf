@@ -288,7 +288,7 @@ const MapAdminComponentNoSSR = ({
 
   return (
     <div className="flex flex-col items-center">
-      <MapContainer center={adminCenter} zoom={6} scrollWheelZoom style={{ height: "600px", width: "100%", borderRadius: "12px" }}>
+      <MapContainer center={adminCenter} zoom={6} maxZoom={18}  scrollWheelZoom style={{ height: "600px", width: "100%", borderRadius: "12px" }}>
         <TileLayer url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" attribution='&copy; OpenStreetMap contributors' />
         <MapClickHandler onMapClick={handleMapClick} />
 
@@ -298,7 +298,7 @@ const MapAdminComponentNoSSR = ({
               <Circle
                 key={marker.id}
                 center={[marker.latitude, marker.longitude]}
-                radius={10}
+                radius={2}
                 color={markerColors[marker.type]}
                 eventHandlers={{ click: () => deletePolygon(marker.id) }}
               >
@@ -310,7 +310,7 @@ const MapAdminComponentNoSSR = ({
               <Circle
                 key={marker.id}
                 center={[marker.latitude, marker.longitude]}
-                radius={10}
+                radius={2}
                 color={markerColors[marker.type]}
                 eventHandlers={{ click: () => deletePolygon(marker.id) }}
               >
@@ -374,20 +374,30 @@ const MapAdminComponentNoSSR = ({
       )}
 
       {/* 📌 Info-tekst og reset-knapp */}
-      <p className="mt-4 text-gray-600 text-sm">Dobbeltklikk på markører for å slette dem.</p>
-      <button
-        className="mt-2 px-4 py-2 bg-red-500 text-white rounded hover:bg-red-700 transition"
-        onClick={() => {
-          setMarkers([]);
-          setHoles([]);
-          setKurvLabel("Kurv 1");
-          setPolygonPoints([]);
-          setEditingPolygonId(null);
-        }}
-      >
-        Reset bane
-      </button>
-    </div>
+      {/* 📌 Info-tekst og reset-knapp */}
+
+  <h2 className="text-md font-semibold text-gray-900 mb-3">Hvordan sette opp banen</h2>
+
+  <div className="text-xs text-gray-700 space-y-1">
+  <p>Plasser en <strong>bane-markør</strong> for å angi hvor banen ligger.</p>
+<p>Deretter setter du ut et <strong>tee-punkt</strong>, deretter en <strong>kurv</strong>. Gjenta til neste siste kurv.</p>
+<p>Når du har satt ut det siste tee-punktet, plasser <strong>mål-markøren</strong> for siste kurv.</p>
+<p>Om nødvendig, marker <strong>OB-områder</strong> for å definere out-of-bounds-soner.</p>
+  </div>
+
+  <button
+    className="mt-4 max-w-md px-4 py-2 text-xs bg-red-500 text-white rounded-lg hover:bg-red-700 transition-all duration-300"
+    onClick={() => {
+      setMarkers([]);
+      setHoles([]);
+      setKurvLabel("Kurv 1");
+      setPolygonPoints([]);
+      setEditingPolygonId(null);
+    }}
+  >
+    🔄 Tilbakestill bane
+  </button>
+</div>
   );
 };
 
