@@ -76,24 +76,43 @@ export async function GET(req: Request) {
     const url = new URL(req.url);
     const courseId = url.searchParams.get("course_id");
 
-    if (!courseId) {
-      return NextResponse.json({ error: "Missing course_id" }, { status: 400 });
+    if (courseId) {
+      // Hent anmeldelser for en spesifikk bane
+      const reviews = await prisma.review.findMany({
+        where: { courseId },
+        include: {
+          user: {
+            select: {
+              name: true,
+              image: true, // Inkluderer profilbilde
+            },
+          },
+          course: {
+            select: { name: true },
+          },
+        },
+        orderBy: { createdAt: "desc" }, // Sorter fra nyeste til eldste
+      });
+      return NextResponse.json(reviews);
     }
 
-    // ✅ Fetch all reviews for the given courseId, including user's name and profile image
-    const reviews = await prisma.review.findMany({
-      where: { courseId },
+    // Hvis ingen `course_id` er angitt, hent alle anmeldelser
+    const allReviews = await prisma.review.findMany({
       include: {
         user: {
           select: {
             name: true,
-            image: true, // Inkluderer profilbilde
+            image: true,
           },
         },
+        course: {
+          select: { name: true }, // Hent banens navn for visning i karusellen
+        },
       },
+      orderBy: { createdAt: "desc" },
     });
 
-    return NextResponse.json(reviews);
+    return NextResponse.json(allReviews);
   } catch (error) {
     console.error("❌ Feil ved henting av anmeldelser:", error);
     return NextResponse.json({ error: "Serverfeil" }, { status: 500 });

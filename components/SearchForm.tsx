@@ -210,23 +210,24 @@ const SearchForm = () => {
       </Form>
 
       {/* 📌 Søkeresultater */}
-      <div className="mt-6">
-        {searchResults.length > 0 ? (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-            {searchResults.map((course) => (
-              <CourseCard
-              key={course.id}
-              course={{ ...course, description: course.description ?? "Ingen beskrivelse tilgjengelig" }} 
-              isFavorite={false} 
-              onToggleFavorite={() => {}}
-            />            
-            ))}
-          </div>
-        ) : (
-          <p className="text-center text-gray-500">Ingen baner funnet</p>
-        )}
-      </div>
+<div className="mt-6">
+  {searchResults.length > 0 ? (
+    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+      {searchResults.map((course) => (
+        <CourseCard
+          key={course.id}
+          course={{ ...course, description: course.description ?? "Ingen beskrivelse tilgjengelig" }} 
+          isFavorite={false} 
+          onToggleFavorite={() => {}}
+        />            
+      ))}
     </div>
+    // state for at ingen baner funnet kun vises dersom vi har søkt og banen ikke finns
+  ) : searchResults.length === 0 && !loading && form.formState.isSubmitted ? (
+    <p className="text-center text-gray-500">Ingen baner funnet</p>
+  ) : null}
+</div>
+</div>
   );
 };
 

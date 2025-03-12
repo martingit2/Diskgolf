@@ -1,14 +1,6 @@
-/** 
- * Filnavn: ReviewCarousel.tsx
- * Beskrivelse: Karusellkomponent for visning av brukeranmeldelser av diskgolfbaner.
- * Viser anmeldelser med navn, rating, tekst og tilknyttede baner.
- * Utvikler: Martin Pettersen
- */
-
-
-
 "use client";
 
+import { useEffect, useState } from "react";
 import { FaStar } from "react-icons/fa";
 import { Swiper, SwiperSlide } from "swiper/react";
 import { Navigation, Pagination, Autoplay } from "swiper/modules";
@@ -17,111 +9,172 @@ import "swiper/css/navigation";
 import "swiper/css/pagination";
 import "swiper/css/autoplay";
 import Image from "next/image";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { User } from "lucide-react";
+import { useRouter } from "next/navigation";
 
-// Anmeldelser med avatarer og tilknyttede baner
-const reviews = [
-  {
-    id: 1,
-    name: "Ole Hansen",
-    text: "Fantastisk bane! Flotte omgivelser og utfordrende hull.",
-    rating: 5,
-    course: "USN BØ, Telemark",
-    avatar: "/avatars/male.jpg",
-  },
-  {
-    id: 2,
-    name: "Kari Nordmann",
-    text: "Veldig bra atmosfære og godt vedlikeholdt bane.",
-    rating: 4,
-    course: "Skogsveien DiscGolf Park",
-    avatar: "/avatars/woman.jpg",
-  },
-  {
-    id: 3,
-    name: "Lars Pettersen",
-    text: "God bane, passer til både nybegynnere og erfarne spillere.",
-    rating: 5,
-    course: "Porsgrunn DiscGolf",
-    avatar: "/avatars/male2.jpg",
-  },
-  {
-    id: 4,
-    name: "Mona Jakobsen",
-    text: "Fin bane med utfordrende fairways og fantastisk utsikt, anbefales!",
-    rating: 3,
-    course: "Drammen DiscGolf Arena",
-    avatar: "/avatars/woman2.jpg",
-  },
-  {
-    id: 5,
-    name: "Erik Olsen",
-    text: "Gode treningsmuligheter og hyggelig miljø.",
-    rating: 5,
-    course: "Oslo DiscGolf Center",
-    avatar: "/avatars/male3.jpg",
-  },
-  {
-    id: 6,
-    name: "Anna Kristiansen",
-    text: "Fantastisk beliggenhet, men litt for mange folk på helgene.",
-    rating: 4,
-    course: "Sandefjord Frisbeepark",
-    avatar: "/avatars/woman3.jpg",
-  },
-];
+// 🌟 API Response Typing
+interface Review {
+  id: string;
+  rating: number;
+  comment: string;
+  createdAt: string;
+  courseId: string;
+  user: { name: string; image?: string };
+}
+
+interface Course {
+  id: string;
+  name: string;
+  image?: string;
+}
 
 export default function ReviewCarousel() {
+  const [reviews, setReviews] = useState<Review[]>([]);
+  const [courses, setCourses] = useState<{ [key: string]: Course }>({});
+  const [loading, setLoading] = useState(true);
+  const router = useRouter();
+
+  useEffect(() => {
+    const fetchReviews = async () => {
+      try {
+        const reviewsResponse = await fetch("/api/reviews");
+        if (!reviewsResponse.ok) throw new Error("Kunne ikke hente anmeldelser");
+
+        const reviewData: Review[] = await reviewsResponse.json();
+        setReviews(reviewData);
+
+        // 🔹 Hent unike courseId'er og tilhørende banedata
+        const uniqueCourseIds = Array.from(
+          new Set(reviewData.map((review) => review.courseId))
+        );
+
+        const coursePromises = uniqueCourseIds.map(async (courseId) => {
+          const courseResponse = await fetch(`/api/courses/${courseId}`);
+          if (!courseResponse.ok) return null;
+          return courseResponse.json();
+        });
+
+        const courseResults = await Promise.all(coursePromises);
+        const courseMap = courseResults.reduce((acc, course) => {
+          if (course) acc[course.id] = course;
+          return acc;
+        }, {} as { [key: string]: Course });
+
+        setCourses(courseMap);
+      } catch (error) {
+        console.error(error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchReviews();
+  }, []);
+
   return (
     <section className="max-w-7xl mx-auto p-6 mt-20">
-      {/* Tittel for Nyeste Anmeldelser */}
       <h1 className="text-3xl font-extrabold text-gray-800 leading-tight">
-        Nyeste anmeldelser
+        Nyeste bane anmeldelser
       </h1>
-      <Swiper
-        modules={[Navigation, Pagination, Autoplay]}
-        autoplay={{ delay: 4000, disableOnInteraction: false }}
-        pagination={{ clickable: true }}
-        navigation
-        spaceBetween={30}
-        slidesPerView={1}
-        breakpoints={{
-          640: { slidesPerView: 1 },
-          768: { slidesPerView: 2 },
-          1024: { slidesPerView: 3 },
-        }}
-        className="rounded-lg border shadow-lg mt-8"
-      >
-        {reviews.map((review) => (
-          <SwiperSlide key={review.id}>
-            <div className="relative p-8 bg-gradient-to-r from-gray-800 via-gray-950 to-gray-800 shadow-2xl rounded-lg border flex flex-col justify-between items-center min-h-[350px]">
-              <div className="absolute inset-0 bg-gradient-to-r from-gray-800 via-gray-950 to-gray-800 shadow-2xl opacity-90 rounded-lg"></div>
-              <h3 className="text-2xl font-extrabold text-green-300 mb-2 relative">
-                {review.course}
-              </h3>
-              <div className="flex justify-center mb-4 relative">
-                {Array.from({ length: review.rating }).map((_, index) => (
-                  <FaStar key={index} className="text-yellow-400 text-xl" />
-                ))}
-              </div>
-              <p className="text-lg italic text-gray-400 text-center flex-grow relative">
-                &ldquo;{review.text}&rdquo;
-              </p>
-              <div className="flex items-center mt-6 relative">
-                <Image
-                  src={review.avatar}
-                  alt={review.name}
-                  width={60}
-                  height={60}
-                  className="avatar"
-                />
-                <p className="ml-4 text-lg font-semibold text-gray-100">
-                  - {review.name}
-                </p>
-              </div>
-            </div>
-          </SwiperSlide>
-        ))}
-      </Swiper>
+
+      {loading ? (
+        <p className="text-center text-gray-500">Laster anmeldelser...</p>
+      ) : reviews.length === 0 ? (
+        <p className="text-center text-gray-500">Ingen anmeldelser funnet</p>
+      ) : (
+        <Swiper
+          modules={[Navigation, Pagination, Autoplay]}
+          autoplay={{ delay: 4000, disableOnInteraction: false }}
+          pagination={{ clickable: true }}
+          navigation
+          spaceBetween={20}
+          slidesPerView={1}
+          breakpoints={{
+            640: { slidesPerView: 1 },
+            768: { slidesPerView: 2 },
+            1024: { slidesPerView: 3 },
+          }}
+          className="rounded-lg border shadow-lg mt-8"
+        >
+          {reviews.map((review) => {
+            const course = courses[review.courseId]; // 🔹 Hent baneinfo fra courseMap
+
+            return (
+              <SwiperSlide key={review.id}>
+                <Card
+                  className="shadow-xl border border-gray-300 flex flex-col transform transition-all duration-300 hover:scale-105 hover:shadow-2xl rounded-xl overflow-hidden bg-white cursor-pointer"
+                  onClick={() => router.push(`/courses/${review.courseId}`)} // 🚀 Gjør kortet klikkbart
+                >
+                  {/* 🔹 Banebilde øverst med skygge og hover-effekt */}
+                  <div className="relative group">
+                    <Image
+                      src={
+                        course?.image
+                          ? course.image
+                          : "https://res.cloudinary.com/dmuhg7btj/image/upload/v1741665222/discgolf/courses/file_d2gyo0.webp"
+                      }
+                      alt={course?.name || "Bane"}
+                      width={400}
+                      height={200}
+                      className="w-full h-44 object-cover rounded-t-xl shadow-md transition-transform duration-300 group-hover:scale-105"
+                    />
+                    {/* 🌟 Subtil overlay-effekt ved hover */}
+                    <div className="absolute inset-0 bg-black/10 opacity-0 group-hover:opacity-30 transition-opacity duration-300"></div>
+
+                    {/* 🔹 Profilbilde over banebildet */}
+                    <div className="absolute left-1/2 transform -translate-x-1/2 -bottom-8">
+                      {review.user.image ? (
+                        <Image
+                          src={review.user.image}
+                          alt={review.user.name}
+                          width={70}
+                          height={70}
+                          className="rounded-full border-4 border-white shadow-md"
+                        />
+                      ) : (
+                        <div className="w-16 h-16 rounded-full bg-gray-200 flex items-center justify-center text-gray-500 border-4 border-white shadow-md">
+                          <User className="w-8 h-8" />
+                        </div>
+                      )}
+                    </div>
+                  </div>
+
+                  <CardContent className="p-6 flex flex-col items-center text-center mt-10">
+                    {/* 🔹 Brukernavn */}
+                    <CardHeader className="p-0 mt-3">
+                      <CardTitle className="text-xl font-bold text-gray-900">
+                        {review.user.name}
+                      </CardTitle>
+                      {/* 🔹 Highlightet banenavn */}
+                      <p className="text-sm font-semibold text-green-700">
+                        {course?.name || "Ukjent bane"}
+                      </p>
+                    </CardHeader>
+
+                    {/* 🔹 Stjerner */}
+                    <div className="flex justify-center mt-2">
+                      {Array.from({ length: review.rating }).map((_, index) => (
+                        <FaStar key={index} className="text-yellow-500 text-lg" />
+                      ))}
+                    </div>
+
+                    {/* 🔹 Kommentar */}
+                    <p className="text-gray-700 italic text-sm mt-4 px-4 border-l-4 border-green-500 pl-3">
+                      {review.comment}
+                    </p>
+
+                    {/* 🔹 Dato */}
+                    <p className="text-xs text-gray-500 mt-3">
+                      {new Date(review.createdAt).toLocaleDateString()}
+                    </p>
+                  </CardContent>
+                </Card>
+              </SwiperSlide>
+            );
+          })}
+        </Swiper>
+      )}
     </section>
   );
 }

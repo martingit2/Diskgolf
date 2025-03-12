@@ -15,6 +15,7 @@ const nextConfig: NextConfig = {
       "diskgolf.app",  // Oppdater til det endelige domenet
       "spill.diskgolf.app",
       "res.cloudinary.com", 
+      "randomuser.me",
     ],
   },
 

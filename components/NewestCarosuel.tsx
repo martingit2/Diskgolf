@@ -10,66 +10,54 @@ import "swiper/css/navigation";
 import "swiper/css/pagination";
 import "swiper/css/autoplay";
 
-// 📌 Definerer typen for Course (baner)
+// Definerer typen for Course (baner)
 interface Course {
   id: string;
   name: string;
   location: string;
   image?: string;
-  averageRating?: number; // Kan være undefined
-  totalReviews?: number; // Kan være undefined
+  createdAt: string;
+  averageRating?: number; // Gjennomsnittsrating (kan være undefined)
+  totalReviews?: number; // Antall anmeldelser (kan være undefined)
 }
 
-const BaneCarousel = () => {
-  const [topCourses, setTopCourses] = useState<Course[]>([]);
+const NyesteBanerCarousel = () => {
+  const [newestCourses, setNewestCourses] = useState<Course[]>([]);
   const router = useRouter(); // Bruker Next.js sin router for navigasjon
 
   useEffect(() => {
-    const fetchTopCourses = async () => {
+    const fetchNewestCourses = async () => {
       try {
         const response = await fetch("/api/courses");
         if (!response.ok) throw new Error("Kunne ikke hente data");
 
         const data: Course[] = await response.json();
 
-        // 🎯 Håndterer muligheten for undefined verdier
-        const validatedCourses = data.map((course) => ({
-          ...course,
-          averageRating: course.averageRating ?? 0,
-          totalReviews: course.totalReviews ?? 0,
-        }));
+        // Sorter etter `createdAt` (nyeste først)
+        const sortedCourses = data
+          .sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime())
+          .slice(0, 8); // Henter kun de 8 nyeste banene
 
-        // 🎯 Sorter etter rating og deretter etter antall anmeldelser
-        const sortedCourses = validatedCourses
-          .filter((course) => course.averageRating > 0)
-          .sort((a, b) => {
-            if (b.averageRating === a.averageRating) {
-              return b.totalReviews - a.totalReviews;
-            }
-            return b.averageRating - a.averageRating;
-          })
-          .slice(0, 8);
-
-        setTopCourses(sortedCourses);
+        setNewestCourses(sortedCourses);
       } catch (error) {
         console.error("Feil ved henting av baner:", error);
       }
     };
 
-    fetchTopCourses();
+    fetchNewestCourses();
   }, []);
 
   return (
     <section className="max-w-7xl mx-auto p-6 mt-20">
       <h1 className="text-3xl font-extrabold text-gray-800 leading-tight">
-        Topprangerte DiskGolf-baner
+        Nyeste DiskGolf-baner
       </h1>
       <Swiper
         modules={[Navigation, Pagination, Autoplay]}
         autoplay={{ delay: 3000, disableOnInteraction: false }}
         pagination={{
           clickable: true,
-          renderBullet: (index, className) => `<span class="${className} bg-green-600"></span>`,
+          renderBullet: (index, className) => `<span class="${className} bg-blue-600"></span>`,
         }}
         navigation
         spaceBetween={20}
@@ -81,9 +69,9 @@ const BaneCarousel = () => {
         }}
         className="rounded-lg shadow-lg mt-8"
       >
-        {topCourses.map((course) => {
-          const rating = Math.round(course.averageRating ?? 0); // 🔹 Sikrer alltid en gyldig rating
-          const totalReviews = course.totalReviews ?? 0;
+        {newestCourses.map((course) => {
+          const rating = Math.round(course.averageRating || 0); // Sikrer at vi alltid har en verdi
+          const totalReviews = course.totalReviews || 0;
 
           return (
             <SwiperSlide key={course.id}>
@@ -107,7 +95,9 @@ const BaneCarousel = () => {
                     </svg>
                   ))}
                   {totalReviews > 0 && (
-                    <span className="text-white text-xs ml-1">({totalReviews})</span>
+                    <span className="text-white text-xs ml-1">
+                      ({totalReviews})
+                    </span>
                   )}
                 </div>
 
@@ -125,6 +115,9 @@ const BaneCarousel = () => {
                   <div className="bg-black bg-opacity-70 p-2 rounded">
                     <h3 className="text-xl font-semibold">{course.name}</h3>
                     <p className="text-sm text-gray-300">{course.location}</p>
+                    <p className="text-xs text-gray-400">
+                      Lagt til: {new Date(course.createdAt).toLocaleDateString("no-NO")}
+                    </p>
                   </div>
                 </div>
               </div>
@@ -136,4 +129,4 @@ const BaneCarousel = () => {
   );
 };
 
-export default BaneCarousel;
+export default NyesteBanerCarousel;

@@ -4,12 +4,16 @@
  * Utvikler: Martin Pettersen
  */
 
+import AppReviews from "@/components/AppReviews";
+import JoinClub from "@/components/JoinClub";
 import Map from "@/components/Map";
+import NyesteBanerCarousel from "@/components/NewestCarosuel";
 import BaneCarousel from "@/components/popular-carousel";
 import QuickStartGame from "@/components/QuickStartGame";
 import ReviewCarousel from "@/components/ReviewCarousel";
 import SearchForm from "@/components/SearchForm";
 import RotatingText from "@/components/text-rotator";
+import TournamentsCarousel from "@/components/TournamentCarousel";
 import React from "react";
 
 // Henter miljøvariabel for Cookiebot
@@ -72,15 +76,37 @@ export default function HomePage() {
           <div className="mt-4">
             <SearchForm />
           </div>
+          
           <div className="mt-20">
             <BaneCarousel />
           </div>
+          <div className="mt-20">
+            <NyesteBanerCarousel />
+          </div>
+        {/*  <div className="mt-4"> */}
+          {/* <TournamentsCarousel />*/}
+         { /* </div> */}
+         {/* Bli Medlem CTA */}
+         <div className="mt-20">
+           <JoinClub />
+         </div>
           <div className="mt-4">
             <ReviewCarousel />
           </div>
+
+          <div className="mt-10">
+            <AppReviews />
+
+          </div>
+
+
+          
+
+          
           <div className="mt-10">
             <QuickStartGame />
           </div>
+          
         </section>
       </main>
     </React.Fragment>
