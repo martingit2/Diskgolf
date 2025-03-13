@@ -3,15 +3,16 @@
 import { FC } from "react";
 import CreateClubNewsForm from "./CreateClubNewsForm"; // Importer skjemaet for klubbnyheter
 
+// Sørg for at clubId er inkludert i TabNavigationProps
 interface TabNavigationProps {
   selectedTab: string;
   setSelectedTab: (tab: string) => void;
   userRole: string;
-  clubId: string; // Sørg for at clubId er inkludert her som en valid prop
+  clubId: string; // Legg til clubId for å sende til CreateClubNewsForm
 }
 
 const TabNavigation: FC<TabNavigationProps> = ({ selectedTab, setSelectedTab, userRole, clubId }) => {
-  console.log("Current clubId:", clubId); // Logg clubId for å se verdien
+  console.log("Current clubId:", clubId); // Legg til en logg her for å se hva clubId er
   
   return (
     <div className="flex flex-col items-center">
