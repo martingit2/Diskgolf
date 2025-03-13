@@ -7,7 +7,7 @@ import PieChartPlot from "@/components/charts/PieChartPlot";
 import RadarChartPlot from "@/components/charts/RadarChartPlot";
 import DashboardNavbar from "@/components/dashboard/dashboard-navbar";
 
-// Define the type of the data
+// Define the type of the data.
 interface StatsData {
   name: string;
   totalThrows: number;
