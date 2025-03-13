@@ -1,5 +1,6 @@
 "use client";
 
+import { ObZone } from "@/app/types/obtypes";
 import dynamic from "next/dynamic";
 import { useState, useEffect, CSSProperties } from "react";
 
@@ -16,7 +17,7 @@ const MapAdminWrapper = () => {
   const [kurvLabel, setKurvLabel] = useState<string>("");
   const [startPoints, setStartPoints] = useState<{ lat: number; lng: number }[]>([]);
   const [goalPoint, setGoalPoint] = useState<{ lat: number; lng: number } | null>(null);
-  const [obZones, setObZones] = useState<{ lat: number; lng: number }[]>([]);
+  const [obZones, setObZones] = useState<ObZone[]>([]);
 
   useEffect(() => {
     setIsClient(true);

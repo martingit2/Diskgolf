@@ -12,6 +12,10 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 
 const MapAdminComponent = dynamic(() => import("@/components/MapAdminComponentNoSSR"), { ssr: false });
 
+type ObZone =
+  | { type: "circle"; lat: number; lng: number }
+  | { type: "polygon"; points: [number, number][] };
+
 const AdminDashboard = () => {
   const { data: session, status } = useSession();
   const [selectedType, setSelectedType] = useState<"bane" | "start" | "kurv" | "mål" | "ob" | null>(null);
@@ -22,7 +26,7 @@ const AdminDashboard = () => {
   const [kurvLabel, setKurvLabel] = useState<string>("Kurv 1");
   const [startPoints, setStartPoints] = useState<{ lat: number; lng: number }[]>([]);
   const [goalPoint, setGoalPoint] = useState<{ lat: number; lng: number } | null>(null);
-  const [obZones, setObZones] = useState<{ lat: number; lng: number }[]>([]);
+  const [obZones, setObZones] = useState<ObZone[]>([]);
 
   if (status === "loading") return <p>Laster inn...</p>;
   if (!session || session.user.role !== "ADMIN") return <p>Du har ikke tilgang til denne siden.</p>;
@@ -51,7 +55,6 @@ const AdminDashboard = () => {
   };
 
   const handleSaveCourse = async () => {
-    // Hent verdier fra DOM
     const getValue = (id: string) => (document.getElementById(id) as HTMLInputElement).value;
     
     const courseData = {
@@ -65,7 +68,12 @@ const AdminDashboard = () => {
       start: startPoints,
       goal: goalPoint,
       baskets: holes,
-      obZones,
+      obZones: obZones.map(ob => ({
+        type: ob.type,
+        lat: ob.type === "circle" ? ob.lat : undefined,
+        lng: ob.type === "circle" ? ob.lng : undefined,
+        points: ob.type === "polygon" ? ob.points : undefined,
+      })),
       image: null as string | null,
     };
   
@@ -77,17 +85,12 @@ const AdminDashboard = () => {
   
     try {
       let imageUrl = null;
-      // Legg til logg for å se verdien av image før opplasting
-      console.log("Image file state før opplasting:", image);
-  
       if (image) {
         const uploadResult = await handleImageUpload(image);
-        console.log("Upload result:", uploadResult);
         if (!uploadResult?.secure_url) {
           throw new Error("Kunne ikke laste opp bildet");
         }
         imageUrl = uploadResult.secure_url;
-        console.log("Secure URL fra Cloudinary:", imageUrl);
       }
   
       const response = await fetch("/api/courses", {
@@ -118,6 +121,7 @@ const AdminDashboard = () => {
       toast.error(error instanceof Error ? error.message : "Ukjent feil");
     }
   };
+
   return (
     <div className="p-6 flex flex-col items-center">
       <h1 className="text-4xl font-bold text-gray-900">Opprett bane</h1>
@@ -138,7 +142,7 @@ const AdminDashboard = () => {
               <Button
                 key={type}
                 variant={selectedType === type ? "default" : "outline"}
-                onClick={() => setSelectedType(type as any)}
+                onClick={() => setSelectedType(type as "bane" | "start" | "kurv" | "mål" | "ob")}
               >
                 {label}
               </Button>

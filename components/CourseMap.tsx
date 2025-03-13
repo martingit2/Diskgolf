@@ -7,6 +7,8 @@ import "leaflet/dist/leaflet.css";
 import "leaflet.awesome-markers/dist/leaflet.awesome-markers.css";
 import "leaflet.awesome-markers";
 
+import AutoResizeMapMobile from "./AutoResizeMapMobile"; // <--- Importer komponenten
+
 // Funksjon for å lage ikon
 const createIcon = (iconName: string, markerColor: "blue" | "green" | "red" | "orange") => {
   return L.AwesomeMarkers.icon({
@@ -45,6 +47,9 @@ const CourseMap = ({ courseId }: { courseId: string }) => {
       scrollWheelZoom
       style={{ height: "100%", width: "100%", borderRadius: "12px" }}
     >
+      {/* Kaller AutoResizeMapMobile for å sørge for at Leaflet tegner kartet riktig på mobil */}
+      <AutoResizeMapMobile />
+
       <TileLayer
         url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
         attribution='&copy; OpenStreetMap contributors'
@@ -83,18 +88,18 @@ const CourseMap = ({ courseId }: { courseId: string }) => {
       )}
 
       {/* OB-områder som polygoner */}
-      {courseData.obZones?.map((obZone: any, index: number) => (
+      {courseData.obZones?.map((obZone: any, index: number) =>
         obZone.points && obZone.points.length > 2 ? (
           <Polygon
             key={index}
-            positions={obZone.points} // Bruk `points` direkte fra API-responsen
+            positions={obZone.points}
             color="red"
             fillOpacity={0.3}
           >
             <Popup>OB-område</Popup>
           </Polygon>
         ) : null
-      ))}
+      )}
     </MapContainer>
   );
 };

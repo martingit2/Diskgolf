@@ -7,6 +7,25 @@ import "leaflet/dist/leaflet.css";
 import "leaflet.awesome-markers/dist/leaflet.awesome-markers.css";
 import "leaflet.awesome-markers";
 
+// Definer ObZone-typen direkte i filen
+type ObZone =
+  | { type: "circle"; lat: number; lng: number }
+  | { type: "polygon"; points: [number, number][] };
+
+
+
+
+  interface MapAdminProps {
+    selectedType: "bane" | "start" | "kurv" | "mål" | "ob" | null;
+    setDistanceMeasurements: (distances: string[]) => void;
+    setHoles: (holes: { latitude: number; longitude: number; number: number; par: number }[]) => void;
+    setKurvLabel: (label: string) => void;
+    setStartPoints: (startPoints: { lat: number; lng: number }[]) => void;
+    setGoalPoint: (goalPoint: { lat: number; lng: number } | null) => void;
+    setObZones: (obZones: ObZone[]) => void;  // ✅ Make sure this is correctly typed
+  }
+
+
 // ✅ Oppretter ikon for markører
 const createIcon = (iconName: string, markerColor: "blue" | "red" | "green" | "orange" | "cadetblue") => {
   return L.AwesomeMarkers.icon({
@@ -20,7 +39,7 @@ const createIcon = (iconName: string, markerColor: "blue" | "red" | "green" | "o
 const adminCenter: [number, number] = [59.9127, 10.7461];
 
 // 📌 Typing for markører
-type MarkerType = "bane" | "start" | "kurv" | "mål" | "ob"; // Legg til "ob"
+type MarkerType = "bane" | "start" | "kurv" | "mål" | "ob";
 
 interface CourseMarker {
   id: string;
@@ -88,37 +107,45 @@ const MapAdminComponentNoSSR = ({
   setDistanceMeasurements,
   setHoles,
   setKurvLabel,
-  setStartPoints, // Legg til denne
-  setGoalPoint,  // Legg til denne
-  setObZones,    // Legg til denne
+  setStartPoints,
+  setGoalPoint,
+  setObZones,
 }: {
   selectedType: MarkerType | null;
   setDistanceMeasurements: (distances: string[]) => void;
   setHoles: (holes: { latitude: number; longitude: number; number: number; par: number }[]) => void;
   setKurvLabel: (label: string) => void;
-  setStartPoints: (startPoints: { lat: number; lng: number }[]) => void; // Legg til denne
-  setGoalPoint: (goalPoint: { lat: number; lng: number } | null) => void; // Legg til denne
-  setObZones: (obZones: { lat: number; lng: number }[]) => void; // Legg til denne
+  setStartPoints: (startPoints: { lat: number; lng: number }[]) => void;
+  setGoalPoint: (goalPoint: { lat: number; lng: number } | null) => void;
+  setObZones: (obZones: ObZone[]) => void;
 }) => {
   const [markers, setMarkers] = useState<CourseMarker[]>([]);
-  const [polygonPoints, setPolygonPoints] = useState<[number, number][]>([]); // Tilstand for polygonpunkter
-  const [editingPolygonId, setEditingPolygonId] = useState<string | null>(null); // Tilstand for redigering av polygon
-
+  const [polygonPoints, setPolygonPoints] = useState<[number, number][]>([]);
+  const [editingPolygonId, setEditingPolygonId] = useState<string | null>(null);
   // 🔄 Oppdater startpunkter, målpunkt og OB-soner når markører endres
+  const [localObZones, setLocalObZones] = useState<ObZone[]>([]); // ✅ Renamed local state
+
   useEffect(() => {
     const startPoints = markers
-      .filter(marker => marker.type === "start")
-      .map(marker => ({ lat: marker.latitude, lng: marker.longitude }));
-
-    const goalPoint = markers.find(marker => marker.type === "mål");
-    const obZones = markers
-      .filter(marker => marker.type === "ob")
-      .map(marker => ({ lat: marker.latitude, lng: marker.longitude }));
-
+      .filter((marker) => marker.type === "start")
+      .map((marker) => ({ lat: marker.latitude, lng: marker.longitude }));
+  
+    const goalPoint = markers.find((marker) => marker.type === "mål");
+  
+    const newObZones: ObZone[] = markers
+      .filter((marker) => marker.type === "ob")
+      .map((marker) =>
+        marker.polygon
+          ? { type: "polygon", points: marker.polygon } // ✅ Correctly assigns polygon
+          : { type: "circle", lat: marker.latitude, lng: marker.longitude } // ✅ Correctly assigns circle
+      );
+  
+    setObZones(newObZones); // ✅ Updates the parent component's state
+    setLocalObZones(newObZones); // ✅ Updates the local state (if needed)
+  
     setStartPoints(startPoints);
     setGoalPoint(goalPoint ? { lat: goalPoint.latitude, lng: goalPoint.longitude } : null);
-    setObZones(obZones);
-  }, [markers]);
+  }, [markers]); // ✅ Runs when `markers` change// ✅ Runs when `markers` change// ✅ Runs when `markers` change
 
   // 🔍 Oppdater avstander mellom markører (inkludert OB-områder)
   const updateDistances = (updatedMarkers: CourseMarker[]) => {
@@ -374,30 +401,28 @@ const MapAdminComponentNoSSR = ({
       )}
 
       {/* 📌 Info-tekst og reset-knapp */}
-      {/* 📌 Info-tekst og reset-knapp */}
+      <h2 className="text-md font-semibold text-gray-900 mb-3">Hvordan sette opp banen</h2>
 
-  <h2 className="text-md font-semibold text-gray-900 mb-3">Hvordan sette opp banen</h2>
+      <div className="text-xs text-gray-700 space-y-1">
+        <p>Plasser en <strong>bane-markør</strong> for å angi hvor banen ligger.</p>
+        <p>Deretter setter du ut et <strong>tee-punkt</strong>, deretter en <strong>kurv</strong>. Gjenta til neste siste kurv.</p>
+        <p>Når du har satt ut det siste tee-punktet, plasser <strong>mål-markøren</strong> for siste kurv.</p>
+        <p>Om nødvendig, marker <strong>OB-områder</strong> for å definere out-of-bounds-soner.</p>
+      </div>
 
-  <div className="text-xs text-gray-700 space-y-1">
-  <p>Plasser en <strong>bane-markør</strong> for å angi hvor banen ligger.</p>
-<p>Deretter setter du ut et <strong>tee-punkt</strong>, deretter en <strong>kurv</strong>. Gjenta til neste siste kurv.</p>
-<p>Når du har satt ut det siste tee-punktet, plasser <strong>mål-markøren</strong> for siste kurv.</p>
-<p>Om nødvendig, marker <strong>OB-områder</strong> for å definere out-of-bounds-soner.</p>
-  </div>
-
-  <button
-    className="mt-4 max-w-md px-4 py-2 text-xs bg-red-500 text-white rounded-lg hover:bg-red-700 transition-all duration-300"
-    onClick={() => {
-      setMarkers([]);
-      setHoles([]);
-      setKurvLabel("Kurv 1");
-      setPolygonPoints([]);
-      setEditingPolygonId(null);
-    }}
-  >
-    🔄 Tilbakestill bane
-  </button>
-</div>
+      <button
+        className="mt-4 max-w-md px-4 py-2 text-xs bg-red-500 text-white rounded-lg hover:bg-red-700 transition-all duration-300"
+        onClick={() => {
+          setMarkers([]);
+          setHoles([]);
+          setKurvLabel("Kurv 1");
+          setPolygonPoints([]);
+          setEditingPolygonId(null);
+        }}
+      >
+        🔄 Tilbakestill bane
+      </button>
+    </div>
   );
 };
 

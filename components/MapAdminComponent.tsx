@@ -1,5 +1,6 @@
 "use client";
 
+import { ObZone } from "@/app/types/obtypes";
 import dynamic from "next/dynamic";
 import { useEffect, useState } from "react";
 
@@ -9,10 +10,11 @@ interface MapAdminProps {
   setDistanceMeasurements: (distances: string[]) => void;
   setHoles: (holes: { latitude: number; longitude: number; number: number; par: number }[]) => void;
   setKurvLabel: (label: string) => void;
-  setStartPoints: (startPoints: { lat: number; lng: number }[]) => void; // Legg til denne linjen
-  setGoalPoint: (goalPoint: { lat: number; lng: number } | null) => void; // Legg til denne linjen
-  setObZones: (obZones: { lat: number; lng: number }[]) => void; // Legg til denne linjen
+  setStartPoints: (startPoints: { lat: number; lng: number }[]) => void;
+  setGoalPoint: (goalPoint: { lat: number; lng: number } | null) => void;
+  setObZones: (obZones: ObZone[]) => void; // Oppdatert type her
 }
+
 
 // Dynamisk import av kart for å unngå SSR-problemer
 const DynamicMap = dynamic(() => import("./MapAdminComponentNoSSR"), { ssr: false });
