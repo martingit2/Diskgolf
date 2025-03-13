@@ -10,6 +10,7 @@ export default function BaneoversiktPage() {
   const [courses, setCourses] = useState<Course[]>([]);
   const [searchTerm, setSearchTerm] = useState("");
   const [difficultyFilter, setDifficultyFilter] = useState("");
+  const [locationFilter, setLocationFilter] = useState(""); // Ny state for sted
   const [favorites, setFavorites] = useState<string[]>([]);
   const [sortBy, setSortBy] = useState("");
   const [locations, setLocations] = useState<string[]>([]);
@@ -69,8 +70,9 @@ export default function BaneoversiktPage() {
 
   const filteredCourses = courses.filter(
     (course) =>
-      course.name.toLowerCase().includes(searchTerm.toLowerCase()) &&
-      (difficultyFilter === "" || course.difficulty === difficultyFilter)
+      course.name.toLowerCase().includes(searchTerm.toLowerCase()) && // Søk etter banenavn
+      (difficultyFilter === "" || course.difficulty === difficultyFilter) && // Filtrer på vanskelighetsgrad
+      (locationFilter === "" || course.location.split(",")[0] === locationFilter) // Filtrer på sted
   );
 
   const sortedCourses = [...filteredCourses].sort((a, b) => {
@@ -108,7 +110,8 @@ export default function BaneoversiktPage() {
         {/* Sted */}
         <select
           className="flex-1 p-2 text-sm rounded-lg border border-gray-300 bg-white text-gray-700 focus:border-blue-500 focus:ring-2 focus:ring-blue-200 transition-all"
-          onChange={(e) => setDifficultyFilter(e.target.value)}
+          value={locationFilter}
+          onChange={(e) => setLocationFilter(e.target.value)}
         >
           <option value="">Alle Steder</option>
           {locations.map((location) => (

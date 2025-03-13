@@ -189,8 +189,9 @@ const GolfInfo = ({ courseData }: { courseData: any }) => {
                   extraInfo = (
                     <div className="text-sm">
                       <p>
-                        Sirkel: Midtpunkt (Lat: {obZone.lat.toFixed(4)}, Lng: {obZone.lng.toFixed(4)})
-                      </p>
+  Sirkel: Midtpunkt (Lat: {obZone.lat ? obZone.lat.toFixed(4) : "N/A"}, Lng: {obZone.lng ? obZone.lng.toFixed(4) : "N/A"})
+</p>
+
                       <p className="mt-1 text-gray-600 text-xs">
                         Avstanden fra Tee eller Kurv til OB-grensen for sirkelen må beregnes separat.
                       </p>
