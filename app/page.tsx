@@ -4,6 +4,10 @@
  * Utvikler: Martin Pettersen
  */
 
+"use client";
+
+import { useState, useEffect } from "react";
+import { motion, AnimatePresence } from "framer-motion";
 import AppReviews from "@/components/AppReviews";
 import JoinClub from "@/components/JoinClub";
 import Map from "@/components/Map";
@@ -20,11 +24,21 @@ import React from "react";
 // const domainGroupId = process.env.NEXT_PUBLIC_COOKIEBOT_DOMAIN_GROUP_ID;
 
 export default function HomePage() {
+  const [showJoinClub, setShowJoinClub] = useState(true);
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setShowJoinClub((prev) => !prev);
+    }, 7000); // Bytter hver 7. sekund
+
+    return () => clearInterval(interval);
+  }, []);
+
   return (
     <React.Fragment>
       {/* Cookiebot-scriptet er kommentert ut, siden trialen har utløpt */}
       {/* Husk å fornye trialen før innlevering av prosjekt */}
-      {/*
+      {/* 
       {domainGroupId && (
         <Script
           id="cookiebot-script"
@@ -76,37 +90,55 @@ export default function HomePage() {
           <div className="mt-4">
             <SearchForm />
           </div>
-          
+
           <div className="mt-20">
             <BaneCarousel />
           </div>
           <div className="mt-20">
             <NyesteBanerCarousel />
           </div>
-        {/*  <div className="mt-4"> */}
-          {/* <TournamentsCarousel />*/}
-         { /* </div> */}
-         {/* Bli Medlem CTA */}
-         <div className="mt-20">
-           <JoinClub />
-         </div>
+
+          {/* Kommentert ut turneringsseksjon */}
+          {/* <div className="mt-4"> */}
+          {/* <TournamentsCarousel /> */}
+          {/* </div> */}
+
           <div className="mt-4">
             <ReviewCarousel />
           </div>
 
+          {/* CTA-seksjon med animasjon mellom JoinClub og QuickStartGame */}
+          <div className="mt-20 relative w-full max-w-3xl mx-auto h-[400px] flex items-center justify-center">
+            <AnimatePresence mode="wait">
+              {showJoinClub ? (
+                <motion.div
+                  key="joinClub"
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, y: -20 }}
+                  transition={{ duration: 0.8 }}
+                  className="absolute w-full"
+                >
+                  <JoinClub />
+                </motion.div>
+              ) : (
+                <motion.div
+                  key="quickStartGame"
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, y: -20 }}
+                  transition={{ duration: 0.8 }}
+                  className="absolute w-full"
+                >
+                  <QuickStartGame />
+                </motion.div>
+              )}
+            </AnimatePresence>
+          </div>
+
           <div className="mt-10">
             <AppReviews />
-
           </div>
-
-
-          
-
-          
-          <div className="mt-10">
-            <QuickStartGame />
-          </div>
-          
         </section>
       </main>
     </React.Fragment>
