@@ -123,7 +123,7 @@ const BaneCarousel = () => {
                 {/* 🏷 Tekst */}
                 <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black via-transparent to-transparent text-white p-4">
                   <div className="bg-black bg-opacity-70 p-2 rounded">
-                    <h3 className="text-xl font-semibold">{course.name}</h3>
+                    <h3 className="text-xl text-green-300 font-semibold">{course.name}</h3>
                     <p className="text-sm text-gray-300">{course.location}</p>
                   </div>
                 </div>
