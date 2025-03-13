@@ -34,13 +34,13 @@ const navLinks = [
   {
     name: 'Finn bane',
     description: 'Søk etter tilgjengelige baner i nærheten.',
-    href: '#',
+    href: '/baner',
     icon: MagnifyingGlassCircleIcon,
   },
   {
     name: 'Mest populære',
     description: 'De mest populære banene.',
-    href: '#',
+    href: '/baner?sortBy=popular',
     icon: StarIcon,
   },
   {
