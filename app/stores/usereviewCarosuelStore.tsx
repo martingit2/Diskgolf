@@ -37,7 +37,7 @@ const useReviewsCarouselStore = create<ReviewsCarouselStore>((set) => ({
   setCourses: (courses) => set({ courses }),
   setLoading: (loading) => set({ loading }),
   setError: (error) => set({ error }),
-  
+
   // Fetching reviews and courses
   fetchReviews: async () => {
     set({ loading: true, error: null });
@@ -46,11 +46,17 @@ const useReviewsCarouselStore = create<ReviewsCarouselStore>((set) => ({
       if (!reviewsResponse.ok) throw new Error("Kunne ikke hente anmeldelser");
 
       const reviewData: Review[] = await reviewsResponse.json();
-      set({ reviews: reviewData });
 
-      // Fetch courses for unique course IDs
+      // Sorter anmeldelser etter createdAt (nyeste først) og begrens til 5
+      const sortedReviews = reviewData
+        .sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime())
+        .slice(0, 5); // Begrens til 5 anmeldelser
+
+      set({ reviews: sortedReviews });
+
+      // Hent kursdata for de 5 nyeste anmeldelsene
       const uniqueCourseIds = Array.from(
-        new Set(reviewData.map((review) => review.courseId))
+        new Set(sortedReviews.map((review) => review.courseId))
       );
 
       const coursePromises = uniqueCourseIds.map(async (courseId) => {

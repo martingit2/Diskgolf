@@ -14,8 +14,6 @@ import { User } from "lucide-react";
 import { useRouter } from "next/navigation";
 import useReviewsCarouselStore from "@/app/stores/usereviewCarosuelStore";
 
-// Import Zustand store
-
 const ReviewCarousel = () => {
   const { reviews, courses, loading, error, fetchReviews } = useReviewsCarouselStore();
   const router = useRouter();
@@ -106,10 +104,8 @@ const ReviewCarousel = () => {
                         {course?.name || "Ukjent bane"}
                       </p>
                     </CardHeader>
-                     {/* Separator */}
-                     <hr className="my-4 border-gray-300 w-2/3 mx-auto" />
-
-                    
+                    {/* Separator */}
+                    <hr className="my-4 border-gray-300 w-2/3 mx-auto" />
 
                     {/* Rating stars */}
                     <div className="flex justify-center mt-2">
@@ -128,8 +124,8 @@ const ReviewCarousel = () => {
                       {new Date(review.createdAt).toLocaleDateString()}
                     </p>
                   </CardContent>
-                   {/* Separator */}
-                   <hr className="my-4 border-gray-300 w-2/3 mx-auto" />
+                  {/* Separator */}
+                  <hr className="my-4 border-gray-300 w-2/3 mx-auto" />
                 </Card>
               </SwiperSlide>
             );
