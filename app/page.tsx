@@ -1,9 +1,3 @@
-/** 
- * Filnavn: page.tsx
- * Beskrivelse: Hovedsiden for DiskGolf-appen, inneholder kart, søkefunksjonalitet, anmeldelser og en tekstrotator for interaktiv brukeropplevelse.
- * Utvikler: Martin Pettersen
- */
-
 "use client";
 
 import { useState, useEffect } from "react";
@@ -18,13 +12,21 @@ import ReviewCarousel from "@/components/ReviewCarousel";
 import SearchForm from "@/components/SearchForm";
 import RotatingText from "@/components/text-rotator";
 import TournamentsCarousel from "@/components/TournamentCarousel";
+
 import React from "react";
+import useCoursesStore from "./stores/UseCoursesStore";
 
 // Henter miljøvariabel for Cookiebot
 // const domainGroupId = process.env.NEXT_PUBLIC_COOKIEBOT_DOMAIN_GROUP_ID;
 
 export default function HomePage() {
   const [showJoinClub, setShowJoinClub] = useState(true);
+  const { courses, fetchCourses } = useCoursesStore(); // Henter kursdata og metoden for å hente dem
+
+  useEffect(() => {
+    // Kaller fetchCourses for å hente kursdata hvis de ikke allerede er cachet
+    fetchCourses();
+  }, [fetchCourses]);
 
   useEffect(() => {
     const interval = setInterval(() => {
