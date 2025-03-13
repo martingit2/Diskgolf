@@ -1,51 +1,33 @@
 "use client";
 
-import { useEffect, useState } from "react";
-import { useRouter } from "next/navigation";
+import { useEffect } from "react";
 import { Swiper, SwiperSlide } from "swiper/react";
 import { Navigation, Pagination, Autoplay } from "swiper/modules";
+import useCarouselStore from "@/app/stores/useCarosuellStore"; // Importer Zustand-storen for karusellen
+import { useRouter } from "next/navigation";
 import Image from "next/image";
 import "swiper/css";
 import "swiper/css/navigation";
 import "swiper/css/pagination";
 import "swiper/css/autoplay";
 
-// Definerer typen for Course (baner)
-interface Course {
-  id: string;
-  name: string;
-  location: string;
-  image?: string;
-  createdAt: string;
-  averageRating?: number; // Gjennomsnittsrating (kan være undefined)
-  totalReviews?: number; // Antall anmeldelser (kan være undefined)
-}
-
 const NyesteBanerCarousel = () => {
-  const [newestCourses, setNewestCourses] = useState<Course[]>([]);
-  const router = useRouter(); // Bruker Next.js sin router for navigasjon
+  const { newestCourses, fetchNewestCourses, loading, error } = useCarouselStore(); // Bruk Zustand-storen for å hente dataene
+  const router = useRouter();
 
   useEffect(() => {
-    const fetchNewestCourses = async () => {
-      try {
-        const response = await fetch("/api/courses");
-        if (!response.ok) throw new Error("Kunne ikke hente data");
+    if (newestCourses.length === 0 && !loading) {
+      fetchNewestCourses(); // Hent nyeste baner hvis de ikke er hentet fra før
+    }
+  }, [newestCourses, fetchNewestCourses, loading]);
 
-        const data: Course[] = await response.json();
+  if (loading) {
+    return <p>Laster nyeste baner...</p>;
+  }
 
-        // Sorter etter `createdAt` (nyeste først)
-        const sortedCourses = data
-          .sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime())
-          .slice(0, 8); // Henter kun de 8 nyeste banene
-
-        setNewestCourses(sortedCourses);
-      } catch (error) {
-        console.error("Feil ved henting av baner:", error);
-      }
-    };
-
-    fetchNewestCourses();
-  }, []);
+  if (error) {
+    return <p className="text-red-500">{error}</p>;
+  }
 
   return (
     <section className="max-w-7xl mx-auto p-6 mt-20">
@@ -57,7 +39,10 @@ const NyesteBanerCarousel = () => {
         autoplay={{ delay: 3000, disableOnInteraction: false }}
         pagination={{
           clickable: true,
-          renderBullet: (index, className) => `<span class="${className} bg-blue-600"></span>`,
+          renderBullet: (index: number, className: string) => (
+            // Return a string that represents the bullet, you can still add styles
+            `<span class="${className} bg-blue-600"></span>`
+          ),
         }}
         navigation
         spaceBetween={20}
@@ -70,14 +55,14 @@ const NyesteBanerCarousel = () => {
         className="rounded-lg shadow-lg mt-8"
       >
         {newestCourses.map((course) => {
-          const rating = Math.round(course.averageRating || 0); // Sikrer at vi alltid har en verdi
-          const totalReviews = course.totalReviews || 0;
+          const rating = Math.round(course.averageRating ?? 0);
+          const totalReviews = course.totalReviews ?? 0;
 
           return (
             <SwiperSlide key={course.id}>
               <div
                 className="relative overflow-hidden rounded-lg group cursor-pointer"
-                onClick={() => router.push(`/courses/${course.id}`)} // Navigerer til banens side
+                onClick={() => router.push(`/courses/${course.id}`)}
               >
                 {/* ⭐ Stjerner øverst til høyre */}
                 <div className="absolute top-2 right-2 z-10 bg-black bg-opacity-70 text-yellow-400 rounded-full px-2 py-1 flex items-center space-x-1">
@@ -110,13 +95,13 @@ const NyesteBanerCarousel = () => {
                   className="w-full h-auto object-cover transition-transform duration-300 group-hover:scale-105"
                 />
 
-                {/* 🏷 Tekst */}
+                {/* Tekst */}
                 <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black via-transparent to-transparent text-white p-4">
                   <div className="bg-black bg-opacity-70 p-2 rounded">
                     <h3 className="text-xl text-green-300 font-semibold">{course.name}</h3>
                     <p className="text-sm text-gray-300">{course.location}</p>
                     <p className="text-xs text-gray-400">
-                      Lagt til: {new Date(course.createdAt).toLocaleDateString("no-NO")}
+                      Lagt til: {course.createdAt ? new Date(course.createdAt).toLocaleDateString("no-NO") : "Ukjent dato"}
                     </p>
                   </div>
                 </div>

@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { Swiper, SwiperSlide } from "swiper/react";
 import { Navigation, Pagination, Autoplay } from "swiper/modules";
@@ -9,6 +9,7 @@ import "swiper/css";
 import "swiper/css/navigation";
 import "swiper/css/pagination";
 import "swiper/css/autoplay";
+import useCarouselStore from "@/app/stores/useCarosuellStore"; // Importer Zustand-storen for karusellen
 
 // 📌 Definerer typen for Course (baner)
 interface Course {
@@ -21,43 +22,16 @@ interface Course {
 }
 
 const BaneCarousel = () => {
-  const [topCourses, setTopCourses] = useState<Course[]>([]);
-  const router = useRouter(); // Bruker Next.js sin router for navigasjon
+  // Henter data fra Zustand-storen
+  const { topCourses, fetchTopCourses } = useCarouselStore();
+  const router = useRouter();
 
   useEffect(() => {
-    const fetchTopCourses = async () => {
-      try {
-        const response = await fetch("/api/courses");
-        if (!response.ok) throw new Error("Kunne ikke hente data");
-
-        const data: Course[] = await response.json();
-
-        // 🎯 Håndterer muligheten for undefined verdier
-        const validatedCourses = data.map((course) => ({
-          ...course,
-          averageRating: course.averageRating ?? 0,
-          totalReviews: course.totalReviews ?? 0,
-        }));
-
-        // 🎯 Sorter etter rating og deretter etter antall anmeldelser
-        const sortedCourses = validatedCourses
-          .filter((course) => course.averageRating > 0)
-          .sort((a, b) => {
-            if (b.averageRating === a.averageRating) {
-              return b.totalReviews - a.totalReviews;
-            }
-            return b.averageRating - a.averageRating;
-          })
-          .slice(0, 8);
-
-        setTopCourses(sortedCourses);
-      } catch (error) {
-        console.error("Feil ved henting av baner:", error);
-      }
-    };
-
-    fetchTopCourses();
-  }, []);
+    // Hent topprangerte baner hvis de ikke er hentet fra før
+    if (topCourses.length === 0) {
+      fetchTopCourses(); // Kaller fetchTopCourses hvis ikke dataene er cachet
+    }
+  }, [topCourses, fetchTopCourses]);
 
   return (
     <section className="max-w-7xl mx-auto p-6 mt-20">
@@ -82,7 +56,7 @@ const BaneCarousel = () => {
         className="rounded-lg shadow-lg mt-8"
       >
         {topCourses.map((course) => {
-          const rating = Math.round(course.averageRating ?? 0); // 🔹 Sikrer alltid en gyldig rating
+          const rating = Math.round(course.averageRating ?? 0); // Sikrer alltid en gyldig rating
           const totalReviews = course.totalReviews ?? 0;
 
           return (

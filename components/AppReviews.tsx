@@ -1,57 +1,12 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import { FaStar } from "react-icons/fa";
 import Image from "next/image";
 import "swiper/css";
+import useReviewsStore from "@/app/stores/useAppReviewStore";
 
-// 📌 Midlertidig testdata for app-anmeldelser
-const testReviews = [
-  {
-    id: "1",
-    username: "Sofie A.",
-    comment: "En fantastisk app! Intuitivt grensesnitt og flott design. Perfekt for både nybegynnere og erfarne spillere!",
-    rating: 5,
-    role: "DiskGolf-entusiast",
-  },
-  {
-    id: "2",
-    username: "Thomas R.",
-    comment: "Flott app, men jeg skulle ønske den hadde mer detaljert statistikk for hver runde jeg spiller.",
-    rating: 4,
-    role: "Turneringsspiller",
-  },
-  {
-    id: "3",
-    username: "Camilla E.",
-    comment: "Beste DiskGolf-app jeg har prøvd! Detaljerte kart, enkel baneoversikt og gode analyser. 10/10!",
-    rating: 5,
-    role: "Erfaren diskgolfspiller",
-  },
-  {
-    id: "4",
-    username: "Jonas H.",
-    comment: "Gode funksjoner, enkelt å spille men savner flere innstillinger.",
-    rating: 3,
-    role: "Casual spiller",
-  },
-  {
-    id: "5",
-    username: "Elise M.",
-    comment: "Elsker hvordan appen samler alle mine runder og gir en full oversikt over prestasjonene mine!",
-    rating: 5,
-    role: "Proff diskgolfutøver",
-  },
-  {
-    id: "6",
-    username: "Markus W.",
-    comment: "Veldig nyttig app for å finne baner, men jeg savner en turneringsmodus.",
-    rating: 4,
-    role: "Aktiv klubbspiller",
-  },
-];
-
-// 📌 Avatarer basert på kjønn (hentes fra `randomuser.me`)
+// Avatar map for users
 const avatarMap: { [key: string]: string } = {
   "Sofie A.": "https://randomuser.me/api/portraits/women/44.jpg",
   "Camilla E.": "https://randomuser.me/api/portraits/women/62.jpg",
@@ -62,24 +17,13 @@ const avatarMap: { [key: string]: string } = {
 };
 
 const AppReviews = () => {
-  const [reviews, setReviews] = useState(testReviews);
-  const [loading, setLoading] = useState(false);
+  // Access the state and actions from the zustand store
+  const { reviews, loading, error, fetchReviews } = useReviewsStore();
 
   useEffect(() => {
-    const fetchReviews = async () => {
-      try {
-        setLoading(true);
-        // 🚀 Når API er klart, bytt ut med faktisk fetch()
-        setReviews(testReviews);
-      } catch (error) {
-        console.error("Feil ved henting av anmeldelser:", error);
-      } finally {
-        setLoading(false);
-      }
-    };
-
+    // Fetch reviews when the component mounts
     fetchReviews();
-  }, []);
+  }, [fetchReviews]);
 
   return (
     <section className="max-w-7xl mx-auto p-6 mt-20">
@@ -89,6 +33,8 @@ const AppReviews = () => {
 
       {loading ? (
         <p className="text-center text-gray-500">Laster anmeldelser...</p>
+      ) : error ? (
+        <p className="text-center text-red-500">{error}</p>
       ) : reviews.length === 0 ? (
         <p className="text-center text-gray-500">Ingen anmeldelser funnet</p>
       ) : (
@@ -100,7 +46,7 @@ const AppReviews = () => {
             >
               {/* 🔹 Avatar */}
               <Image
-                src={avatarMap[review.username] || "https://randomuser.me/api/portraits/lego/5.jpg"} // Standard avatar hvis navn ikke finnes
+                src={review.username in avatarMap ? avatarMap[review.username] : "https://randomuser.me/api/portraits/lego/5.jpg"}
                 alt={review.username}
                 width={60}
                 height={60}
@@ -116,15 +62,13 @@ const AppReviews = () => {
                 {Array.from({ length: 5 }).map((_, starIndex) => (
                   <FaStar
                     key={starIndex}
-                    className={`text-lg ${
-                      starIndex < review.rating ? "text-yellow-400" : "text-gray-300"
-                    }`}
+                    className={`text-lg ${starIndex < review.rating ? "text-yellow-400" : "text-gray-300"}`}
                   />
                 ))}
               </div>
 
               {/* 🔹 Kommentar */}
-              <p className="text-gray-700 italic mt-4 px-4">"{review.comment}"</p>
+              <p className="text-gray-700 italic mt-4 px-4">{`"${review.comment}"`}</p>
             </div>
           ))}
         </div>
