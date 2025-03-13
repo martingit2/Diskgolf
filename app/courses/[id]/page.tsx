@@ -43,7 +43,6 @@ export default async function CoursePage({
 
     // 1) Hent kursdata
     const courseResponse = await fetch(`${baseUrl}/api/courses/${id}`, {
-      cache: "no-cache",
     });
     if (!courseResponse.ok) {
       return notFound();
@@ -53,7 +52,7 @@ export default async function CoursePage({
     // 2) Hent anmeldelser
     const reviewsResponse = await fetch(
       `${baseUrl}/api/reviews?course_id=${id}`,
-      { cache: "no-cache" }
+
     );
     if (!reviewsResponse.ok) {
       return notFound();
@@ -87,7 +86,6 @@ export default async function CoursePage({
     if (course.latitude && course.longitude) {
       const weatherResponse = await fetch(
         `${baseUrl}/api/weather?lat=${course.latitude}&lon=${course.longitude}`,
-        { cache: "no-cache" }
       );
       if (weatherResponse.ok) {
         weatherData = await weatherResponse.json();
