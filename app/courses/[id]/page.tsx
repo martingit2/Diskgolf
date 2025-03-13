@@ -24,10 +24,7 @@ import {
 import WriteReview from "@/components/WriteReview";
 import { FaStar } from "react-icons/fa";
 import MapModal from "@/components/MapModal";
-
-// Importer MapModal-komponenten
-
-
+import FavoriteButton from "@/components/FavoriteButton"; // Importer FavoriteButton
 
 export const dynamic = "force-dynamic";
 
@@ -136,6 +133,8 @@ export default async function CoursePage({
                     className="object-cover transition-transform duration-300 group-hover:scale-105"
                   />
                   <div className="absolute inset-0 bg-gradient-to-b from-transparent to-black/40 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+                  {/* Favorittknapp */}
+                  <FavoriteButton courseId={id} />
                 </>
               )}
             </div>
@@ -150,16 +149,13 @@ export default async function CoursePage({
               {/* Kart-knapp */}
               <MapModal courseId={course.id} />
 
-             
-
-<Link href={`/meld-feil/${course.id}`} passHref>
-  <Button className="bg-red-500 hover:bg-red-600 text-white font-semibold py-3 px-8 rounded-lg shadow-md transition-all duration-300 flex items-center gap-2">
-    <AlertTriangle className="w-5 h-5" /> {/* ✅ Legger til feil-/advarselsikon */}
-    Meld Feil på Bane
-  </Button>
-</Link>
-</div>
-
+              <Link href={`/meld-feil/${course.id}`} passHref>
+                <Button className="bg-red-500 hover:bg-red-600 text-white font-semibold py-3 px-8 rounded-lg shadow-md transition-all duration-300 flex items-center gap-2">
+                  <AlertTriangle className="w-5 h-5" /> {/* ✅ Legger til feil-/advarselsikon */}
+                  Meld Feil på Bane
+                </Button>
+              </Link>
+            </div>
 
             {/* Separator under knappene */}
             <hr className="my-6 border-t border-gray-300" />

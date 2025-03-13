@@ -1,7 +1,6 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import Link from "next/link";
 import { useRouter } from "next/navigation";
 import L from "leaflet";
 import { MapContainer, Marker, TileLayer, Popup } from "react-leaflet";
@@ -9,17 +8,17 @@ import "leaflet/dist/leaflet.css";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import Image from "next/image";
 import { Button } from "@/components/ui/button";
-import { FaMapMarkedAlt, FaInfoCircle } from "react-icons/fa";
+import { FaInfoCircle } from "react-icons/fa";
+import { Disc, Layers, Ruler, Star, AlertCircle, User } from "lucide-react";
 
 // 📌 Bruk en grønn Leaflet markør
 const greenMarkerIcon = new L.Icon({
-  iconUrl: "https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-2x-green.png", 
+  iconUrl:
+    "https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-2x-green.png",
   iconSize: [25, 41],
   iconAnchor: [12, 41],
   popupAnchor: [1, -34],
 });
-
-
 
 interface Course {
   id: string;
@@ -32,6 +31,12 @@ interface Course {
   averageRating?: number;
   totalReviews?: number;
   totalDistance?: number;
+  par?: number;
+  numHoles?: number;
+  baskets?: { id: string }[];
+  start?: { latitude: number; longitude: number }[];
+  obZones?: { id: string }[];
+  owner?: string;
 }
 
 const MapComponent = () => {
@@ -62,15 +67,10 @@ const MapComponent = () => {
   const renderStars = (rating: number) => (
     <div className="flex">
       {Array.from({ length: 5 }, (_, i) => (
-        <svg
+        <Star
           key={i}
-          xmlns="http://www.w3.org/2000/svg"
-          fill={i < rating ? "#FFD700" : "#E0E0E0"}
-          viewBox="0 0 24 24"
-          className="h-4 w-4"
-        >
-          <path d="M12 .587l3.668 7.431 8.215 1.192-5.938 5.778 1.404 8.182L12 18.896l-7.349 3.864 1.404-8.182L.117 9.21l8.215-1.192z" />
-        </svg>
+          className={`w-4 h-4 ${i < rating ? "text-yellow-500" : "text-gray-300"}`}
+        />
       ))}
     </div>
   );
@@ -85,86 +85,92 @@ const MapComponent = () => {
           <TileLayer url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" />
 
           {/* Dynamisk genererte markører for baner */}
-          {courses.map((course) => (
-            <Marker key={course.id} position={[course.latitude, course.longitude]} icon={greenMarkerIcon}>
-              <Popup>
-                <Card className="w-56 shadow-md border border-gray-200 rounded-lg overflow-hidden">
-                  <div className="relative">
-                    <Image
-                      src={
-                        course.image ||
-                        "https://res.cloudinary.com/dmuhg7btj/image/upload/v1741665222/discgolf/courses/file_d2gyo0.webp"
-                      }
-                      alt={course.name}
-                      width={250}
-                      height={150}
-                      className="w-full h-28 object-cover rounded-t-lg"
-                    />
-                    <div className="absolute inset-0 bg-gradient-to-t from-black/40 to-transparent rounded-t-lg"></div>
-                  </div>
+          {courses.map((course) => {
+            // ✅ Fiks for "Antall kurver"
+            const numHoles = course.numHoles ?? (course.baskets ? course.baskets.length : "Ukjent");
 
-                  <CardContent className="p-3">
-                    {/* Navn og lokasjon */}
-                    <CardHeader className="p-0 mb-2">
-                      <CardTitle className="text-md font-bold text-gray-900">{course.name}</CardTitle>
-                      <p className="text-xs text-gray-600">{course.location}</p>
-                      <hr className="my-2 border-gray-300" />
-                    </CardHeader>
-
-                    {/* ⭐ Stjernerating */}
-                    {course.averageRating !== undefined && (
-                      <div className="flex items-center gap-1">
-                        {renderStars(Math.round(course.averageRating))}
-                        <span className="text-xs text-gray-700">
-                          ({course.totalReviews || 0})
-                        </span>
-                      </div>
-                    )}
-
-                    {/* Info */}
-                    <div className="text-xs text-gray-600 mt-2 space-y-1">
-                      <p>
-                        <span className="font-medium">Vanskelighetsgrad:</span>{" "}
-                        <span
-                          className={
-                            course.difficulty === "Lett"
-                              ? "text-green-500"
-                              : course.difficulty === "Middels"
-                              ? "text-yellow-500"
-                              : "text-red-500"
-                          }
-                        >
-                          {course.difficulty || "Ukjent"}
-                        </span>
-                      </p>
-                      <p>
-                        <span className="font-medium">Banelengde:</span>{" "}
-                        {course.totalDistance ? `${course.totalDistance.toFixed(2)} m` : "Ukjent"}
-                      </p>
+            return (
+              <Marker key={course.id} position={[course.latitude, course.longitude]} icon={greenMarkerIcon}>
+                <Popup>
+                  <Card className="w-72 shadow-md border border-gray-200 rounded-lg overflow-hidden">
+                    <div className="relative w-full h-40">
+                      <Image
+                        src={
+                          course.image ||
+                          "https://res.cloudinary.com/dmuhg7btj/image/upload/v1741665222/discgolf/courses/file_d2gyo0.webp"
+                        }
+                        alt={course.name}
+                        fill
+                        className="object-cover rounded-t-lg"
+                      />
+                      <div className="absolute inset-0 bg-gradient-to-t from-black/40 to-transparent rounded-t-lg"></div>
                     </div>
 
-                    {/* Knapper med spacing */}
-                    <div className="mt-5 flex flex-col gap-3">
-  <Button
-    className="w-full bg-gray-900 text-white hover:bg-gray-700 transition-all flex items-center gap-2 justify-center"
-    onClick={() => router.push(`/courses/${course.id}`)}
-  >
-    <FaInfoCircle className="text-white" />
-    Gå til Bane
-  </Button>
-  <Link href={`/map/${course.id}`} passHref>
-    <Button className="w-full bg-green-800 text-white hover:bg-green-600 transition-all flex items-center gap-2 justify-center">
-      <FaMapMarkedAlt className="text-white" />
-      Vis Baneoversikt
-    </Button>
-  </Link>
-</div>
-                       
-                  </CardContent>
-                </Card>
-              </Popup>
-            </Marker>
-          ))}
+                    <CardContent className="p-3">
+                      {/* Navn og lokasjon */}
+                      <CardHeader className="p-0 mb-2">
+                        <CardTitle className="text-md font-bold text-gray-900">{course.name}</CardTitle>
+                        <p className="text-xs text-gray-600">{course.location}</p>
+                        <hr className="my-2 border-gray-300" />
+                      </CardHeader>
+
+                      {/* ⭐ Stjernerating */}
+                      {course.averageRating !== undefined && (
+                        <div className="flex items-center gap-1">
+                          {renderStars(Math.round(course.averageRating))}
+                          <span className="text-xs text-gray-700">
+                            ({course.totalReviews || 0} anmeldelser)
+                          </span>
+                        </div>
+                      )}
+
+                      {/* Utvidet baneinfo */}
+                      <div className="text-xs text-gray-600 mt-2 space-y-2">
+                        <p>
+                          <Disc className="inline text-green-500 mr-2" />
+                          <strong>Par:</strong> {course.par ?? "Ukjent"}
+                        </p>
+                        <p>
+                          <Disc className="inline text-orange-500 mr-2" />
+                          <strong>Antall kurver:</strong> {numHoles}
+                        </p>
+                        <p>
+                          <Layers className="inline text-blue-500 mr-2" />
+                          <strong>Antall Tee:</strong> {course.start ? course.start.length : "Ukjent"}
+                        </p>
+                        <p>
+                          <AlertCircle className="inline text-red-500 mr-2" />
+                          <strong>OB-soner:</strong> {course.obZones ? course.obZones.length : "0"} soner
+                        </p>
+                        <p>
+                          <Ruler className="inline text-gray-600 mr-2" />
+                          <strong>Banelengde:</strong>{" "}
+                          {course.totalDistance ? `${course.totalDistance.toFixed(2)} m` : "Ukjent"}
+                        </p>
+                        {course.owner && (
+                          <p>
+                            <User className="inline text-gray-700 mr-2" />
+                            <strong>Baneeier:</strong> {course.owner}
+                          </p>
+                        )}
+                      </div>
+
+                      {/* Knapper med spacing */}
+                      <div className="mt-5 flex flex-col gap-3">
+                        <Button
+                          className="w-full bg-gray-900 text-white hover:bg-gray-700 transition-all flex items-center gap-2 justify-center"
+                          onClick={() => router.push(`/courses/${course.id}`)}
+                        >
+                          <FaInfoCircle className="text-white" />
+                          Gå til Bane
+                        </Button>
+                      </div>
+                    </CardContent>
+                  </Card>
+                </Popup>
+              </Marker>
+            );
+          })}
         </MapContainer>
       )}
     </div>
