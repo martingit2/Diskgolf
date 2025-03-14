@@ -75,11 +75,11 @@ const ReviewCarousel = () => {
                     <div className="absolute inset-0 bg-black/10 opacity-0 group-hover:opacity-30 transition-opacity duration-300"></div>
 
                     {/* User profile image */}
-{/* User profile image */}
-<div className="absolute left-1/2 transform -translate-x-1/2 -bottom-8 w-16 h-16 rounded-full border-4 border-white shadow-md overflow-hidden">
-  {review.user.image ? (
-    <Image
-      src={review.user.image}
+
+               <div className="absolute left-1/2 transform -translate-x-1/2 -bottom-8 w-16 h-16 rounded-full border-4 border-white shadow-md overflow-hidden">
+            {review.user.image ? (
+            <Image
+        src={review.user.image}
       alt={review.user.name}
       width={64}
       height={64}
