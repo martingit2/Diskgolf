@@ -113,7 +113,7 @@ export default function BaneoversiktPage() {
           value={locationFilter}
           onChange={(e) => setLocationFilter(e.target.value)}
         >
-          <option value="">Alle Steder</option>
+          <option value="">Alle steder</option>
           {locations.map((location) => (
             <option key={location} value={location}>
               {location}
@@ -127,7 +127,7 @@ export default function BaneoversiktPage() {
           value={difficultyFilter}
           onChange={(e) => setDifficultyFilter(e.target.value)}
         >
-          <option value="">Alle Vanskelighetsgrader</option>
+          <option value="">Alle vanskelighetsgrader</option>
           <option value="Lett">Lett</option>
           <option value="Middels">Middels</option>
           <option value="Vanskelig">Vanskelig</option>

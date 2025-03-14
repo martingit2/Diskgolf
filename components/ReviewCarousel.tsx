@@ -75,23 +75,23 @@ const ReviewCarousel = () => {
                     <div className="absolute inset-0 bg-black/10 opacity-0 group-hover:opacity-30 transition-opacity duration-300"></div>
 
                     {/* User profile image */}
-                    <div className="absolute left-1/2 transform -translate-x-1/2 -bottom-8">
-                      {review.user.image ? (
-                        <Image
-                          src={review.user.image}
-                          alt={review.user.name}
-                          width={70}
-                          height={70}
-                          className="rounded-full border-4 border-white shadow-md"
-                        />
-                      ) : (
-                        <div className="w-16 h-16 rounded-full bg-gray-200 flex items-center justify-center text-gray-500 border-4 border-white shadow-md">
-                          <User className="w-8 h-8" />
-                        </div>
-                      )}
-                    </div>
-                  </div>
-
+{/* User profile image */}
+<div className="absolute left-1/2 transform -translate-x-1/2 -bottom-8 w-16 h-16 rounded-full border-4 border-white shadow-md overflow-hidden">
+  {review.user.image ? (
+    <Image
+      src={review.user.image}
+      alt={review.user.name}
+      width={64}
+      height={64}
+      className="w-full h-full object-cover"
+    />
+  ) : (
+    <div className="w-full h-full bg-gray-200 flex items-center justify-center text-gray-500">
+      <User className="w-8 h-8" />
+    </div>
+  )}
+</div>
+</div>
                   <CardContent className="p-6 flex flex-col items-center text-center mt-10">
                     {/* Username */}
                     <CardHeader className="p-0 mt-3">
