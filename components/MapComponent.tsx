@@ -51,6 +51,7 @@ const MapComponent = () => {
         const res = await fetch("/api/courses");
         if (!res.ok) throw new Error("Kunne ikke hente baneinformasjon");
         const data = await res.json();
+        setCourses(data);
       } catch (err) {
         console.error("Feil ved henting av kursdata:", err);
         setError("Kunne ikke laste inn baner");
