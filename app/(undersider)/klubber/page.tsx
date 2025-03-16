@@ -172,7 +172,7 @@ const Klubber = () => {
 
                     {/* Knapper nederst */}
                     <div className="mt-6 flex gap-4">
-                      <Link href={`/klubb/${club.id}`} passHref className="flex-1">
+                      <Link href={`/klubber/${club.id}`} passHref className="flex-1">
                         <Button className="w-full py-3 bg-gray-900 text-white font-semibold rounded-xl hover:bg-gray-800 transition duration-300">
                           Se klubbdetaljer
                         </Button>
