@@ -1,107 +1,140 @@
-'use client'
+// components/NyTurnering.tsx
+'use client';
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import { toast } from "react-hot-toast";
 
 const NyTurnering = () => {
   const [name, setName] = useState("");
-  const [type, setType] = useState("USER");
   const [location, setLocation] = useState("");
   const [description, setDescription] = useState("");
   const [dateTime, setDateTime] = useState("");
-  const [maxParticipants, setMaxParticipants] = useState<number>(0);
-  const [image, setImage] = useState<File | null>(null);
+  const [maxParticipants, setMaxParticipants] = useState<number | "">("");
   const router = useRouter();
 
-  const handleImageUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const file = event.target.files ? event.target.files[0] : null;
-    if (file) {
-      setImage(file);
-    }
-  };
-
   const handleMaxParticipantsChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    let value = e.target.value.replace(/^0+/, ''); // Fjern ledende nuller
-    if (!value) {
-      value = '0'; // Hvis ingen tall er skrevet inn, sett verdien til 0
+    const value = e.target.value;
+    if (value === "") {
+      setMaxParticipants("");
+    } else {
+      const numberValue = parseInt(value, 10);
+      if (!isNaN(numberValue)) {
+        setMaxParticipants(numberValue);
+      }
     }
-    const numberValue = parseInt(value, 10); // Konverter til et heltall
-    setMaxParticipants(numberValue);
   };
 
   const handleSubmit = async (event: React.FormEvent) => {
     event.preventDefault();
 
-    // Send POST request to backend to create a new tournament
-    const formData = new FormData();
-    formData.append("name", name);
-    formData.append("type", type);
-    formData.append("location", location);
-    formData.append("description", description);
-    formData.append("dateTime", dateTime);
-    if (image) {
-      formData.append("image", image);
+    if (maxParticipants === "" || maxParticipants < 1) {
+      toast.error("Maksimalt antall deltakere må være minst 1");
+      return;
     }
-    formData.append("maxParticipants", maxParticipants.toString());
+
+    const tournamentData = {
+      name,
+      location,
+      description,
+      dateTime,
+      maxParticipants,
+    };
 
     try {
-      const response = await fetch("/api/tournaments", {
+      const response = await fetch("/api/tournaments/create", {
         method: "POST",
-        body: formData,
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(tournamentData),
       });
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.error || "Kunne ikke opprette turnering");
+      }
 
       const data = await response.json();
       console.log("Turnering opprettet:", data);
-      router.push("/turneringer");
+      toast.success("Turnering opprettet!");
+      router.push(`/turnering/${data.id}`);
     } catch (error) {
       console.error("Feil ved oppretting av turnering:", error);
+      toast.error(error instanceof Error ? error.message : "Ukjent feil");
     }
   };
 
   return (
-    <div className="max-w-5xl mx-auto p-6">
+    <div className="max-w-5xl mx-auto p-6 bg-white shadow-lg rounded-lg">
       <h1 className="text-3xl font-extrabold text-center text-gray-900 mb-6">Opprett ny turnering</h1>
-      <form onSubmit={handleSubmit}>
-        <div className="mb-4">
-          <label htmlFor="name" className="block text-gray-700">Turneringsnavn:</label>
-          <input id="name" type="text" value={name} onChange={(e) => setName(e.target.value)} className="mt-2 p-3 w-full border border-gray-300 rounded-lg" required />
+      <form onSubmit={handleSubmit} className="space-y-6">
+        <div>
+          <label htmlFor="name" className="block text-sm font-medium text-gray-700">Turneringsnavn:</label>
+          <input
+            id="name"
+            type="text"
+            value={name}
+            onChange={(e) => setName(e.target.value)}
+            className="mt-1 block w-full p-3 border border-gray-300 rounded-lg shadow-sm focus:ring-2 focus:ring-green-500 focus:border-green-500 transition duration-300"
+            required
+          />
         </div>
 
-        <div className="mb-4">
-          <label htmlFor="type" className="block text-gray-700">Type turnering:</label>
-          <select id="type" value={type} onChange={(e) => setType(e.target.value)} className="mt-2 p-3 w-full border border-gray-300 rounded-lg">
-            <option value="USER">Brukerturnering</option>
-            <option value="CLUB">Klubbtunering</option>
-          </select>
+        <div>
+          <label htmlFor="location" className="block text-sm font-medium text-gray-700">Sted:</label>
+          <input
+            id="location"
+            type="text"
+            value={location}
+            onChange={(e) => setLocation(e.target.value)}
+            className="mt-1 block w-full p-3 border border-gray-300 rounded-lg shadow-sm focus:ring-2 focus:ring-green-500 focus:border-green-500 transition duration-300"
+            required
+          />
         </div>
 
-        <div className="mb-4">
-          <label htmlFor="location" className="block text-gray-700">Sted:</label>
-          <input id="location" type="text" value={location} onChange={(e) => setLocation(e.target.value)} className="mt-2 p-3 w-full border border-gray-300 rounded-lg" required />
+        <div>
+          <label htmlFor="description" className="block text-sm font-medium text-gray-700">Beskrivelse:</label>
+          <textarea
+            id="description"
+            value={description}
+            onChange={(e) => setDescription(e.target.value)}
+            className="mt-1 block w-full p-3 border border-gray-300 rounded-lg shadow-sm focus:ring-2 focus:ring-green-500 focus:border-green-500 transition duration-300"
+            required
+          />
         </div>
 
-        <div className="mb-4">
-          <label htmlFor="description" className="block text-gray-700">Beskrivelse:</label>
-          <textarea id="description" value={description} onChange={(e) => setDescription(e.target.value)} className="mt-2 p-3 w-full border border-gray-300 rounded-lg" required />
+        <div>
+          <label htmlFor="dateTime" className="block text-sm font-medium text-gray-700">Dato og tid:</label>
+          <input
+            id="dateTime"
+            type="datetime-local"
+            value={dateTime}
+            onChange={(e) => setDateTime(e.target.value)}
+            className="mt-1 block w-full p-3 border border-gray-300 rounded-lg shadow-sm focus:ring-2 focus:ring-green-500 focus:border-green-500 transition duration-300"
+            required
+          />
         </div>
 
-        <div className="mb-4">
-          <label htmlFor="dateTime" className="block text-gray-700">Dato og tid:</label>
-          <input id="dateTime" type="datetime-local" value={dateTime} onChange={(e) => setDateTime(e.target.value)} className="mt-2 p-3 w-full border border-gray-300 rounded-lg" required />
-        </div>
-
-        <div className="mb-4">
-          <label htmlFor="maxParticipants" className="block text-gray-700">Maksimalt antall deltakere:</label>
-          <input id="maxParticipants" type="number" value={maxParticipants} onChange={handleMaxParticipantsChange} className="mt-2 p-3 w-full border border-gray-300 rounded-lg" min={1} max={500} required />
-        </div>
-
-        <div className="mb-4">
-          <label htmlFor="image" className="block text-gray-700">Last opp bilde (valgfritt):</label>
-          <input id="image" type="file" onChange={handleImageUpload} className="mt-2 p-3 w-full border border-gray-300 rounded-lg" />
+        <div>
+          <label htmlFor="maxParticipants" className="block text-sm font-medium text-gray-700">Maksimalt antall deltakere:</label>
+          <input
+            id="maxParticipants"
+            type="number"
+            value={maxParticipants}
+            onChange={handleMaxParticipantsChange}
+            className="mt-1 block w-full p-3 border border-gray-300 rounded-lg shadow-sm focus:ring-2 focus:ring-green-500 focus:border-green-500 transition duration-300"
+            min={1}
+            max={500}
+            required
+          />
         </div>
 
         <div className="mt-6">
-          <button type="submit" className="bg-green-500 text-white py-3 px-6 rounded-lg hover:bg-green-400 transition duration-300">
+          <button
+            type="submit"
+            className="w-full bg-green-500 text-white py-3 px-6 rounded-lg hover:bg-green-600 transition duration-300"
+          >
             Opprett turnering
           </button>
         </div>

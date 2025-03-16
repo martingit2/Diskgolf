@@ -72,6 +72,7 @@ model Club {
   memberships Membership[] // Relasjon til medlemskapene i klubben
   clubNews    ClubNews[] // Relasjon til ClubNews
   meetings    Meeting[]
+  tournaments Tournament[] // Relasjon til Tournament
 
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
@@ -215,12 +216,19 @@ model TwoFactorConfirmation {
 }
 
 model Tournament {
-  id          String         @id @default(uuid())  // Unik identifikator
-  name        String         // Navn på turneringen
-  type        TournamentType // Bruk enum i stedet for string
-  participants User[]        @relation("TournamentParticipants") // Relasjon til brukere som deltar
-  createdAt   DateTime       @default(now()) // Tidsstempel for opprettelse
-  updatedAt   DateTime       @updatedAt // Automatisk oppdatert tidsstempel
+  id              String         @id @default(uuid())
+  name            String
+  type            TournamentType
+  location        String         // Sjekk at dette feltet eksisterer
+  description     String
+  dateTime        DateTime
+  maxParticipants Int
+  image           String?
+  participants    User[]         @relation("TournamentParticipants")
+  clubId          String?
+  club            Club?          @relation(fields: [clubId], references: [id])
+  createdAt       DateTime       @default(now())
+  updatedAt       DateTime       @updatedAt
 }
 
 model Membership {

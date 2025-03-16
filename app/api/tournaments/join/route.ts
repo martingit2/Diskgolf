@@ -1,14 +1,14 @@
-import { NextRequest, NextResponse } from "next/server";
+// app/api/tournaments/join/route.ts
 import { PrismaClient } from "@prisma/client";
+import { NextResponse } from "next/server";
 
 const prisma = new PrismaClient();
 
-export async function POST(req: NextRequest) {
-  try {
-    const { tournamentId, userId } = await req.json();
+export async function POST(request: Request) {
+  const { tournamentId, userId } = await request.json();
 
-    // Legg til brukeren som deltaker i turneringen
-    const updatedTournament = await prisma.tournament.update({
+  try {
+    const tournament = await prisma.tournament.update({
       where: { id: tournamentId },
       data: {
         participants: {
@@ -16,13 +16,16 @@ export async function POST(req: NextRequest) {
         },
       },
       include: {
-        participants: true, // Include participants to return updated list
+        participants: true,
       },
     });
 
-    return NextResponse.json(updatedTournament);
+    return NextResponse.json(tournament, { status: 200 });
   } catch (error) {
-    console.error("Error joining tournament:", error);
-    return NextResponse.json({ error: "Failed to join tournament" }, { status: 500 });
+    console.error("Feil ved påmelding til turnering:", error);
+    return NextResponse.json(
+      { error: "Kunne ikke melde på bruker til turnering" },
+      { status: 500 }
+    );
   }
 }
