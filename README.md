@@ -49,7 +49,7 @@ Applikasjonen er under utvikling og er tilgjengelig på: [https://diskgolf.app](
 - [**Class Variance Authority**](https://cva.style): For dynamisk kombinasjon av CSS-klasser.
 
 ## Deploy
-- [**Vercel**](https://vercel.com): Hosting for både frontend og backend.
+- [**Heroku**](https://heroku.com): Hosting for både frontend og backend.
 
 
 ---
