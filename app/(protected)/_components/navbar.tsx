@@ -63,7 +63,11 @@ export const Navbar = () => {
         <div className="mt-3 w-full flex justify-center gap-2">
           {/* Bane-knapp */}
           <Button asChild variant={pathname === "/map" ? "default" : "outline"}>
-            <Link href="/map">Bane</Link>
+            <Link href="/map">Opprett Bane</Link>
+          </Button>
+          {/* Rediger Bane-knapp */}
+          <Button asChild variant={pathname === "/edit-map" ? "default" : "outline"}>
+            <Link href="/edit-map">Rediger Bane</Link>
           </Button>
         </div>
       )}

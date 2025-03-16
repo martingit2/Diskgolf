@@ -249,98 +249,157 @@ const EditCourseMap = ({ courseId, onUpdate, selectedType, setDistanceMeasuremen
     onUpdate(updatedData); // Oppdater forelderkomponenten
   };
 
+  // Tilbakestill banen
+  const resetCourse = () => {
+    setCourseData({
+      id: courseData.id,
+      name: courseData.name,
+      location: courseData.location,
+      latitude: courseData.latitude,
+      longitude: courseData.longitude,
+      par: courseData.par,
+      description: courseData.description,
+      difficulty: courseData.difficulty,
+      startPoints: [],
+      goalPoint: null,
+      holes: [],
+      obZones: [],
+    });
+    setPolygonPoints([]);
+    onUpdate({
+      ...courseData,
+      startPoints: [],
+      goalPoint: null,
+      holes: [],
+      obZones: [],
+    });
+  };
+
   if (loading) return <p>Laster banedata...</p>;
 
   return (
-    <MapContainer
-      center={mapCenter} // Bruk kartets senter fra props
-      zoom={15}
-      maxZoom={18}
-      scrollWheelZoom
-      style={{ height: "100%", width: "100%", borderRadius: "12px" }}
-    >
-      <TileLayer
-        url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
-        attribution='&copy; OpenStreetMap contributors'
-      />
-
-      {/* Håndter klikk på kartet */}
-      <MapClickHandler onMapClick={handleMapClick} />
-
-      {/* Vis startpunkter */}
-      {courseData.startPoints.map((point, index) => (
-        <Marker
-          key={`start-${index}`}
-          position={[point.lat, point.lng]}
-          icon={createIcon("flag", "green")}
-          eventHandlers={{
-            click: () => handleDeleteMarker("start", index),
-          }}
-        >
-          <Popup>Tee {index + 1} (Klikk for å slette)</Popup>
-        </Marker>
-      ))}
-
-      {/* Vis kurver */}
-      {courseData.holes.map((hole, index) => (
-        <Marker
-          key={`kurv-${index}`}
-          position={[hole.latitude, hole.longitude]}
-          icon={createIcon("circle", "orange")}
-          eventHandlers={{
-            click: () => handleDeleteMarker("kurv", index),
-          }}
-        >
-          <Popup>Kurv {hole.number} (Klikk for å slette)</Popup>
-        </Marker>
-      ))}
-
-      {/* Vis mål */}
-      {courseData.goalPoint && (
-        <Marker
-          position={[courseData.goalPoint.lat, courseData.goalPoint.lng]}
-          icon={createIcon("flag-checkered", "red")}
-          eventHandlers={{
-            click: () => handleDeleteMarker("mål", 0),
-          }}
-        >
-          <Popup>Mål (Klikk for å slette)</Popup>
-        </Marker>
-      )}
-
-      {/* Vis OB-områder */}
-      {courseData.obZones.map((zone, index) => (
-        <Polygon
-          key={`ob-${index}`}
-          positions={zone.points}
-          color="red"
-          fillOpacity={0.3}
-          eventHandlers={{
-            click: () => handleDeleteMarker("ob", index),
-          }}
-        >
-          <Popup>OB-område (Klikk for å slette)</Popup>
-        </Polygon>
-      ))}
-
-      {/* Tegn polygonlinjer mens brukeren velger punkter */}
-      {polygonPoints.length > 0 && (
-        <Polygon
-          positions={polygonPoints}
-          color="red"
-          fillOpacity={0.2}
+    <div className="flex flex-col items-center">
+      <MapContainer
+        center={mapCenter} // Bruk kartets senter fra props
+        zoom={15}
+        maxZoom={18}
+        scrollWheelZoom
+        style={{ height: "500px", width: "100%", borderRadius: "12px" }}
+      >
+        <TileLayer
+          url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+          attribution='&copy; OpenStreetMap contributors'
         />
-      )}
 
-      {/* Knapp for å fullføre polygon */}
-      {selectedType === "ob" && (
-        <div className="absolute top-4 right-4 z-[1000] bg-white p-2 rounded shadow">
-          <button onClick={completePolygon} className="bg-blue-500 text-white px-4 py-2 rounded">
-            Fullfør OB-område
-          </button>
+        {/* Håndter klikk på kartet */}
+        <MapClickHandler onMapClick={handleMapClick} />
+
+        {/* Vis startpunkter */}
+        {courseData.startPoints.map((point, index) => (
+          <Marker
+            key={`start-${index}`}
+            position={[point.lat, point.lng]}
+            icon={createIcon("flag", "green")}
+            eventHandlers={{
+              click: () => handleDeleteMarker("start", index),
+            }}
+          >
+            <Popup>Tee {index + 1} (Klikk for å slette)</Popup>
+          </Marker>
+        ))}
+
+        {/* Vis kurver */}
+        {courseData.holes.map((hole, index) => (
+          <Marker
+            key={`kurv-${index}`}
+            position={[hole.latitude, hole.longitude]}
+            icon={createIcon("circle", "orange")}
+            eventHandlers={{
+              click: () => handleDeleteMarker("kurv", index),
+            }}
+          >
+            <Popup>Kurv {hole.number} (Klikk for å slette)</Popup>
+          </Marker>
+        ))}
+
+        {/* Vis mål */}
+        {courseData.goalPoint && (
+          <Marker
+            position={[courseData.goalPoint.lat, courseData.goalPoint.lng]}
+            icon={createIcon("flag-checkered", "red")}
+            eventHandlers={{
+              click: () => handleDeleteMarker("mål", 0),
+            }}
+          >
+            <Popup>Mål (Klikk for å slette)</Popup>
+          </Marker>
+        )}
+
+        {/* Vis OB-områder */}
+        {courseData.obZones.map((zone, index) => (
+          <Polygon
+            key={`ob-${index}`}
+            positions={zone.points}
+            color="red"
+            fillOpacity={0.3}
+            eventHandlers={{
+              click: () => handleDeleteMarker("ob", index),
+            }}
+          >
+            <Popup>OB-område (Klikk for å slette)</Popup>
+          </Polygon>
+        ))}
+
+        {/* Tegn polygonlinjer mens brukeren velger punkter */}
+        {polygonPoints.length > 0 && (
+          <Polygon
+            positions={polygonPoints}
+            color="red"
+            fillOpacity={0.2}
+          />
+        )}
+      </MapContainer>
+
+      {/* Informasjonstekst og knapper */}
+      <div className="mt-4 w-full max-w-7xl">
+        <h2 className="text-md font-semibold text-gray-900 mb-3">Hvordan redigere banen</h2>
+        <div className="text-xs text-gray-700 space-y-1">
+          <p>Dobbelklikk markører for å <strong>slette</strong> dem.</p>
+          <p>Plasser et <strong>tee-punkt</strong> for å angi starten på hullet.</p>
+          <p>Deretter plasserer du en <strong>kurv</strong> for å angi målet.</p>
+          <p>Gjenta dette for <strong>tee og kurver til</strong> du er på siste kurv.</p>
+          <p>For siste tee setter du en <strong>tee og avslutter med mål som</strong> siste kurv.</p>
+          <p>Om nødvendig, marker <strong>OB-områder</strong> for å definere out-of-bounds-soner.</p>
+          <p>For å sette <strong>OB-områder</strong> klikk ob og plasser 3 punkter på kartet og deretter klikk fullfør ob-område.</p>
+          
         </div>
-      )}
-    </MapContainer>
+
+        {/* Knapper for OB-område og tilbakestilling */}
+        {selectedType === "ob" && (
+          <div className="mt-4 space-x-2">
+            <button
+              onClick={completePolygon}
+              className="bg-gray-900 text-white px-4 py-2 rounded hover:bg-green-700 transition"
+            >
+              Fullfør OB-område
+            </button>
+            <button
+              onClick={() => setPolygonPoints([])}
+              className="bg-red-500 text-white px-4 py-2 rounded hover:bg-red-700 transition"
+            >
+              Tilbakestill polygon
+            </button>
+          </div>
+        )}
+
+        <button
+          className="mt-4 px-4 py-2 bg-red-500 text-white rounded hover:bg-red-700 transition"
+          onClick={resetCourse}
+        >
+          Tilbakestill bane
+        </button>
+      </div>
+    </div>
   );
 };
 

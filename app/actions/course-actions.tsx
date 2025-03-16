@@ -25,6 +25,11 @@ export async function updateCourse(courseId: string, updatedData: any) {
       where: { courseId },
     });
 
+    // Slett eksisterende OB-soner for banen
+    await prisma.oB.deleteMany({
+      where: { courseId },
+    });
+
     // Opprett nye startpunkter basert på dataene fra frontend
     if (updatedData.startPoints && updatedData.startPoints.length > 0) {
       await prisma.start.createMany({
@@ -32,6 +37,18 @@ export async function updateCourse(courseId: string, updatedData: any) {
           courseId,
           latitude: point.lat,
           longitude: point.lng,
+        })),
+      });
+    }
+
+    // Opprett nye OB-soner basert på dataene fra frontend
+    if (updatedData.obZones && updatedData.obZones.length > 0) {
+      await prisma.oB.createMany({
+        data: updatedData.obZones.map((obZone: any) => ({
+          courseId,
+          latitude: obZone.type === "circle" ? obZone.lat : null,
+          longitude: obZone.type === "circle" ? obZone.lng : null,
+          points: obZone.type === "polygon" ? obZone.points : null,
         })),
       });
     }
@@ -48,7 +65,6 @@ export async function updateCourse(courseId: string, updatedData: any) {
         description: updatedData.description,
         difficulty: updatedData.difficulty,
         image: updatedData.image,
-        // Oppdater andre felt her om nødvendig
       },
     });
 
