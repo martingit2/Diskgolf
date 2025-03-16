@@ -71,6 +71,7 @@ model Club {
   courses     Course[] @relation("ClubToCourses") // Relasjon til klubbens baner
   memberships Membership[] // Relasjon til medlemskapene i klubben
   clubNews    ClubNews[] // Relasjon til ClubNews
+  meetings    Meeting[]
 
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
@@ -263,4 +264,17 @@ model OB {
   longitude Float?   // Valgfritt: For enkle OB-soner (sirkler)
   points    Json?    // Valgfritt: Array av koordinater for polygoner
   course    Course   @relation(fields: [courseId], references: [id], onDelete: Cascade)
+}
+
+model Meeting {
+  id          String   @id @default(uuid()) // Unik ID for møtet
+  clubId      String   // Klubbens ID som møtet tilhører
+  title       String   // Tittel på møtet
+  description String   // Beskrivelse av møtet
+  pdfUrl      String?  // URL til PDF-fil for referatet
+  createdAt   DateTime @default(now()) // Når møtet ble opprettet
+
+  club        Club     @relation(fields: [clubId], references: [id]) // Relasjon til Club-modellen
+
+  @@index([clubId]) // Lager en indeks for klubben for raskere spørringer
 }

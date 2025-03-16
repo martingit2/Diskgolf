@@ -47,13 +47,10 @@ interface Club {
 export default async function ClubPage({
   params,
 }: {
-  params: Promise<{ id: string }>;
+  params: Promise<{ id: string }>; // Oppdatert til Promise<{ id: string }>
 }) {
-  // Vi venter på params slik vi gjorde i din andre dynamiske rute
-  const { id } = await params;
-  if (!id) {
-    return notFound();
-  }
+  // Vent på at params-resolusjonen kommer fram
+  const { id } = await params; // Hent `id` fra Promise
 
   try {
     const baseUrl = process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000";
@@ -62,6 +59,9 @@ export default async function ClubPage({
       return notFound();
     }
     const club: Club = await clubResponse.json();
+
+    // Sjekk om brukeren er medlem
+    const isMember = await checkIfUserIsMember(id); // Alltid true for testing
 
     return (
       <div className="min-h-screen bg-gradient-to-r from-gray-50 to-gray-100 py-12">
@@ -73,6 +73,9 @@ export default async function ClubPage({
               <p className="text-lg text-gray-600 mt-1">{club.location}</p>
             )}
           </div>
+
+          {/* Horisontal linje øverst */}
+          <hr className="my-8 border-gray-200" />
 
           {/* Main innhold */}
           <div className="flex flex-col md:flex-row gap-8">
@@ -94,17 +97,20 @@ export default async function ClubPage({
 
               {/* Handlingsknapper */}
               <div className="flex flex-col sm:flex-row items-center gap-6">
-                <Link href={`/klubb/${club.id}/medlem`} passHref>
+                <Link href={`/klubber/${id}/medlem`} passHref>
                   <Button className="bg-green-500 hover:bg-green-600 text-white font-semibold py-3 px-8 rounded-lg shadow-lg transition-transform transform hover:scale-105 flex items-center gap-2">
                     <FiUserPlus className="animate-bounce" /> Bli medlem
                   </Button>
                 </Link>
-                <Link href={`/klubb/${club.id}/kontakt`} passHref>
+                <Link href={`/klubber/${id}/kontakt`} passHref>
                   <Button className="bg-blue-500 hover:bg-blue-600 text-white font-semibold py-3 px-8 rounded-lg shadow-lg transition-transform transform hover:scale-105">
                     Kontakt klubben
                   </Button>
                 </Link>
               </div>
+
+              {/* Horisontal linje under handlingsknapper */}
+              <hr className="my-8 border-gray-200" />
 
               {/* Klubbens beskrivelse */}
               {club.description && (
@@ -271,6 +277,22 @@ export default async function ClubPage({
                   )}
                 </div>
               </div>
+
+              {/* Medlemsområde (kun for medlemmer) */}
+              {isMember && (
+                <div className="p-6 bg-white rounded-lg shadow-md border border-gray-200">
+                  <h3 className="text-2xl font-bold text-gray-900 mb-4">
+                    Medlemsområde
+                  </h3>
+                  <div className="space-y-4">
+                    <Link href={`/klubber/${id}/medlem`} passHref>
+                      <Button className="w-full bg-green-500 hover:bg-green-600 text-white font-semibold py-3 rounded-lg shadow-lg transition-transform transform hover:scale-105">
+                        Gå til medlemsområde
+                      </Button>
+                    </Link>
+                  </div>
+                </div>
+              )}
             </div>
           </div>
         </div>
@@ -280,4 +302,9 @@ export default async function ClubPage({
     console.error("❌ Error fetching club:", error);
     return notFound();
   }
+}
+
+// Midlertidig funksjon for testing: alltid returner true
+async function checkIfUserIsMember(clubId: string): Promise<boolean> {
+  return true; // Alltid true for testing
 }
