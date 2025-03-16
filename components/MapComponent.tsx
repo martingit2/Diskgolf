@@ -48,9 +48,22 @@ const MapComponent = () => {
   useEffect(() => {
     const fetchCourses = async () => {
       try {
+        const cached = localStorage.getItem('coursesData');
+        const timestamp = localStorage.getItem('coursesTimestamp');
+
+        // Sjekk hvis cache eksisterer.
+        if (cached && timestamp && Date.now() - Number(timestamp) < 24 * 60 * 60 * 1000) {
+          setCourses(JSON.parse(cached));
+          setLoading(false);
+          return;
+        }
+
         const res = await fetch("/api/courses");
         if (!res.ok) throw new Error("Kunne ikke hente baneinformasjon");
         const data = await res.json();
+        // Oppdater cache.
+        localStorage.setItem('courseData', JSON.stringify(data));
+        localStorage.setItem('coursesTimestamp', String(Date.now()));
         setCourses(data);
       } catch (err) {
         console.error("Feil ved henting av kursdata:", err);
