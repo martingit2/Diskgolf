@@ -42,22 +42,21 @@ export default async function CoursePage({
     const baseUrl = process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000";
 
     // 1) Hent kursdata
-    const courseResponse = await fetch(`${baseUrl}/api/courses/${id}`, {
-    });
+    const courseResponse = await fetch(`${baseUrl}/api/courses/${id}`);
     if (!courseResponse.ok) {
       return notFound();
     }
     const course = await courseResponse.json();
 
     // 2) Hent anmeldelser
-    const reviewsResponse = await fetch(
-      `${baseUrl}/api/reviews?course_id=${id}`,
-
-    );
+    const reviewsResponse = await fetch(`${baseUrl}/api/reviews?course_id=${id}`);
     if (!reviewsResponse.ok) {
       return notFound();
     }
     const reviews = await reviewsResponse.json();
+
+    // 3) Hent klubbens navn fra course-objektet
+    const clubName = course.club?.name || "Ukjent"; // Fallback til "Ukjent" hvis club ikke finnes
 
     function translateCondition(condition: string): string {
       const mapping: Record<string, string> = {
@@ -74,7 +73,7 @@ export default async function CoursePage({
       return mapping[condition] || condition;
     }
 
-    // 3) Hent værdata (hvis latitude/longitude finnes)
+    // 4) Hent værdata (hvis latitude/longitude finnes)
     let weatherData:
       | {
           temperature: number;
@@ -85,7 +84,7 @@ export default async function CoursePage({
       | null = null;
     if (course.latitude && course.longitude) {
       const weatherResponse = await fetch(
-        `${baseUrl}/api/weather?lat=${course.latitude}&lon=${course.longitude}`,
+        `${baseUrl}/api/weather?lat=${course.latitude}&lon=${course.longitude}`
       );
       if (weatherResponse.ok) {
         weatherData = await weatherResponse.json();
@@ -222,7 +221,7 @@ export default async function CoursePage({
                     <div className="flex items-center gap-2">
                       <User className="w-5 h-5 text-gray-500" />
                       <span className="font-medium">Baneeier:</span>
-                      <span>Ukjent</span>
+                      <span className="text-green-700">{clubName}</span>
                     </div>
                     <div className="flex items-center gap-2">
                       <RefreshCw className="w-5 h-5 text-gray-500" />
