@@ -195,53 +195,56 @@ function Header() {
           </div>
           <div className="mt-6 flow-root">
             <div className="-my-6 divide-y divide-gray-500/10">
-              <div className="space-y-2 py-6">
-                <Disclosure as="div" className="-mx-3">
-                  {({ open }) => (
-                    <>
-                      <Disclosure.Button className="flex w-full items-center justify-between rounded-lg py-2 pl-3 pr-3.5 text-base font-semibold leading-7 text-white hover:bg-blue-800">
-                        Baner
-                        <ChevronDownIcon
-                          className={cn(open ? 'rotate-180' : '', 'h-5 w-5 flex-none')}
-                          aria-hidden="true"
-                        />
-                      </Disclosure.Button>
-                      <Disclosure.Panel className="mt-2 space-y-2">
-                        {[...navLinks, ...cta].map((item) => (
-                          <Disclosure.Button
-                            key={item.name}
-                            as="a"
-                            href={item.href}
-                            className="block rounded-lg py-2 pl-6 pr-3 text-sm font-semibold leading-7 text-white hover:bg-blue-800"
-                          >
-                            {item.name}
-                          </Disclosure.Button>
-                        ))}
-                      </Disclosure.Panel>
-                    </>
-                  )}
-                </Disclosure>
-                <a
-                  href="#"
-                  className="-mx-3 block rounded-lg px-3 py-2 text-base font-semibold leading-7 text-white hover:bg-green-700"
-                >
-                  Nyheter
-                </a>
-                <a
-                  href="#"
-                  className="-mx-3 block rounded-lg px-3 py-2 text-base font-semibold leading-7 text-white hover:bg-blue-800"
-                >
-                  Klubber
-                </a>
-                <a
-                  href="#"
-                  className="-mx-3 block rounded-lg px-3 py-2 text-base font-semibold leading-7 text-white hover:bg-blue-800"
-                >
-                  Turneringer
-                </a>
-                
+            <div className="space-y-2 py-6">
+  <Disclosure as="div" className="-mx-3">
+    {({ open }) => (
+      <>
+        <Disclosure.Button className="flex w-full items-center justify-between rounded-lg py-2 pl-3 pr-3.5 text-base font-semibold leading-7 text-white hover:bg-blue-800">
+          Baner
+          <ChevronDownIcon
+            className={cn(open ? "rotate-180" : "", "h-5 w-5 flex-none")}
+            aria-hidden="true"
+          />
+        </Disclosure.Button>
+        <Disclosure.Panel className="mt-2 space-y-2">
+          {[...navLinks, ...cta].map((item) => (
+            <Disclosure.Button
+              key={item.name}
+              as={Link}
+              href={item.href}
+              className="block rounded-lg py-2 pl-6 pr-3 text-sm font-semibold leading-7 text-white hover:bg-blue-800"
+              onClick={() => setMobileMenuOpen(false)}
+            >
+              {item.name}
+            </Disclosure.Button>
+          ))}
+        </Disclosure.Panel>
+      </>
+    )}
+  </Disclosure>
 
-              </div>
+  <Link
+    href="/nyheter"
+    className="-mx-3 block rounded-lg px-3 py-2 text-base font-semibold leading-7 text-white hover:bg-green-700"
+    onClick={() => setMobileMenuOpen(false)}
+  >
+    Nyheter
+  </Link>
+  <Link
+    href="/klubber"
+    className="-mx-3 block rounded-lg px-3 py-2 text-base font-semibold leading-7 text-white hover:bg-blue-800"
+    onClick={() => setMobileMenuOpen(false)}
+  >
+    Klubber
+  </Link>
+  <Link
+    href="/turneringer"
+    className="-mx-3 block rounded-lg px-3 py-2 text-base font-semibold leading-7 text-white hover:bg-blue-800"
+    onClick={() => setMobileMenuOpen(false)}
+  >
+    Turneringer
+  </Link>
+</div>
               <div className="py-6">
                 <UserDropdown isMobile={true} currentUser={currentUser} />
               </div>
