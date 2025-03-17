@@ -4,7 +4,6 @@
  * Utvikler: Martin Pettersen
  */
 
-
 "use client";
 
 import React, { useState } from "react";
@@ -77,6 +76,10 @@ const LoginForm = ({ onForgotPassword, onRegister, onLoginSuccess }: LoginFormPr
       backButtonHref="/"
       onBackButtonClick={onRegister}
     >
+      <div className="p-4 mb-4 bg-blue-50 text-blue-600 border border-blue-200 rounded">
+        Hvis du er lærer eller sensor, bruk e-posten <strong>admin@diskgolf.app</strong> for å logge inn som admin. 
+        For vanlig bruker, bruk <strong>bruker@diskgolf.app</strong>. Passordet er som angitt i oppgaven.
+      </div>
       <Form {...form}>
         <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
           <div className="space-y-4">
@@ -137,7 +140,5 @@ const LoginForm = ({ onForgotPassword, onRegister, onLoginSuccess }: LoginFormPr
     </CardWrapper>
   );
 };
-
-/* test */
 
 export default LoginForm;
