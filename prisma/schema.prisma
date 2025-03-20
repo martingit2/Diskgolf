@@ -48,6 +48,11 @@ model User {
   isTwoFactorEnable     Boolean                @default(false)
   twoFactorConfirmation TwoFactorConfirmation?
   tournaments     Tournament[] @relation("TournamentParticipants") // Relasjon til Tournament
+ games            Game[]
+  gameParticipations GameParticipation[]
+  gameScores       GameScore[]
+  rooms            Room[]
+  completedGameScores CompletedGameScore[]
 }
 
 model Club {
@@ -115,11 +120,16 @@ model Course {
   reviews Review[]
   rounds  Round[]
 
+
 // Relasjoner
   start       Start[]  @relation  // Flere tees per bane
   goal        Goal?    @relation  // Ett sluttpunkt per bane
   baskets     Basket[] @relation  // Flere kurver per bane
   obZones     OB[]     @relation  // Flere OB-soner per bane
+
+  games    Game[]
+  rooms    Room[]
+  completedGameScores CompletedGameScore[]
 
 
   clubId String?
@@ -286,3 +296,79 @@ model Meeting {
 
   @@index([clubId]) // Lager en indeks for klubben for raskere spørringer
 }
+
+
+model Game {
+  id          String   @id @default(uuid())
+  courseId    String
+  password    String?
+  course      Course   @relation(fields: [courseId], references: [id])
+  gameMode    String   // "singleplayer" eller "multiplayer"
+  ownerId     String?  
+  owner       User?    @relation(fields: [ownerId], references: [id], onDelete: SetNull)
+  ownerName   String?  
+  expiresAt   DateTime // 👈 Spill slettes automatisk etter 3 timer
+  isActive    Boolean  @default(true)
+  createdAt   DateTime @default(now())
+  maxPlayers  Int?
+
+  participants GameParticipation[]
+  scores       GameScore[]
+}
+
+model GameParticipation {
+  id          String @id @default(uuid())
+  gameId      String?
+  game        Game?   @relation(fields: [gameId], references: [id], onDelete: Cascade)
+  roomId      String? // 👈 Legg til roomId
+  room        Room?   @relation(fields: [roomId], references: [id], onDelete: Cascade) // 👈 Legg til relasjon til Room
+  userId      String?
+  user        User?  @relation(fields: [userId], references: [id], onDelete: SetNull)
+  playerName  String
+  createdAt   DateTime @default(now())
+}
+
+
+
+model GameScore {
+  id        String  @id @default(uuid())
+  gameId    String
+  game      Game    @relation(fields: [gameId], references: [id], onDelete: Cascade)
+  userId    String?
+  user      User?   @relation(fields: [userId], references: [id], onDelete: SetNull)
+  holeNumber Int
+  strokes    Int
+  obCount    Int
+  createdAt  DateTime @default(now())
+}
+
+
+model Room {
+  id          String   @id @default(uuid())
+  name        String
+  passwordHash String?  // Lagrer det hashede passordet
+  courseId    String
+  course      Course   @relation(fields: [courseId], references: [id])
+  ownerId     String?
+  owner       User?    @relation(fields: [ownerId], references: [id], onDelete: SetNull)
+  ownerName   String   // Legg til dette feltet
+  maxPlayers  Int
+  isActive    Boolean  @default(true)
+  expiresAt   DateTime // Tidsstempel for når rommet slettes
+  createdAt   DateTime @default(now())
+
+  participants GameParticipation[]
+}
+
+model CompletedGameScore { // ✅ Lagre spillernes poeng etter at spillet er slettet
+  id        String  @id @default(uuid())
+  courseId  String
+  course    Course  @relation(fields: [courseId], references: [id])
+  userId    String
+  user      User    @relation(fields: [userId], references: [id])
+  holeNumber Int
+  strokes    Int
+  obCount    Int
+  createdAt  DateTime @default(now())
+}
+

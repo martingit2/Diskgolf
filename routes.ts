@@ -54,6 +54,7 @@ export const publicRoutes = [
     "/find-course",
     "/courses/[id]",
     "/courses",
+    "/spill",
 ];
 
 /** 
