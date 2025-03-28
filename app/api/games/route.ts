@@ -1,42 +1,110 @@
 import { NextResponse } from "next/server";
 import { PrismaClient } from "@prisma/client";
-import { hash } from "bcryptjs"; // For å hashe passordet
 
-export const dynamic = 'force-dynamic';
 const prisma = new PrismaClient();
 
-// ✅ Opprett et nytt spill
 export async function POST(req: Request) {
   try {
-    const { courseId, password, ownerId, ownerName, maxPlayers, gameMode } = await req.json();
+    const { courseId, playerId, playerName } = await req.json();
 
-    // Validering av påkrevde felt
-    if (!courseId || !gameMode) {
+    // Validering
+    if (!courseId || !playerName) {
       return NextResponse.json(
-        { error: "courseId og gameMode er påkrevd" },
+        { error: "courseId og playerName er påkrevd" },
         { status: 400 }
       );
     }
 
-    // Hash passordet hvis det er oppgitt
-    const passwordHash = password ? await hash(password, 12) : null;
-
-    // Opprett nytt spill i databasen
-    const newGame = await prisma.game.create({
-      data: {
-        courseId, // Påkrevd: Relasjon til Course
-        course: { connect: { id: courseId } }, // Påkrevd: Relasjon til Course
-        gameMode, // Påkrevd: "singleplayer" eller "multiplayer"
-        password: passwordHash, // Valgfritt: Lagre det hashede passordet
-        ownerId: ownerId || null, // Valgfritt: ID til eieren
-        ownerName: ownerName || "Gjest", // Valgfritt: Navnet på eieren
-        maxPlayers: gameMode === "multiplayer" ? maxPlayers : null, // Valgfritt: Bare for multiplayer
-        expiresAt: new Date(Date.now() + 3 * 60 * 60 * 1000), // Påkrevd: Auto-slett etter 3 timer
-        isActive: true, // Påkrevd: Aktiv status
-      },
+    // Hent hele banen med alle relasjoner
+    const course = await prisma.course.findUnique({
+      where: { id: courseId },
+      include: {
+        holes: true,
+        baskets: true,
+        start: true,
+        goal: true,
+        obZones: true,
+        club: true
+      }
     });
 
-    return NextResponse.json(newGame, { status: 201 });
+    if (!course) {
+      return NextResponse.json(
+        { error: "Bane ikke funnet" },
+        { status: 404 }
+      );
+    }
+
+    // Opprett nytt SOLO-spill
+    const newGame = await prisma.game.create({
+      data: {
+        courseId,
+        gameMode: "singleplayer",
+        ownerId: playerId || null,
+        ownerName: playerName,
+        expiresAt: new Date(Date.now() + 3 * 60 * 60 * 1000), // 3 timer
+        isActive: true,
+        maxPlayers: 1,
+      }
+    });
+
+    // Opprett deltakelse
+    await prisma.gameParticipation.create({
+      data: {
+        gameId: newGame.id,
+        playerName,
+        userId: playerId || null,
+        isReady: true
+      }
+    });
+
+    // Beregn total avstand (samme logikk som i courses/route.ts)
+    let totalDistance = 0;
+    if (course.start.length > 0 && course.goal) {
+      const startPoint = course.start[0];
+      totalDistance = calculateDistance(
+        startPoint.latitude,
+        startPoint.longitude,
+        course.goal.latitude,
+        course.goal.longitude
+      );
+    } else if (course.baskets.length > 1) {
+      for (let i = 0; i < course.baskets.length - 1; i++) {
+        const basket1 = course.baskets[i];
+        const basket2 = course.baskets[i + 1];
+        totalDistance += calculateDistance(
+          basket1.latitude,
+          basket1.longitude,
+          basket2.latitude,
+          basket2.longitude
+        );
+      }
+    }
+
+    // Formater OB-soner
+    const obZones = course.obZones.map(obZone => {
+      if (obZone.points) {
+        return { type: "polygon", points: obZone.points };
+      } else {
+        return { type: "circle", latitude: obZone.latitude, longitude: obZone.longitude };
+      }
+    });
+
+    // Returner alt vi trenger for spill-siden
+    return NextResponse.json({ 
+      gameId: newGame.id,
+      course: {
+        ...course,
+        holes: course.holes,
+        baskets: course.baskets,
+        start: course.start,
+        goal: course.goal,
+        obZones,
+        totalDistance,
+        numHoles: course.holes.length || course.baskets.length
+      }
+    }, { status: 201 });
+
   } catch (error) {
     console.error("Feil ved opprettelse av spill:", error);
     return NextResponse.json(
@@ -46,20 +114,16 @@ export async function POST(req: Request) {
   }
 }
 
-// ✅ Hent aktive spill
-export async function GET() {
-  try {
-    const games = await prisma.game.findMany({
-      where: { expiresAt: { gte: new Date() } }, // Hent kun spill som ikke er utgått
-      include: { course: true }, // Inkluder banedata
-    });
-
-    return NextResponse.json(games, { status: 200 });
-  } catch (error) {
-    console.error("Feil ved henting av spill:", error);
-    return NextResponse.json(
-      { error: "Kunne ikke hente spill" },
-      { status: 500 }
-    );
-  }
+// Haversine-formel (samme som i courses/route.ts)
+function calculateDistance(lat1: number, lon1: number, lat2: number, lon2: number): number {
+  const R = 6371;
+  const dLat = (lat2 - lat1) * (Math.PI / 180);
+  const dLon = (lon2 - lon1) * (Math.PI / 180);
+  const a =
+    Math.sin(dLat / 2) ** 2 +
+    Math.cos(lat1 * (Math.PI / 180)) *
+    Math.cos(lat2 * (Math.PI / 180)) *
+    Math.sin(dLon / 2) ** 2;
+  const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+  return R * c * 1000;
 }

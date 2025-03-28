@@ -2,86 +2,151 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 
+interface Hole {
+  number: number;
+}
+
+interface Basket {
+  id: string;
+}
+
+interface Course {
+  id: string;
+  name: string;
+  holes?: Hole[];
+  baskets?: Basket[];
+  goal?: { id: string };
+}
+
 interface SoloSpillProps {
-  courses: any[];
-  user: any;
+  courses: Course[];
+  user: { id: string; name: string } | null;
   guestName: string;
   setGuestName: (name: string) => void;
 }
 
 export default function SoloSpill({ courses, user, guestName, setGuestName }: SoloSpillProps) {
   const [selectedCourseId, setSelectedCourseId] = useState<string>("");
+  const [isLoading, setIsLoading] = useState(false);
   const router = useRouter();
 
+  const getTotalHoles = (course: Course) => {
+    if (course.holes?.length) return course.holes.length;
+    const basketsCount = course.baskets?.length || 0;
+    const hasSeparateGoal = course.goal && !course.baskets?.some(b => b.id === course.goal?.id);
+    return basketsCount + (hasSeparateGoal ? 1 : 0);
+  };
+
   const handlePlayAlone = async () => {
+    console.log("Start spill klikket"); // Debug log
+    
     if (!selectedCourseId) {
       alert("⚠️ Velg en bane før du starter!");
       return;
     }
-
-    const ownerName = user?.name || guestName || "Gjest"; // Bruk brukerens navn eller gjestenavn
-    const ownerId = user?.id || null;
-
-    if (!ownerName) {
+  
+    const playerName = user?.name || guestName;
+    const playerId = user?.id || null;
+  
+    if (!playerName) {
       alert("⚠️ Du må skrive inn et navn hvis du ikke er innlogget!");
       return;
     }
-
+  
+    setIsLoading(true);
     try {
-      const res = await fetch("/api/rooms", {
+      console.log("Sender forespørsel til /api/games"); // Debug log
+      const res = await fetch("/api/games", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          name: `Solo - ${ownerName}`,
-          password: null, // Ingen passord for solo-spill
           courseId: selectedCourseId,
-          ownerId,
-          ownerName, // Send med ownerName hvis ownerId ikke er satt
-          maxPlayers: 1, // Solo-spill har maks 1 spiller
+          playerId,
+          playerName
         }),
       });
-
-      const data = await res.json();
-      if (data.error) {
-        alert(data.error); // Vis feilmelding hvis noe går galt
-      } else {
-        router.push(`/spill/${data.newRoom.id}`); // Naviger til solo-spillet
+  
+      console.log("Mottatt respons:", res.status); // Debug log
+      
+      if (!res.ok) {
+        const errorData = await res.json().catch(() => ({}));
+        console.error("API feil:", errorData); // Debug log
+        throw new Error(errorData.error || `HTTP error! status: ${res.status}`);
       }
+  
+      const data = await res.json();
+      console.log("Mottatt data:", data); // Debug log
+      
+      if (data.error) {
+        alert(data.error);
+        return;
+      }
+  
+      if (!data.gameId) {
+        throw new Error("Mangler gameId i respons");
+      }
+
+      console.log("Redirecter til:", `/spill/solo/${data.gameId}`); // Debug log
+      // Bruk begge metodene for sikkerhets skyld
+      router.push(`/spill/solo/${data.gameId}`);
+      window.location.href = `/spill/solo/${data.gameId}`;
+      
     } catch (error) {
-      console.error("❌ Feil ved opprettelse av solo-spill:", error);
-      alert("Kunne ikke starte solo-spill");
+      console.error("Full feilmelding:", error); // Debug log
+      alert(`Noe gikk galt: ${error instanceof Error ? error.message : 'Ukjent feil'}`);
+    } finally {
+      setIsLoading(false);
     }
   };
 
   return (
     <div className="bg-gray-800 p-6 rounded-lg shadow-md w-full max-w-lg mb-6">
       <h2 className="text-2xl font-semibold mb-4">Spill Alene</h2>
+      
       {!user && (
         <input
           type="text"
           placeholder="Ditt navn"
           value={guestName}
           onChange={(e) => setGuestName(e.target.value)}
-          className="w-full p-2 text-black rounded mb-2"
+          className="w-full p-2 text-black rounded mb-4"
+          required
         />
       )}
+      
       <select
         value={selectedCourseId}
         onChange={(e) => setSelectedCourseId(e.target.value)}
-        className="w-full p-2 text-black rounded mb-2"
+        className="w-full p-2 text-black rounded mb-4"
+        required
       >
         <option value="">Velg en bane</option>
-        {courses.map((course: any) => (
+        {courses.map((course) => (
           <option key={course.id} value={course.id}>
-            {course.name}
+            {course.name} ({getTotalHoles(course)} hull)
           </option>
         ))}
       </select>
+      
       <button
         onClick={handlePlayAlone}
-        className="w-full bg-purple-500 hover:bg-purple-600 text-white py-2 rounded"
+        disabled={isLoading}
+        className={`w-full py-2 px-4 rounded text-white ${
+          isLoading ? 'bg-gray-600' : 'bg-purple-600 hover:bg-purple-700'
+        }`}
       >
-        Start Spill Alene
+        {isLoading ? 'Starter spill...' : 'Start Spill Alene'}
+      </button>
+
+      {/* Testknapp for å sjekke routing uten API */}
+      <button
+        onClick={() => {
+          console.log("Tester redirect");
+          window.location.href = "/spill/solo/test123";
+        }}
+        className="mt-4 bg-red-500 text-white p-2 rounded"
+      >
+        TEST: Manuell redirect
       </button>
     </div>
   );

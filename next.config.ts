@@ -19,21 +19,6 @@ const nextConfig: NextConfig = {
     ],
   },
 
-  async rewrites() {
-    return [
-      {
-        source: "/spill/:path*",  
-        destination: process.env.NODE_ENV === "development" 
-          ? "http://localhost:3000/spill/:path*"  // Lokalt subdomene for utvikling
-          : "https://spill.diskgolf.app/:path*",  // Bruk produksjons-URL for subdomenet
-      },
-    ];
-  },
-
-  
-      async redirects() {
-        return [];
-      },
 
   webpack: (config) => {
     config.resolve = config.resolve || {};

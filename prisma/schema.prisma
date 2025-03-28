@@ -317,15 +317,16 @@ model Game {
 }
 
 model GameParticipation {
-  id          String @id @default(uuid())
+  id          String   @id @default(uuid())
   gameId      String?
-  game        Game?   @relation(fields: [gameId], references: [id], onDelete: Cascade)
-  roomId      String? // 👈 Legg til roomId
-  room        Room?   @relation(fields: [roomId], references: [id], onDelete: Cascade) // 👈 Legg til relasjon til Room
+  game        Game?    @relation(fields: [gameId], references: [id], onDelete: Cascade)
+  roomId      String?  // 👈 Legg til roomId
+  room        Room?    @relation(fields: [roomId], references: [id], onDelete: Cascade)
   userId      String?
-  user        User?  @relation(fields: [userId], references: [id], onDelete: SetNull)
+  user        User?    @relation(fields: [userId], references: [id], onDelete: SetNull)
   playerName  String
   createdAt   DateTime @default(now())
+  isReady     Boolean  @default(false)  // Legger til isReady
 }
 
 
@@ -354,6 +355,7 @@ model Room {
   ownerName   String   // Legg til dette feltet
   maxPlayers  Int
   isActive    Boolean  @default(true)
+  status        String              @default("waiting")  // Legger til statusfelt
   expiresAt   DateTime // Tidsstempel for når rommet slettes
   createdAt   DateTime @default(now())
 

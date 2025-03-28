@@ -1,6 +1,7 @@
 "use client";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import AvailableRooms from "./AvailableRooms";
 
 interface MultiplayerSpillProps {
   courses: any[];
@@ -10,7 +11,13 @@ interface MultiplayerSpillProps {
   rooms: any[];
 }
 
-export default function MultiplayerSpill({ courses, user, guestName, setGuestName, rooms }: MultiplayerSpillProps) {
+export default function MultiplayerSpill({
+  courses,
+  user,
+  guestName,
+  setGuestName,
+  rooms,
+}: MultiplayerSpillProps) {
   const [selectedCourseId, setSelectedCourseId] = useState<string>("");
   const [roomName, setRoomName] = useState("");
   const [roomPassword, setRoomPassword] = useState("");
@@ -32,15 +39,6 @@ export default function MultiplayerSpill({ courses, user, guestName, setGuestNam
     const ownerName = user?.name || guestName || "Gjest"; // Bruk brukerens navn eller gjestenavn
     const ownerId = user?.id || null;
 
-    console.log("Data som sendes til backend:", {
-      name: roomName,
-      password: roomPassword,
-      courseId: selectedCourseId,
-      ownerId,
-      ownerName, // Sjekk at denne har en verdi
-      maxPlayers,
-    });
-
     try {
       const res = await fetch("/api/rooms", {
         method: "POST",
@@ -59,7 +57,8 @@ export default function MultiplayerSpill({ courses, user, guestName, setGuestNam
       if (data.error) {
         alert(data.error); // Vis feilmelding hvis noe går galt
       } else {
-        router.push(`/spill/${data.newRoom.id}`); // Naviger til det nye rommet
+        // Naviger til det nye rommet
+        router.push(`/spill/${data.newRoom.id}`);
       }
     } catch (error) {
       console.error("❌ Feil ved opprettelse av rom:", error);
@@ -70,6 +69,8 @@ export default function MultiplayerSpill({ courses, user, guestName, setGuestNam
   return (
     <div className="bg-gray-800 p-6 rounded-lg shadow-md w-full max-w-lg mb-6">
       <h2 className="text-2xl font-semibold mb-4">Opprett Rom (Flerspiller)</h2>
+
+      {/* Velg bane */}
       <select
         value={selectedCourseId}
         onChange={(e) => setSelectedCourseId(e.target.value)}
@@ -82,6 +83,8 @@ export default function MultiplayerSpill({ courses, user, guestName, setGuestNam
           </option>
         ))}
       </select>
+
+      {/* Romnavn */}
       <input
         type="text"
         placeholder="Romnavn"
@@ -89,6 +92,8 @@ export default function MultiplayerSpill({ courses, user, guestName, setGuestNam
         onChange={(e) => setRoomName(e.target.value)}
         className="w-full p-2 text-black rounded mb-2"
       />
+
+      {/* Passord */}
       <input
         type="password"
         placeholder="Passord"
@@ -96,6 +101,8 @@ export default function MultiplayerSpill({ courses, user, guestName, setGuestNam
         onChange={(e) => setRoomPassword(e.target.value)}
         className="w-full p-2 text-black rounded mb-2"
       />
+
+      {/* Antall spillere */}
       <input
         type="number"
         placeholder="Antall spillere"
@@ -106,6 +113,8 @@ export default function MultiplayerSpill({ courses, user, guestName, setGuestNam
         }}
         className="w-full p-2 text-black rounded mb-2"
       />
+
+      {/* Gjestenavn hvis ikke innlogget */}
       {!user && (
         <input
           type="text"
@@ -115,6 +124,8 @@ export default function MultiplayerSpill({ courses, user, guestName, setGuestNam
           className="w-full p-2 text-black rounded mb-2"
         />
       )}
+
+      {/* Opprett-knapp */}
       <button
         onClick={handleCreateRoom}
         className="w-full bg-green-500 hover:bg-green-600 text-white py-2 rounded"
@@ -122,25 +133,8 @@ export default function MultiplayerSpill({ courses, user, guestName, setGuestNam
         Opprett Rom
       </button>
 
-      {/* Vis tilgjengelige rom */}
-      {rooms.length > 0 && (
-        <div className="mt-6">
-          <h2 className="text-xl font-semibold">Tilgjengelige Rom</h2>
-          <ul>
-            {rooms.map((room) => (
-              <li key={room.id} className="mt-2">
-                {room.name} ({room.course?.name})
-                <button
-                  onClick={() => router.push(`/spill/${room.id}`)}
-                  className="ml-4 bg-blue-500 px-3 py-1 rounded"
-                >
-                  Bli med
-                </button>
-              </li>
-            ))}
-          </ul>
-        </div>
-      )}
+      {/* Tilgjengelige Rom (bruker ny komponent) */}
+      <AvailableRooms rooms={rooms} guestName={guestName} user={user} />
     </div>
   );
 }
