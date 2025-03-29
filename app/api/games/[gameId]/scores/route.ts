@@ -10,25 +10,36 @@ export async function POST(
   try {
     // Vent på at params blir løst
     const { gameId } = await params;
-    const { holeNumber, strokes, obCount, userId } = await request.json();
+    const { holeNumber, strokes, obCount, userId, playerName } = await request.json();
 
-    // Slett eksisterende score for dette hullet hvis den finnes
+    // Hent spilleren fra game hvis ikke gitt
+    let effectivePlayerName = playerName;
+    if (!playerName) {
+      const game = await prisma.game.findUnique({
+        where: { id: gameId },
+        select: { ownerName: true }
+      });
+      effectivePlayerName = game?.ownerName || "Gjest";
+    }
+
+    // Slett eksisterende score
     await prisma.gameScore.deleteMany({
       where: {
-        gameId: gameId,
+        gameId,
         holeNumber,
-        userId
+        userId: userId || undefined
       }
     });
 
     // Opprett ny score
     const score = await prisma.gameScore.create({
       data: {
-        gameId: gameId,
+        gameId,
         holeNumber,
         strokes,
         obCount,
-        userId
+        userId: userId || null,
+        playerName: effectivePlayerName
       }
     });
 

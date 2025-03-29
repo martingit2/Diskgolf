@@ -60,15 +60,13 @@ export default function Page({ params }: { params: Promise<{ gameId: string }> }
         if (!res.ok) throw new Error(await res.text());
         
         const data = await res.json();
-        const basketsCount = data.course.baskets?.length || 0;
-        const hasSeparateGoal = data.course.goal && !data.course.baskets?.some((b: any) => b.id === data.course.goal?.id);
-        const totalHoles = basketsCount + (hasSeparateGoal ? 1 : 0);
+        // Tell kun baskets, ignorer goal helt
+        const totalHoles = data.course.holes?.length || data.course.baskets?.length || 0;
 
         const transformedData: GameData = {
           ...data,
           course: {
             ...data.course,
-            // Bruk global par for alle hull
             holes: data.course.holes?.length ? data.course.holes : 
                   Array.from({ length: totalHoles }, (_, index) => ({
                     number: index + 1,

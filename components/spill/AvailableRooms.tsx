@@ -1,5 +1,5 @@
 "use client";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 
 interface Room {
@@ -8,12 +8,17 @@ interface Room {
   maxPlayers: number;
   course?: {
     name: string;
+    holes?: { number: number }[];
+    baskets?: { id: string }[];
+    goal?: { id: string };
+    totalHoles?: number;
   };
   participants: {
     id: string;
     playerName: string;
   }[];
   passwordHash: string | null;
+  ownerName: string;
 }
 
 interface AvailableRoomsProps {
@@ -24,182 +29,219 @@ interface AvailableRoomsProps {
 
 export default function AvailableRooms({ rooms, guestName, user }: AvailableRoomsProps) {
   const router = useRouter();
-
   const [passwordInput, setPasswordInput] = useState("");
   const [joinRoomId, setJoinRoomId] = useState<string | null>(null);
   const [searchTerm, setSearchTerm] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
+  const [isJoining, setIsJoining] = useState(false);
+  const [refreshKey, setRefreshKey] = useState(0);
 
   const pageSize = 5;
 
-  const filteredRooms = rooms.filter((room) => {
-    const isMultiplayer = room.maxPlayers > 1;
-    const isNotFull = room.participants.length < room.maxPlayers;
-    const matchesSearch = room.name.toLowerCase().includes(searchTerm.toLowerCase());
-    return isMultiplayer && isNotFull && matchesSearch;
-  });
-
-  const totalPages = Math.ceil(filteredRooms.length / pageSize);
-  const startIndex = (currentPage - 1) * pageSize;
-  const endIndex = startIndex + pageSize;
-  const roomsOnPage = filteredRooms.slice(startIndex, endIndex);
-
-  const handleJoinRoom = async (room: Room) => {
-    if (room.passwordHash) {
-      setJoinRoomId(room.id);
-    } else {
-      await joinRoomRequest(room.id, null);
-    }
+  const getHoleCount = (room: Room) => {
+    return room.course?.totalHoles || 
+           room.course?.holes?.length || 
+           room.course?.baskets?.length || 
+           0;
   };
 
-  const joinRoomRequest = async (roomId: string, enteredPassword: string | null) => {
+  const filteredRooms = rooms
+    .filter((room) => {
+      const matchesSearch = room.name.toLowerCase().includes(searchTerm.toLowerCase()) || 
+                          room.course?.name.toLowerCase().includes(searchTerm.toLowerCase());
+      const isNotFull = room.participants.length < room.maxPlayers;
+      return matchesSearch && isNotFull;
+    })
+    .sort((a, b) => b.participants.length - a.participants.length);
+
+  const totalPages = Math.ceil(filteredRooms.length / pageSize);
+  const paginatedRooms = filteredRooms.slice(
+    (currentPage - 1) * pageSize,
+    currentPage * pageSize
+  );
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setRefreshKey(prev => prev + 1);
+    }, 10000);
+    return () => clearInterval(interval);
+  }, []);
+
+  const joinRoom = async (roomId: string, password: string | null) => {
+    setIsJoining(true);
     try {
-      const playerName = user?.name || guestName || "Gjest";
+      const playerName = user?.name || guestName;
       if (!playerName) {
-        alert("Vennligst skriv inn navn eller logg inn for å bli med i rommet.");
+        alert("Vennligst skriv inn navn eller logg inn");
         return;
       }
 
-      const res = await fetch(`/api/rooms/join`, {
+      const response = await fetch("/api/rooms/join", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           roomId,
-          password: enteredPassword,
+          password,
           userId: user?.id || null,
           playerName,
         }),
       });
 
-      const data = await res.json();
-      if (data.error) {
-        alert(data.error);
-      } else {
-        // ✅ Naviger til spill-lobbyen etter vellykket join
-        router.push(`/spill/${roomId}`);
+      const data = await response.json();
+      if (!response.ok) {
+        throw new Error(data.error || "Kunne ikke bli med i rommet");
       }
+
+      router.push(`/spill/multiplayer/${roomId}`);
     } catch (error) {
-      console.error("Feil ved innlogging til rom:", error);
-      alert("Kunne ikke bli med i rommet.");
+      console.error("Feil ved deltakelse:", error);
+      alert(error instanceof Error ? error.message : "Ukjent feil");
+    } finally {
+      setIsJoining(false);
+      setJoinRoomId(null);
+      setPasswordInput("");
     }
   };
 
-  const handleSubmitPassword = async () => {
-    if (!joinRoomId) return;
-    await joinRoomRequest(joinRoomId, passwordInput);
-    // ❌ Ikke tøm tilstanden før redirect – ellers mister vi tilgangen til roomId
-    setPasswordInput("");
-    setJoinRoomId(null);
-  };
-
-  const handleNextPage = () => {
-    if (currentPage < totalPages) setCurrentPage((prev) => prev + 1);
-  };
-  const handlePrevPage = () => {
-    if (currentPage > 1) setCurrentPage((prev) => prev - 1);
+  const handleJoinClick = (room: Room) => {
+    if (room.passwordHash) {
+      setJoinRoomId(room.id);
+    } else {
+      joinRoom(room.id, null);
+    }
   };
 
   return (
-    <div className="bg-gray-800 p-6 rounded-lg shadow-md w-full max-w-lg mt-6">
-      <h2 className="text-xl font-semibold mb-4">Tilgjengelige Rom</h2>
+    <div className="bg-gray-800 p-6 rounded-lg shadow-md">
+      <div className="flex justify-between items-center mb-4">
+        <h3 className="text-xl font-semibold">Ledige rom</h3>
+        <span className="text-sm text-gray-400">
+          {filteredRooms.length} rom tilgjengelig
+        </span>
+      </div>
 
-      <div className="mb-4">
-        <label htmlFor="search" className="block mb-1">
-          Søk på romnavn:
-        </label>
+      <div className="mb-4 relative">
         <input
-          id="search"
           type="text"
-          placeholder="F.eks. 'Anna sitt rom'"
+          placeholder="Søk etter rom eller bane..."
           value={searchTerm}
           onChange={(e) => {
             setSearchTerm(e.target.value);
             setCurrentPage(1);
           }}
-          className="w-full p-2 text-black rounded"
+          className="w-full p-2 pl-10 bg-gray-700 text-white rounded border border-gray-600 focus:ring-2 focus:ring-blue-500"
         />
+        <svg
+          className="absolute left-3 top-2.5 h-5 w-5 text-gray-400"
+          fill="none"
+          stroke="currentColor"
+          viewBox="0 0 24 24"
+        >
+          <path
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            strokeWidth={2}
+            d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
+          />
+        </svg>
       </div>
 
-      {roomsOnPage.length === 0 ? (
-        <p>Ingen ledige flerspillerrom akkurat nå.</p>
+      {paginatedRooms.length === 0 ? (
+        <div className="text-center py-8 text-gray-400">
+          Ingen ledige rom funnet
+        </div>
       ) : (
-        <ul>
-          {roomsOnPage.map((room) => {
-            const currentPlayers = room.participants.length;
-            return (
-              <li key={room.id} className="mb-3">
-                <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center">
-                  <div>
-                    <span className="font-semibold">{room.name}</span>{" "}
-                    <span className="text-sm text-gray-300">
-                      ({room.course?.name || "Ukjent bane"})
-                    </span>
-                    <div className="text-sm text-gray-400">
-                      Spillere: {currentPlayers}/{room.maxPlayers}
+        <ul className="space-y-3">
+          {paginatedRooms.map((room) => (
+            <li
+              key={room.id}
+              className="bg-gray-750 hover:bg-gray-700 rounded-lg p-4 transition-colors"
+            >
+              <div className="flex items-center justify-between">
+                <div>
+                  <h4 className="font-medium">{room.name}</h4>
+                  <div className="text-sm text-gray-400">
+                    {room.course?.name || "Ukjent bane"} • {getHoleCount(room)} hull • Opprettet av {room.ownerName}
+                  </div>
+                </div>
+                <div className="flex items-center space-x-4">
+                  <div className="text-center">
+                    <div className="font-medium">
+                      {room.participants.length}/{room.maxPlayers}
                     </div>
+                    <div className="text-xs text-gray-400">Spillere</div>
                   </div>
                   <button
-                    onClick={() => handleJoinRoom(room)}
-                    className="mt-2 sm:mt-0 bg-blue-500 hover:bg-blue-600 px-4 py-1 rounded text-white"
+                    onClick={() => handleJoinClick(room)}
+                    disabled={isJoining}
+                    className="bg-blue-600 hover:bg-blue-700 px-4 py-2 rounded-lg disabled:opacity-50"
                   >
                     Bli med
                   </button>
                 </div>
-              </li>
-            );
-          })}
+              </div>
+            </li>
+          ))}
         </ul>
       )}
 
       {totalPages > 1 && (
-        <div className="flex justify-between items-center mt-4">
+        <div className="flex justify-between items-center mt-6">
           <button
-            onClick={handlePrevPage}
+            onClick={() => setCurrentPage((p) => Math.max(1, p - 1))}
             disabled={currentPage === 1}
-            className="bg-gray-600 hover:bg-gray-700 text-white py-1 px-3 rounded disabled:opacity-50"
+            className="flex items-center space-x-1 px-4 py-2 bg-gray-700 rounded-lg disabled:opacity-50"
           >
-            Forrige
+            <span>←</span>
+            <span>Forrige</span>
           </button>
-          <span>
+          <span className="text-sm">
             Side {currentPage} av {totalPages}
           </span>
           <button
-            onClick={handleNextPage}
+            onClick={() => setCurrentPage((p) => Math.min(totalPages, p + 1))}
             disabled={currentPage === totalPages}
-            className="bg-gray-600 hover:bg-gray-700 text-white py-1 px-3 rounded disabled:opacity-50"
+            className="flex items-center space-x-1 px-4 py-2 bg-gray-700 rounded-lg disabled:opacity-50"
           >
-            Neste
+            <span>Neste</span>
+            <span>→</span>
           </button>
         </div>
       )}
 
       {joinRoomId && (
-        <div className="mt-6 bg-gray-700 p-4 rounded shadow-lg">
-          <label className="block mb-2 text-white font-semibold">
-            Skriv inn passord for rommet:
-          </label>
-          <input
-            type="password"
-            value={passwordInput}
-            onChange={(e) => setPasswordInput(e.target.value)}
-            className="w-full p-2 text-black rounded mb-2"
-          />
-          <div className="flex justify-end gap-2">
-            <button
-              onClick={handleSubmitPassword}
-              className="bg-green-500 hover:bg-green-600 text-white py-2 px-4 rounded"
-            >
-              Bli med
-            </button>
-            <button
-              onClick={() => {
-                setJoinRoomId(null);
-                setPasswordInput("");
-              }}
-              className="bg-red-500 hover:bg-red-600 text-white py-2 px-4 rounded"
-            >
-              Avbryt
-            </button>
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
+          <div className="bg-gray-800 rounded-lg p-6 max-w-md w-full">
+            <h3 className="text-xl font-semibold mb-4">Rompassord</h3>
+            <p className="mb-4 text-gray-300">
+              Dette rommet er beskyttet med passord.
+            </p>
+            <input
+              type="password"
+              value={passwordInput}
+              onChange={(e) => setPasswordInput(e.target.value)}
+              className="w-full p-3 bg-gray-700 text-white rounded border border-gray-600 mb-4"
+              placeholder="Skriv inn passord"
+              autoFocus
+            />
+            <div className="flex justify-end space-x-3">
+              <button
+                onClick={() => {
+                  setJoinRoomId(null);
+                  setPasswordInput("");
+                }}
+                className="px-4 py-2 bg-gray-700 hover:bg-gray-600 rounded-lg"
+              >
+                Avbryt
+              </button>
+              <button
+                onClick={() => joinRoom(joinRoomId, passwordInput)}
+                disabled={!passwordInput || isJoining}
+                className="px-4 py-2 bg-blue-600 hover:bg-blue-700 rounded-lg disabled:opacity-50"
+              >
+                {isJoining ? "Bli med..." : "Bekreft"}
+              </button>
+            </div>
           </div>
         </div>
       )}

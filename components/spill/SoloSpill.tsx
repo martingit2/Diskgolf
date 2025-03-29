@@ -32,9 +32,8 @@ export default function SoloSpill({ courses, user, guestName, setGuestName }: So
 
   const getTotalHoles = (course: Course) => {
     if (course.holes?.length) return course.holes.length;
-    const basketsCount = course.baskets?.length || 0;
-    const hasSeparateGoal = course.goal && !course.baskets?.some(b => b.id === course.goal?.id);
-    return basketsCount + (hasSeparateGoal ? 1 : 0);
+    // Tell kun baskets, ignorer goal helt
+    return course.baskets?.length || 0;
   };
 
   const handlePlayAlone = async () => {
@@ -87,9 +86,7 @@ export default function SoloSpill({ courses, user, guestName, setGuestName }: So
       }
 
       console.log("Redirecter til:", `/spill/solo/${data.gameId}`); // Debug log
-      // Bruk begge metodene for sikkerhets skyld
       router.push(`/spill/solo/${data.gameId}`);
-      window.location.href = `/spill/solo/${data.gameId}`;
       
     } catch (error) {
       console.error("Full feilmelding:", error); // Debug log
@@ -136,17 +133,6 @@ export default function SoloSpill({ courses, user, guestName, setGuestName }: So
         }`}
       >
         {isLoading ? 'Starter spill...' : 'Start Spill Alene'}
-      </button>
-
-      {/* Testknapp for å sjekke routing uten API */}
-      <button
-        onClick={() => {
-          console.log("Tester redirect");
-          window.location.href = "/spill/solo/test123";
-        }}
-        className="mt-4 bg-red-500 text-white p-2 rounded"
-      >
-        TEST: Manuell redirect
       </button>
     </div>
   );

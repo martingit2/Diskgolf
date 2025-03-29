@@ -303,74 +303,80 @@ model Game {
   courseId    String
   password    String?
   course      Course   @relation(fields: [courseId], references: [id])
-  gameMode    String   // "singleplayer" eller "multiplayer"
+  gameMode    String
   ownerId     String?  
   owner       User?    @relation(fields: [ownerId], references: [id], onDelete: SetNull)
   ownerName   String?  
-  expiresAt   DateTime // 👈 Spill slettes automatisk etter 3 timer
+  expiresAt   DateTime
   isActive    Boolean  @default(true)
   createdAt   DateTime @default(now())
   maxPlayers  Int?
 
   participants GameParticipation[]
   scores       GameScore[]
+  room         Room?    @relation(fields: [roomId], references: [id])
+  roomId       String?  @unique
 }
+
 
 model GameParticipation {
   id          String   @id @default(uuid())
   gameId      String?
   game        Game?    @relation(fields: [gameId], references: [id], onDelete: Cascade)
-  roomId      String?  // 👈 Legg til roomId
+  roomId      String?
   room        Room?    @relation(fields: [roomId], references: [id], onDelete: Cascade)
   userId      String?
   user        User?    @relation(fields: [userId], references: [id], onDelete: SetNull)
   playerName  String
   createdAt   DateTime @default(now())
-  isReady     Boolean  @default(false)  // Legger til isReady
+  isReady     Boolean  @default(false)
 }
-
 
 
 model GameScore {
-  id        String  @id @default(uuid())
-  gameId    String
-  game      Game    @relation(fields: [gameId], references: [id], onDelete: Cascade)
-  userId    String?
-  user      User?   @relation(fields: [userId], references: [id], onDelete: SetNull)
+  id         String  @id @default(uuid())
+  gameId     String
+  game       Game    @relation(fields: [gameId], references: [id], onDelete: Cascade)
+  userId     String?
+  user       User?   @relation(fields: [userId], references: [id], onDelete: SetNull)
   holeNumber Int
   strokes    Int
   obCount    Int
+  playerName String  // Endret fra String? til String
   createdAt  DateTime @default(now())
-}
 
+  @@unique([gameId, holeNumber, userId, playerName], name: "game_score_unique")
+}
 
 model Room {
   id          String   @id @default(uuid())
   name        String
-  passwordHash String?  // Lagrer det hashede passordet
+  passwordHash String?
   courseId    String
   course      Course   @relation(fields: [courseId], references: [id])
   ownerId     String?
   owner       User?    @relation(fields: [ownerId], references: [id], onDelete: SetNull)
-  ownerName   String   // Legg til dette feltet
+  ownerName   String
   maxPlayers  Int
   isActive    Boolean  @default(true)
-  status        String              @default("waiting")  // Legger til statusfelt
-  expiresAt   DateTime // Tidsstempel for når rommet slettes
+  status      String   @default("waiting")
+  expiresAt   DateTime
   createdAt   DateTime @default(now())
 
   participants GameParticipation[]
+  game         Game?    
+  gameId       String?  @unique
 }
 
-model CompletedGameScore { // ✅ Lagre spillernes poeng etter at spillet er slettet
+model CompletedGameScore {
   id        String  @id @default(uuid())
   courseId  String
   course    Course  @relation(fields: [courseId], references: [id])
-  userId    String
-  user      User    @relation(fields: [userId], references: [id])
+  userId    String? // Gjør optional for konsistens
+  user      User?   @relation(fields: [userId], references: [id])
+  playerName String // Legg til for å lagre gjestenavn
   holeNumber Int
   strokes    Int
   obCount    Int
   createdAt  DateTime @default(now())
 }
-
