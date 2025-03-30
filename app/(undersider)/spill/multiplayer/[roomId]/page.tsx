@@ -2,73 +2,85 @@
 import { useEffect, useState } from "react";
 import { useRouter, useParams } from "next/navigation";
 import { notFound } from 'next/navigation';
+import { useSession } from "next-auth/react";
 
 interface Participant {
   id: string;
+  userId: string | null;
   playerName: string;
   isReady: boolean;
 }
 
 export default function MultiplayerLobby() {
+  const { data: session } = useSession();
   const [room, setRoom] = useState<any>(null);
   const [participants, setParticipants] = useState<Participant[]>([]);
   const [isReady, setIsReady] = useState(false);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [readyCount, setReadyCount] = useState(0);
   
   const router = useRouter();
   const params = useParams();
 
-  // Håndter manglende roomId
   if (!params?.roomId) {
     return notFound();
   }
 
   const roomId = params.roomId as string;
 
-  // Hent romdata
+  const fetchRoom = async () => {
+    try {
+      const res = await fetch(`/api/rooms/${roomId}`);
+      if (!res.ok) throw new Error("Kunne ikke hente romdata");
+      
+      const data = await res.json();
+      setRoom(data);
+      setParticipants(data.participants || []);
+      setReadyCount(data.participants?.filter((p: any) => p.isReady).length || 0);
+
+      // Sjekk om den innloggede brukeren er klar
+      const currentPlayer = data.participants?.find((p: any) => 
+        p.userId === session?.user?.id || p.playerName === (session?.user?.name || data.ownerName)
+      );
+      setIsReady(currentPlayer?.isReady || false);
+    } catch (err) {
+      console.error('Error fetching room:', err);
+      setError(err instanceof Error ? err.message : "Ukjent feil");
+    } finally {
+      setLoading(false);
+    }
+  };
+
   useEffect(() => {
-    const fetchRoom = async () => {
-      try {
-        const res = await fetch(`/api/rooms/${roomId}`);
-        if (!res.ok) throw new Error("Kunne ikke hente romdata");
-        
-        const data = await res.json();
-        setRoom(data);
-        setParticipants(data.participants || []);
-      } catch (err) {
-        setError(err instanceof Error ? err.message : "Ukjent feil");
-      } finally {
-        setLoading(false);
-      }
-    };
-
     fetchRoom();
-    
-    // Poll for updates
-    const interval = setInterval(fetchRoom, 5000);
+    const interval = setInterval(fetchRoom, 3000);
     return () => clearInterval(interval);
-  }, [roomId]);
+  }, [roomId, session]);
 
-  // Marker deg som klar
   const handleReady = async () => {
     try {
-      if (!room?.ownerId) {
-        throw new Error("Mangler eier-ID for rommet");
-      }
-
       const res = await fetch(`/api/rooms/${roomId}/ready`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ playerId: room.ownerId })
+        body: JSON.stringify({ 
+          playerId: session?.user?.id,
+          playerName: session?.user?.name || room?.ownerName
+        })
       });
 
-      if (res.ok) {
-        setIsReady(true);
-        // Oppdater deltakere lokalt
-        setParticipants(prev =>
-          prev.map(p => p.id === room.ownerId ? { ...p, isReady: true } : p)
-        );
+      const data = await res.json();
+      console.log('Ready response:', data);
+
+      if (!res.ok) {
+        throw new Error(data.error || "Kunne ikke sette klar-status");
+      }
+
+      setIsReady(true);
+      setReadyCount(data.readyCount);
+
+      if (data.gameStarted) {
+        router.push(`/spill/multiplayer/${roomId}/spill`);
       }
     } catch (err) {
       console.error("Feil ved klar-markering:", err);
@@ -76,7 +88,6 @@ export default function MultiplayerLobby() {
     }
   };
 
-  // Sjekk om alle er klare
   useEffect(() => {
     if (room?.status === "inProgress") {
       router.push(`/spill/multiplayer/${roomId}/spill`);
@@ -107,7 +118,9 @@ export default function MultiplayerLobby() {
       <p className="mb-4">Bane: {room.course?.name}</p>
       
       <div className="mb-8">
-        <h2 className="text-xl font-semibold mb-2">Spillere ({participants.length}/{room.maxPlayers})</h2>
+        <h2 className="text-xl font-semibold mb-2">
+          Spillere ({participants.length}/{room.maxPlayers})
+        </h2>
         <ul className="space-y-2">
           {participants.map((p) => (
             <li key={p.id} className="flex items-center">
@@ -122,12 +135,20 @@ export default function MultiplayerLobby() {
         <button
           onClick={handleReady}
           className="bg-green-600 hover:bg-green-700 text-white py-2 px-6 rounded-lg"
-          disabled={!room?.ownerId}
         >
           Jeg er klar!
         </button>
       ) : (
-        <p className="text-green-500">Venter på at alle skal bli klare...</p>
+        <div>
+          <p className="text-green-500 mb-2">
+            Du er klar! ({readyCount}/{participants.length})
+          </p>
+          <p className="text-gray-400">
+            {readyCount === participants.length 
+              ? "Starter spillet..." 
+              : "Venter på at alle skal bli klare..."}
+          </p>
+        </div>
       )}
     </div>
   );

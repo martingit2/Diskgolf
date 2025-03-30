@@ -3,101 +3,88 @@ import { PrismaClient } from "@prisma/client";
 
 const prisma = new PrismaClient();
 
+interface RequestBody {
+  playerId?: string;
+  playerName?: string;
+}
+
 export async function POST(
   req: Request,
   { params }: { params: Promise<{ id: string }> }
 ) {
   try {
     const { id: roomId } = await params;
-    const { playerId } = await req.json();
+    const { playerId, playerName }: RequestBody = await req.json();
 
-    if (!playerId) {
+    console.log('Marking player as ready:', { roomId, playerId, playerName });
+
+    if ((!playerId && !playerName) || !roomId) {
+      console.error('Missing required fields');
       return NextResponse.json(
-        { error: "Manglende spiller-ID" },
+        { error: "Mangler påkrevde felt" },
         { status: 400 }
       );
     }
 
-    // Oppdater klar-status for deltakeren
-    await prisma.gameParticipation.updateMany({
-      where: {
-        roomId,
-        userId: playerId,
-      },
-      data: {
-        isReady: true,
-      },
+    // Oppdater kun den spesifikke spilleren
+    const updateWhere = {
+      roomId,
+      ...(playerId ? { userId: playerId } : { playerName })
+    };
+
+    const updateResult = await prisma.gameParticipation.updateMany({
+      where: updateWhere,
+      data: { isReady: true },
     });
 
-    // Hent rommet med alle nødvendige relasjoner
+    console.log('Update result:', updateResult);
+
+    if (updateResult.count === 0) {
+      console.error('No matching participant found');
+      return NextResponse.json(
+        { error: "Fant ingen deltaker å oppdatere" },
+        { status: 404 }
+      );
+    }
+
+    // Hent oppdatert romdata
     const room = await prisma.room.findUnique({
       where: { id: roomId },
       include: { 
         participants: true,
-        course: {
-          include: {
-            holes: true,
-            baskets: true,
-            start: true,
-            goal: true
-          }
-        },
         game: true
       },
     });
 
     if (!room) {
+      console.error('Room not found');
       return NextResponse.json(
         { error: "Rom ikke funnet" },
         { status: 404 }
       );
     }
 
-    // Sjekk om alle er klare
-    if (room.participants.every(p => p.isReady)) {
-      // Oppdater romstatus
+    const readyCount = room.participants.filter(p => p.isReady).length;
+    const allReady = readyCount === room.participants.length;
+
+    console.log(`Ready status: ${readyCount}/${room.participants.length} ready`);
+
+    if (allReady && room.game) {
+      console.log('All players ready, starting game...');
       await prisma.room.update({
         where: { id: roomId },
         data: { status: "inProgress" },
       });
-
-      // Bestem hull basert på banens data (samme logikk som singleplayer)
-      const holes = room.course.holes?.length > 0
-        ? room.course.holes
-        : room.course.baskets?.map((_, index) => ({
-            number: index + 1,
-            par: room.course.par || 3
-          })) || Array.from({ length: 18 }, (_, i) => ({
-            number: i + 1,
-            par: room.course.par || 3
-          }));
-
-      // Opprett gameScore for alle deltakere for hvert hull
-      for (const participant of room.participants) {
-        for (const hole of holes) {
-          await prisma.gameScore.create({
-            data: {
-              gameId: room.game?.id || roomId, // Bruk game.id hvis det finnes
-              userId: participant.userId,
-              holeNumber: hole.number,
-              strokes: 0,
-              obCount: 0,
-              playerName: participant.playerName, // Legger til playerName
-            },
-          });
-        }
-      }
-
-      return NextResponse.json({ 
-        success: true,
-        numHoles: holes.length,
-        gameId: room.game?.id || roomId
-      });
     }
 
-    return NextResponse.json({ success: true });
+    return NextResponse.json({ 
+      success: true,
+      gameStarted: allReady,
+      readyCount,
+      totalParticipants: room.participants.length
+    });
   } catch (error) {
-    console.error("Feil ved oppdatering av klar-status:", error);
+    console.error("Error in ready endpoint:", error);
     return NextResponse.json(
       { error: "Kunne ikke oppdatere klar-status" },
       { status: 500 }
