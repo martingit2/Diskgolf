@@ -39,7 +39,6 @@ export default function MultiplayerLobby() {
       setParticipants(data.participants || []);
       setReadyCount(data.participants?.filter((p: any) => p.isReady).length || 0);
 
-      // Sjekk om den innloggede brukeren er klar
       const currentPlayer = data.participants?.find((p: any) => 
         p.userId === session?.user?.id || p.playerName === (session?.user?.name || data.ownerName)
       );
@@ -113,43 +112,47 @@ export default function MultiplayerLobby() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-900 text-white p-8">
-      <h1 className="text-3xl font-bold mb-6">{room.name}</h1>
-      <p className="mb-4">Bane: {room.course?.name}</p>
-      
-      <div className="mb-8">
-        <h2 className="text-xl font-semibold mb-2">
-          Spillere ({participants.length}/{room.maxPlayers})
-        </h2>
-        <ul className="space-y-2">
-          {participants.map((p) => (
-            <li key={p.id} className="flex items-center">
-              <span>{p.playerName}</span>
-              {p.isReady && <span className="ml-2 text-green-500">✓</span>}
-            </li>
-          ))}
-        </ul>
-      </div>
-
-      {!isReady ? (
-        <button
-          onClick={handleReady}
-          className="bg-green-600 hover:bg-green-700 text-white py-2 px-6 rounded-lg"
-        >
-          Jeg er klar!
-        </button>
-      ) : (
-        <div>
-          <p className="text-green-500 mb-2">
-            Du er klar! ({readyCount}/{participants.length})
-          </p>
-          <p className="text-gray-400">
-            {readyCount === participants.length 
-              ? "Starter spillet..." 
-              : "Venter på at alle skal bli klare..."}
-          </p>
+    <div className="min-h-screen bg-gray-900 text-white p-8 flex flex-col items-center">
+      <div className="w-full max-w-2xl"> {/* Legg til en maksbredde og sentrer */}
+        <h1 className="text-3xl font-bold mb-6 text-center">{room.name}</h1>
+        <p className="mb-4 text-center">Bane: {room.course?.name}</p>
+        
+        <div className="mb-8">
+          <h2 className="text-xl font-semibold mb-2 text-center">
+            Spillere ({participants.length}/{room.maxPlayers})
+          </h2>
+          <ul className="space-y-2">
+            {participants.map((p) => (
+              <li key={p.id} className="flex items-center justify-center">
+                <span>{p.playerName}</span>
+                {p.isReady && <span className="ml-2 text-green-500">✓</span>}
+              </li>
+            ))}
+          </ul>
         </div>
-      )}
+
+        <div className="flex flex-col items-center">
+          {!isReady ? (
+            <button
+              onClick={handleReady}
+              className="bg-green-600 hover:bg-green-700 text-white py-2 px-6 rounded-lg"
+            >
+              Jeg er klar!
+            </button>
+          ) : (
+            <div className="text-center">
+              <p className="text-green-500 mb-2">
+                Du er klar! ({readyCount}/{participants.length})
+              </p>
+              <p className="text-gray-400">
+                {readyCount === participants.length 
+                  ? "Starter spillet..." 
+                  : "Venter på at alle skal bli klare..."}
+              </p>
+            </div>
+          )}
+        </div>
+      </div>
     </div>
   );
 }
