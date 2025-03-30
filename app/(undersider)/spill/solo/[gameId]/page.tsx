@@ -116,23 +116,6 @@ export default function Page({ params }: { params: Promise<{ gameId: string }> }
   return (
     <div className="min-h-screen bg-gray-900 text-white p-4 md:p-8">
       <div className="max-w-4xl mx-auto">
-        <header className="mb-8">
-          <h1 className="text-2xl md:text-3xl font-bold text-center">
-            {game.course.name}
-          </h1>
-          <div className="flex flex-col md:flex-row justify-between items-center mt-4 gap-2">
-            <p className="text-gray-300">
-              <span className="font-semibold">Spiller:</span> {game.ownerName}
-            </p>
-            <p className="text-gray-300">
-              <span className="font-semibold">Par:</span> {game.course.par}
-            </p>
-            <p className="text-gray-300">
-              <span className="font-semibold">Hull:</span> {game.course.holes.length}
-            </p>
-          </div>
-        </header>
-
         {game.course && (
           <ScoreForm 
             course={game.course} 
