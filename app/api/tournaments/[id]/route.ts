@@ -1,4 +1,3 @@
-// app/api/tournaments/[id]/route.ts
 import { PrismaClient } from "@prisma/client";
 import { NextResponse } from "next/server";
 
@@ -9,23 +8,40 @@ export async function GET(
   { params }: { params: Promise<{ id: string }> }
 ) {
   try {
-    // Vent på at `params`-objektet er klart
-    const { id } = await params;
-
-    // Sjekk at `id` er tilgjengelig
-    if (!id) {
-      return NextResponse.json(
-        { error: "Turnering-ID mangler" },
-        { status: 400 }
-      );
-    }
-
-    // Hent turneringen med relatert informasjon
+    const { id } = await params; // Unwrap the Promise
     const tournament = await prisma.tournament.findUnique({
       where: { id },
       include: {
-        participants: true, // Inkluder deltakere
-        club: true, // Inkluder klubben som opprettet turneringen
+        course: {
+          select: {
+            id: true,
+            name: true,
+            location: true,
+          },
+        },
+        organizer: {
+          select: {
+            id: true,
+            name: true,
+          },
+        },
+        club: {
+          select: {
+            id: true,
+            name: true,
+          },
+        },
+        participants: {
+          select: {
+            id: true,
+            name: true,
+          },
+        },
+        _count: {
+          select: {
+            participants: true,
+          },
+        },
       },
     });
 
@@ -36,12 +52,83 @@ export async function GET(
       );
     }
 
-    return NextResponse.json(tournament, { status: 200 });
+    return NextResponse.json(tournament);
   } catch (error) {
     console.error("Feil ved henting av turnering:", error);
     return NextResponse.json(
       { error: "Kunne ikke hente turnering" },
       { status: 500 }
     );
+  } finally {
+    await prisma.$disconnect();
+  }
+}
+
+export async function PUT(
+  request: Request,
+  { params }: { params: Promise<{ id: string }> }
+) {
+  try {
+    const { id } = await params; // Unwrap the Promise
+    const body = await request.json();
+    
+    // Valider påkrevde felter
+    if (!body.name || !body.startDate || !body.courseId) {
+      return NextResponse.json(
+        { error: "Mangler obligatoriske felter: name, startDate, courseId" },
+        { status: 400 }
+      );
+    }
+
+    const updatedTournament = await prisma.tournament.update({
+      where: { id },
+      data: {
+        name: body.name,
+        description: body.description || null,
+        location: body.location,
+        startDate: new Date(body.startDate),
+        endDate: body.endDate ? new Date(body.endDate) : null,
+        status: body.status || "PLANNING",
+        maxParticipants: body.maxParticipants ? parseInt(body.maxParticipants) : null,
+        courseId: body.courseId,
+        clubId: body.clubId || null,
+      },
+      include: {
+        course: {
+          select: {
+            id: true,
+            name: true,
+          },
+        },
+        organizer: {
+          select: {
+            id: true,
+            name: true,
+          },
+        },
+        club: {
+          select: {
+            id: true,
+            name: true,
+          },
+        },
+        participants: {
+          select: {
+            id: true,
+            name: true,
+          },
+        },
+      },
+    });
+
+    return NextResponse.json(updatedTournament);
+  } catch (error) {
+    console.error("Feil ved oppdatering av turnering:", error);
+    return NextResponse.json(
+      { error: "Kunne ikke oppdatere turnering" },
+      { status: 500 }
+    );
+  } finally {
+    await prisma.$disconnect();
   }
 }

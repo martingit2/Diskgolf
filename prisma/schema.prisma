@@ -21,11 +21,6 @@ enum UserRole {
   CLUB_LEADER
 }
 
-enum TournamentType {
-  USER
-  CLUB
-}
-
 model User {
   id              String    @id @default(uuid()) // Unik identifikator
   name            String?  // Brukerens fulle navn
@@ -53,6 +48,8 @@ model User {
   gameScores       GameScore[]
   rooms            Room[]
   completedGameScores CompletedGameScore[]
+  organizedTournaments Tournament[] @relation("TournamentOrganizer") 
+  tournamentScores TournamentScore[] 
 }
 
 model Club {
@@ -134,6 +131,7 @@ model Course {
 
   clubId String?
   club   Club?   @relation("ClubToCourses", fields: [clubId], references: [id])
+  tournaments Tournament[]
 }
 
 model Hole {
@@ -225,21 +223,6 @@ model TwoFactorConfirmation {
   @@unique([userId])
 }
 
-model Tournament {
-  id              String         @id @default(uuid())
-  name            String
-  type            TournamentType
-  location        String         // Sjekk at dette feltet eksisterer
-  description     String
-  dateTime        DateTime
-  maxParticipants Int
-  image           String?
-  participants    User[]         @relation("TournamentParticipants")
-  clubId          String?
-  club            Club?          @relation(fields: [clubId], references: [id])
-  createdAt       DateTime       @default(now())
-  updatedAt       DateTime       @updatedAt
-}
 
 model Membership {
   userId  String
@@ -379,4 +362,59 @@ model CompletedGameScore {
   strokes    Int
   obCount    Int
   createdAt  DateTime @default(now())
+}
+
+
+enum TournamentStatus {
+  PLANNING
+  REGISTRATION_OPEN
+  IN_PROGRESS
+  COMPLETED
+}
+
+model Tournament {
+  id              String          @id @default(uuid())
+  name            String
+  description     String
+  location        String
+  startDate       DateTime
+  endDate         DateTime?
+  status          TournamentStatus @default(PLANNING)
+  maxParticipants Int?
+  image           String?
+  
+  // Banerelasjon
+  courseId        String
+  course          Course          @relation(fields: [courseId], references: [id])
+  
+  // Organisasjonsrelasjoner
+  organizerId     String
+  organizer       User            @relation("TournamentOrganizer", fields: [organizerId], references: [id])
+  clubId          String?
+  club            Club?           @relation(fields: [clubId], references: [id])
+  
+  // Deltakerrelasjon
+  participants    User[]          @relation("TournamentParticipants")
+  
+  // Resultatrelasjon (enkel)
+  scores          TournamentScore[]
+  
+  createdAt       DateTime        @default(now())
+  updatedAt       DateTime        @updatedAt
+}
+
+model TournamentScore {
+  id            String     @id @default(uuid())
+  tournamentId  String
+  tournament    Tournament @relation(fields: [tournamentId], references: [id])
+  playerId      String
+  player        User       @relation(fields: [playerId], references: [id])
+  
+  // Enkel scorelagring - kan utvides senere
+  totalScore    Int        // Totalt antall kast (inkl OB)
+  totalOb       Int        // Totalt antall OB
+  strokes       Json       // JSON med detaljerte resultater per hull
+  
+  submittedAt   DateTime   @default(now())
+  isVerified    Boolean    @default(false)
 }

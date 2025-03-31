@@ -7,16 +7,38 @@ const prisma = new PrismaClient();
 export async function POST(request: Request) {
   try {
     const body = await request.json();
-    const { name, location, description, dateTime, maxParticipants } = body;
+    const { 
+      name, 
+      location, 
+      description, 
+      startDate, 
+      endDate, 
+      maxParticipants,
+      courseId,
+      organizerId,
+      clubId
+    } = body;
+
+    // Valider påkrevde felter
+    if (!name || !location || !startDate || !courseId || !organizerId) {
+      return NextResponse.json(
+        { error: "Mangler obligatoriske felter" },
+        { status: 400 }
+      );
+    }
 
     const newTournament = await prisma.tournament.create({
       data: {
         name,
         location,
         description,
-        dateTime: new Date(dateTime),
-        maxParticipants,
-        type: "USER", // Alle turneringer er nå brukerturneringer
+        startDate: new Date(startDate),
+        endDate: endDate ? new Date(endDate) : null,
+        maxParticipants: maxParticipants ? parseInt(maxParticipants) : null,
+        courseId,
+        organizerId,
+        clubId,
+        status: "PLANNING" // Standard status
       },
     });
 
@@ -27,5 +49,7 @@ export async function POST(request: Request) {
       { error: "Kunne ikke opprette turnering" },
       { status: 500 }
     );
+  } finally {
+    await prisma.$disconnect();
   }
 }

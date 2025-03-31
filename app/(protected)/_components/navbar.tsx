@@ -69,6 +69,10 @@ export const Navbar = () => {
           <Button asChild variant={pathname === "/edit-map" ? "default" : "outline"}>
             <Link href="/edit-map">Rediger Bane</Link>
           </Button>
+           {/* Ny knapp for turneringer */}
+           <Button asChild variant={pathname === "/create-tournament" ? "default" : "outline"}>
+            <Link href="/create-tournament">Opprett Turnering</Link>
+          </Button>
         </div>
       )}
     </nav>

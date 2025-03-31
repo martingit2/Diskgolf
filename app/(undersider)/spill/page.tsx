@@ -61,7 +61,7 @@ export default function SpillPage() {
 
   return (
     <div className="min-h-screen bg-gray-900 text-white p-8 flex flex-col items-center">
-      <h1 className="text-4xl text-green-300 font-bold mb-6">DiskGolf Spill</h1>
+      <h1 className="text-4xl text-gray-50 font-bold mb-6">Banespill</h1>
 
       {/* Vis brukerinfo */}
       {user ? (
