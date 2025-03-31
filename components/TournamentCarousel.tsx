@@ -132,7 +132,7 @@ const TournamentsCarousel = () => {
             clickable: true,
             el: '.tournament-pagination',
             bulletClass: 'w-2 h-2 rounded-full bg-gray-300 mx-1 inline-block transition-all',
-            bulletActiveClass: 'w-20 bg-green-600'
+            bulletActiveClass: 'w-4 bg-green-600'
           }}
           navigation={{
             nextEl: '.tournament-next',
