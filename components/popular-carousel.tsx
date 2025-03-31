@@ -9,7 +9,10 @@ import "swiper/css";
 import "swiper/css/navigation";
 import "swiper/css/pagination";
 import "swiper/css/autoplay";
-import useCarouselStore from "@/app/stores/useCarosuellStore"; // Importer Zustand-storen for karusellen
+import useCarouselStore from "@/app/stores/useCarosuellStore";
+import { Button } from "@/components/ui/button";
+import { ChevronRight } from "lucide-react";
+import { motion } from "framer-motion";
 
 // 📌 Definerer typen for Course (baner)
 interface Course {
@@ -29,21 +32,45 @@ const BaneCarousel = () => {
   useEffect(() => {
     // Hent topprangerte baner hvis de ikke er hentet fra før
     if (topCourses.length === 0) {
-      fetchTopCourses(); // Kaller fetchTopCourses hvis ikke dataene er cachet
+      fetchTopCourses();
     }
   }, [topCourses, fetchTopCourses]);
 
   return (
-    <section className="max-w-7xl mx-auto p-6 mt-20">
-      <h1 className="text-3xl font-extrabold text-gray-800 leading-tight">
-        Topprangerte DiskGolf-baner
-      </h1>
+    <section className="max-w-7xl mx-auto p-6 mt-20 relative">
+      {/* Header med overskrift og knapp, lik TournamentsCarousel */}
+      <motion.div
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.5 }}
+        className="flex justify-between items-end mb-8"
+      >
+        <div>
+          <h2 className="text-sm font-semibold text-green-600 uppercase tracking-wider">
+            DiskGolf Baner
+          </h2>
+          <h1 className="text-3xl font-bold text-gray-900 mt-1">
+            Topprangerte DiskGolf-baner
+          </h1>
+        </div>
+        <Button
+          variant="ghost"
+          className="text-green-600 hover:bg-green-50 group"
+          onClick={() => router.push("/baner")}
+        >
+          Se alle baner
+          <ChevronRight className="ml-1 h-4 w-4 transition-transform group-hover:translate-x-1" />
+        </Button>
+      </motion.div>
+
+      {/* Carousel */}
       <Swiper
         modules={[Navigation, Pagination, Autoplay]}
         autoplay={{ delay: 3000, disableOnInteraction: false }}
         pagination={{
           clickable: true,
-          renderBullet: (index, className) => `<span class="${className} bg-green-600"></span>`,
+          renderBullet: (index, className) =>
+            `<span class="${className} bg-green-600"></span>`,
         }}
         navigation
         spaceBetween={20}
@@ -55,15 +82,15 @@ const BaneCarousel = () => {
         }}
         className="rounded-lg shadow-lg mt-8"
       >
-        {topCourses.map((course) => {
-          const rating = Math.round(course.averageRating ?? 0); // Sikrer alltid en gyldig rating
+        {topCourses.map((course: Course) => {
+          const rating = Math.round(course.averageRating ?? 0);
           const totalReviews = course.totalReviews ?? 0;
 
           return (
             <SwiperSlide key={course.id}>
               <div
                 className="relative overflow-hidden rounded-lg group cursor-pointer"
-                onClick={() => router.push(`/courses/${course.id}`)} // Navigerer til banens side
+                onClick={() => router.push(`/courses/${course.id}`)}
               >
                 {/* ⭐ Stjerner øverst til høyre */}
                 <div className="absolute top-2 right-2 z-10 bg-black bg-opacity-70 text-yellow-400 rounded-full px-2 py-1 flex items-center space-x-1">
@@ -87,7 +114,10 @@ const BaneCarousel = () => {
 
                 {/* 📸 Bilde */}
                 <Image
-                  src={course.image || "https://res.cloudinary.com/dmuhg7btj/image/upload/v1741665222/discgolf/courses/file_d2gyo0.webp"}
+                  src={
+                    course.image ||
+                    "https://res.cloudinary.com/dmuhg7btj/image/upload/v1741665222/discgolf/courses/file_d2gyo0.webp"
+                  }
                   alt={course.name}
                   width={800}
                   height={400}
