@@ -24,7 +24,7 @@ const ReviewCarousel = () => {
 
   return (
     <section className="max-w-7xl mx-auto p-6 mt-20">
-      <h1 className="text-3xl font-extrabold text-gray-800 leading-tight text-center">
+      <h1 className="text-3xl font-extrabold text-gray-800 leading-tight text-left">
         Nyeste bane anmeldelser
       </h1>
 

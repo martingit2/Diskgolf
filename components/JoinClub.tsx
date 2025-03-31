@@ -1,8 +1,8 @@
 "use client";
-
 import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { Users } from "lucide-react";
+import { motion } from "framer-motion";
 
 export default function JoinClub() {
   const router = useRouter();
@@ -13,21 +13,38 @@ export default function JoinClub() {
       <div className="absolute inset-0 bg-gradient-to-r from-gray-800 via-gray-950 to-gray-800 shadow-2xl"></div>
 
       {/* Innhold */}
-      <div className="relative z-10 p-12 text-center">
-        <h2 className="text-4xl font-extrabold text-white drop-shadow-lg">
+      <div className="relative z-10 p-8 md:p-12 text-center">
+        <h2 className="text-3xl md:text-4xl font-extrabold text-white drop-shadow-lg">
           Bli med i en <span className="text-green-400">DiskGolf-klubb</span>!
         </h2>
-        <p className="text-lg mt-4 max-w-2xl mx-auto text-gray-300 drop-shadow-md">
+        <p className="text-base md:text-lg mt-4 max-w-2xl mx-auto text-gray-300 drop-shadow-md">
           Knytt deg til et fellesskap, delta i turneringer, og få eksklusive fordeler.  
           Finn en klubb nær deg og bli en del av det voksende DiskGolf-miljøet!  
         </p>
 
-        {/* CTA Knapp */}
+        {/* CTA Knapp med forbedret animasjon */}
         <Button
           onClick={() => router.push("/klubber")}
-          className="mt-8 bg-gradient-to-r from-green-500 to-green-600 text-white font-semibold py-4 px-10 rounded-full text-lg shadow-xl hover:scale-105 transition-all duration-300 flex items-center gap-3 mx-auto"
+          className="mt-8 bg-gradient-to-r from-green-500 to-green-600 text-white font-semibold py-3 px-8 md:py-4 md:px-10 rounded-full text-base md:text-lg shadow-xl hover:scale-105 transition-all duration-300 flex items-center gap-3 mx-auto group"
         >
-          <Users className="w-6 h-6" /> Finn en klubb
+          <motion.div
+            animate={{
+              scale: [1, 1.1, 1],
+              opacity: [0.9, 1, 0.9]
+            }}
+            transition={{
+              duration: 2,
+              repeat: Infinity,
+              ease: "easeInOut"
+            }}
+            whileHover={{
+              scale: 1.2,
+              transition: { duration: 0.3 }
+            }}
+          >
+            <Users className="w-5 h-5 md:w-6 md:h-6" />
+          </motion.div>
+          Finn en klubb
         </Button>
       </div>
 

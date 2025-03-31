@@ -94,11 +94,16 @@ export default function HomePage() {
           </div>
 
           <div className="mt-20">
+            <TournamentsCarousel />
+          </div>
+
+          <div className="mt-20">
             <BaneCarousel />
           </div>
           <div className="mt-20">
             <NyesteBanerCarousel />
           </div>
+          
 
           {/* Kommentert ut turneringsseksjon */}
           {/* <div className="mt-4"> */}
