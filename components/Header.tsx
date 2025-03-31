@@ -182,7 +182,7 @@ function Header() {
           <div className="flex items-center justify-between">
             <a href="#" className="-m-1.5 p-1.5">
               <span className="sr-only">DiscGolf</span>
-              <Image className="h-8 w-auto" src="/logogreen.png" alt="Logo" width={32} height={32} />
+              <Image className="h-8 w-auto" src="/lightgreen.png" alt="Logo" width={32} height={32} />
             </a>
             <button
               type="button"
@@ -199,7 +199,7 @@ function Header() {
   <Disclosure as="div" className="-mx-3">
     {({ open }) => (
       <>
-        <Disclosure.Button className="flex w-full items-center justify-between rounded-lg py-2 pl-3 pr-3.5 text-base font-semibold leading-7 text-white hover:bg-blue-800">
+        <Disclosure.Button className="flex w-full items-center justify-between rounded-lg py-2 pl-3 pr-3.5 text-base font-semibold leading-7 text-white hover:bg-green-500">
           Baner
           <ChevronDownIcon
             className={cn(open ? "rotate-180" : "", "h-5 w-5 flex-none")}
@@ -212,7 +212,7 @@ function Header() {
               key={item.name}
               as={Link}
               href={item.href}
-              className="block rounded-lg py-2 pl-6 pr-3 text-sm font-semibold leading-7 text-white hover:bg-blue-800"
+              className="block rounded-lg py-2 pl-6 pr-3 text-sm font-semibold leading-7 text-white hover:bg-green-500"
               onClick={() => setMobileMenuOpen(false)}
             >
               {item.name}
@@ -225,21 +225,21 @@ function Header() {
 
   <Link
     href="/nyheter"
-    className="-mx-3 block rounded-lg px-3 py-2 text-base font-semibold leading-7 text-white hover:bg-green-700"
+    className="-mx-3 block rounded-lg px-3 py-2 text-base font-semibold leading-7 text-white hover:bg-green-500"
     onClick={() => setMobileMenuOpen(false)}
   >
     Nyheter
   </Link>
   <Link
     href="/klubber"
-    className="-mx-3 block rounded-lg px-3 py-2 text-base font-semibold leading-7 text-white hover:bg-blue-800"
+    className="-mx-3 block rounded-lg px-3 py-2 text-base font-semibold leading-7 text-white hover:bg-green-500"
     onClick={() => setMobileMenuOpen(false)}
   >
     Klubber
   </Link>
   <Link
     href="/turneringer"
-    className="-mx-3 block rounded-lg px-3 py-2 text-base font-semibold leading-7 text-white hover:bg-blue-800"
+    className="-mx-3 block rounded-lg px-3 py-2 text-base font-semibold leading-7 text-white hover:bg-green-500"
     onClick={() => setMobileMenuOpen(false)}
   >
     Turneringer

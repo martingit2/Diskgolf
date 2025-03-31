@@ -1,10 +1,8 @@
 /** 
  * Filnavn: Footer.tsx
  * Beskrivelse: Footer-komponent for DiskGolf-applikasjonen. Inneholder kontaktinformasjon, sosiale medier og nyttige lenker.
- * Utviklere: Said Hussain Khawajazada, Martin Pettersen
+ * Utviklere:  Martin Pettersen, Said Hussain Khawajazada,
  */
-
-
 
 "use client";
 import { FaFacebook, FaInstagram, FaTwitter } from "react-icons/fa";
