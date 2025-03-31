@@ -50,6 +50,8 @@ model User {
   completedGameScores CompletedGameScore[]
   organizedTournaments Tournament[] @relation("TournamentOrganizer") 
   tournamentScores TournamentScore[] 
+  tournamentGameParticipations TournamentGameParticipation[] @relation("UserTournamentGameParticipations")
+  tournamentGameScores         TournamentGameScore[]         @relation("UserTournamentGameScores")
 }
 
 model Club {
@@ -394,8 +396,9 @@ model Tournament {
   club            Club?           @relation(fields: [clubId], references: [id])
   
   // Deltakerrelasjon
-  participants    User[]          @relation("TournamentParticipants")
-  
+  participants    User[]          @relation("TournamentParticipants") 
+  gameSessions TournamentGameSession[] @relation("TournamentGameSessions")
+
   // Resultatrelasjon (enkel)
   scores          TournamentScore[]
   
@@ -417,4 +420,50 @@ model TournamentScore {
   
   submittedAt   DateTime   @default(now())
   isVerified    Boolean    @default(false)
+}
+
+
+// Representerer en spesifikk runde/økt innenfor en turnering
+model TournamentGameSession {
+  id            String     @id @default(uuid())
+  tournamentId  String
+  tournament    Tournament @relation("TournamentGameSessions", fields: [tournamentId], references: [id])
+  roundNumber   Int        // F.eks. 1, 2 (hvis turneringen har flere runder)
+  status        String     @default("waiting") // waiting, inProgress, completed
+  createdAt     DateTime   @default(now())
+  expiresAt     DateTime   // Når sesjonen utløper
+
+  participants TournamentGameParticipation[]
+  scores       TournamentGameScore[]
+
+  @@unique([tournamentId, roundNumber]) // Én sesjon per runde i turneringen
+}
+
+// Representerer en spillers deltakelse i en spesifikk turneringsrunde
+model TournamentGameParticipation {
+  id                String              @id @default(uuid())
+  gameSessionId     String
+  gameSession       TournamentGameSession @relation(fields: [gameSessionId], references: [id], onDelete: Cascade)
+  playerId          String              // Kobling til User-modellen
+  player            User                @relation("UserTournamentGameParticipations", fields: [playerId], references: [id])
+  isReady           Boolean             @default(false)
+  // Kan legge til score-relatert info her hvis det forenkler, f.eks. currentHole
+
+  @@unique([gameSessionId, playerId])
+}
+
+
+// Lagrer score per hull for en spiller i en turneringsrunde
+model TournamentGameScore {
+  id            String    @id @default(uuid())
+  gameSessionId String
+  gameSession   TournamentGameSession @relation(fields: [gameSessionId], references: [id], onDelete: Cascade)
+  playerId      String
+  player        User      @relation("UserTournamentGameScores", fields: [playerId], references: [id])
+  holeNumber    Int
+  strokes       Int
+  obCount       Int
+  createdAt     DateTime  @default(now())
+
+  @@unique([gameSessionId, playerId, holeNumber])
 }
