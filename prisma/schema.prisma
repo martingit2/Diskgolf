@@ -52,6 +52,7 @@ model User {
   tournamentScores TournamentScore[] 
   tournamentGameParticipations TournamentGameParticipation[] @relation("UserTournamentGameParticipations")
   tournamentGameScores         TournamentGameScore[]         @relation("UserTournamentGameScores")
+  authoredNews NewsArticle[] @relation("AuthoredNews")
 }
 
 model Club {
@@ -467,4 +468,43 @@ model TournamentGameScore {
   createdAt     DateTime  @default(now())
 
   @@unique([gameSessionId, playerId, holeNumber])
+}
+
+model Category {
+  id          String   @id @default(uuid())
+  name        String   @unique // Navn på kategorien (f.eks. "Turneringer", "Klubbnytt")
+  slug        String   @unique // URL-vennlig versjon av navnet (f.eks. "turneringer")
+  description String?  // Valgfri beskrivelse
+
+  // Relasjon til NewsArticle (mange-til-mange)
+  articles    NewsArticle[]
+
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+
+// --- OPPDATERT MODELL: NewsArticle ---
+model NewsArticle {
+  id          String   @id @default(uuid())
+  title       String   // Tittel på nyhetsartikkelen
+  content     String   @db.Text // Innholdet (bruk Text for lengre tekster, egnet for RTE HTML)
+  imageUrl    String?  // Valgfri URL til et bilde
+  authorId    String   // ID til brukeren som skrev artikkelen
+  author      User     @relation("AuthoredNews", fields: [authorId], references: [id]) // Relasjon til User
+  isPublished Boolean  @default(false) // Status for publisering
+  publishedAt DateTime? // Tidspunkt for publisering (valgfritt)
+  createdAt   DateTime @default(now()) // Tidspunkt for opprettelse
+  updatedAt   DateTime @updatedAt // Tidspunkt for siste oppdatering
+
+
+  excerpt     String?  // Valgfritt: Generert utdrag for forhåndsvisning
+
+  // Mange-til-mange relasjon til Category
+  categories  Category[]
+
+  // --- INDEKSER ---
+  @@index([authorId])
+  @@index([isPublished, createdAt(sort: Desc)]) // Eksisterende: For publiserte nyheter
+  @@index([title]) 
 }
