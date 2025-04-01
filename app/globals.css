@@ -110,4 +110,71 @@
 }
 
 
+.clamp-2 {
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
 
+
+/* Styling for Swiper navigation arrows in BaneCarousel */
+.bane-carousel-swiper .swiper-button-next::after,
+.bane-carousel-swiper .swiper-button-prev::after {
+  color: #4ade80; /* Tailwind's green-400 (en lys grønnfarge) */
+
+  /* font-size: 1.8rem; */
+  transition: color 0.2s ease-in-out; /* Legg til en myk overgang */
+}
+
+
+.bane-carousel-swiper .swiper-button-next:hover::after,
+.bane-carousel-swiper .swiper-button-prev:hover::after {
+  color: #22c55e; /* Tailwind's green-500 (litt mørkere) */
+}
+
+
+/* Sikre at pagination-prikkene ikke får pilfargen (i tilfelle konflikt) */
+.bane-carousel-swiper .swiper-pagination-bullet {
+    background-color: #16a34a; /* Tilbake til din opprinnelige pagination-farge (green-600) */
+}
+.bane-carousel-swiper .swiper-pagination-bullet-active {
+    background-color: #15803d; /* Kanskje en mørkere grønn for aktiv (green-700) */
+}
+
+
+/* === Styling for Swiper controls in ReviewCarousel === */
+
+/* -- Navigasjonspiler -- */
+.review-carousel-swiper .swiper-button-next::after,
+.review-carousel-swiper .swiper-button-prev::after {
+  color: #4ade80; /* Tailwind's green-400 (lys grønn) */
+  font-size: 1.5rem; /* Juster størrelse om ønskelig */
+  transition: color 0.2s ease-in-out;
+}
+
+.review-carousel-swiper .swiper-button-next:hover::after,
+.review-carousel-swiper .swiper-button-prev:hover::after {
+  color: #22c55e; /* Tailwind's green-500 (litt mørkere) */
+}
+
+/* -- Pagination Prikker (Overstyrer evt. standard/renderBullet hvis nødvendig) -- */
+/* Disse reglene sikrer at prikkene matcher BaneCarousel hvis renderBullet ikke er nok */
+.review-carousel-swiper .swiper-pagination-bullet {
+    background-color: #16a34a !important; /* green-600 */
+    opacity: 0.7; /* Litt svakere for inaktive */
+    transition: background-color 0.2s ease-in-out, opacity 0.2s ease-in-out;
+}
+
+.review-carousel-swiper .swiper-pagination-bullet-active {
+    background-color: #15803d !important; /* green-700 */
+    opacity: 1; /* Full opasitet for aktiv */
+}
+
+
+.review-carousel-swiper .swiper-button-next,
+.review-carousel-swiper .swiper-button-prev {
+    /* padding: 1rem; */ /* Uncomment og juster ved behov */
+    /* background-color: rgba(255, 255, 255, 0.5); */ /* Eksempel: svak bakgrunn */
+    /* border-radius: 50%; */
+}

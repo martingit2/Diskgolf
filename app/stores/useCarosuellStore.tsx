@@ -5,7 +5,7 @@ export type Course = {
   name: string;
   location: string;
   description: string;
-  par: number;
+  par?: number; // Gjør valgfri hvis den ikke alltid finnes
   image?: string;
   difficulty?: string;
   averageRating: number;
@@ -15,6 +15,7 @@ export type Course = {
   baskets?: { latitude: number; longitude: number }[];
   club?: { name: string; logoUrl: string };
   createdAt?: string; // For nyeste baner
+  numHoles?: number; 
 };
 
 type CarouselStore = {

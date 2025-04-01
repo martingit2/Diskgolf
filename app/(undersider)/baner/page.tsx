@@ -3,101 +3,151 @@
 import { useEffect, useState } from "react";
 import { Input } from "@/components/ui/input";
 import Map from "@/components/Map";
-import { toggleFavorite } from "@/app/actions/favorites";
+import { toggleFavorite } from "@/app/actions/favorites"; // Server action for toggling
+import { getCurrentUserFavorites } from "@/app/actions/get-user-favorites"; // Server action for fetching initial favorites
 import { CourseCard } from "@/components/CourseCard";
+
+// Definer Course-typen (samme som før)
+type Course = {
+  id: string;
+  name: string;
+  location: string;
+  description: string;
+  par: number;
+  image?: string;
+  difficulty?: string;
+  averageRating: number;
+  totalReviews: number;
+  holes?: { distance: number }[];
+  totalDistance?: number;
+  baskets?: { latitude: number; longitude: number }[];
+  club?: { name: string; logoUrl: string };
+  numHoles?: number; // Lagt til her for klarhet, selv om den settes i map
+};
 
 export default function BaneoversiktPage() {
   const [courses, setCourses] = useState<Course[]>([]);
   const [searchTerm, setSearchTerm] = useState("");
   const [difficultyFilter, setDifficultyFilter] = useState("");
-  const [locationFilter, setLocationFilter] = useState(""); // Ny state for sted
-  const [favorites, setFavorites] = useState<string[]>([]);
+  const [locationFilter, setLocationFilter] = useState("");
+  const [favorites, setFavorites] = useState<string[]>([]); // Holder ID-ene til favorittbanene
   const [sortBy, setSortBy] = useState("");
   const [locations, setLocations] = useState<string[]>([]);
+  const [isLoading, setIsLoading] = useState(true); // State for å vise lasting av baner/favoritter
+  const [togglingFavoriteId, setTogglingFavoriteId] = useState<string | null>(null); // NY STATE: Holder ID-en til banen som toggles
 
-  type Course = {
-    id: string;
-    name: string;
-    location: string;
-    description: string;
-    par: number;
-    image?: string;
-    difficulty?: string;
-    averageRating: number;
-    totalReviews: number;
-    holes?: { distance: number }[];
-    totalDistance?: number;
-    baskets?: { latitude: number; longitude: number }[];
-    club?: { name: string; logoUrl: string };
-  };
-
+  // Hent baner og initielle favoritter
   useEffect(() => {
-    const fetchCourses = async () => {
+    const fetchData = async () => {
+      setIsLoading(true); // Start lasting
       try {
-        const response = await fetch("/api/courses");
-        const data = await response.json();
+        // Hent baner
+        const courseResponse = await fetch("/api/courses");
+        const courseData = await courseResponse.json();
 
-        if (!response.ok) {
-          throw new Error(data.error || "Failed to fetch courses");
+        if (!courseResponse.ok) {
+          throw new Error(courseData.error || "Failed to fetch courses");
         }
 
-        const uniqueLocations = Array.from(new Set(data.map((course: Course) => course.location.split(",")[0])));
+        const uniqueLocations = Array.from(
+          new Set(courseData.map((course: Course) => course.location.split(",")[0]))
+        );
         setLocations(uniqueLocations as string[]);
 
-        const formattedData = data.map((course: Course) => ({
+        const formattedData = courseData.map((course: Course) => ({
           ...course,
           holes: course.holes?.map((hole) => ({ distance: hole.distance ?? 0 })) ?? [],
           numHoles: course.baskets?.length ?? 0,
         }));
-
         setCourses(formattedData);
+
+        // Hent brukerens favoritter
+        const favResult = await getCurrentUserFavorites();
+        if (favResult.data) {
+          setFavorites(favResult.data);
+        } else {
+          console.error("Could not fetch initial favorites:", favResult.error);
+          // Vurder å vise en feilmelding til brukeren her
+        }
+
       } catch (err) {
-        console.error("Feil ved henting av kurs:", err);
+        console.error("Feil ved henting av data:", err);
+        // Vurder å vise en feilmelding til brukeren her
+      } finally {
+        setIsLoading(false); // Fullfør lasting
       }
     };
 
-    fetchCourses();
-  }, []);
+    fetchData();
+  }, []); // Kjører kun én gang når komponenten mountes
 
+  // Håndter favoritt-toggling
   const handleToggleFavorite = async (courseId: string) => {
-    const result = await toggleFavorite(courseId);
-    if (result.success) {
-      setFavorites(result.favorites);
-    } else {
-      console.error(result.error);
+    // Ikke gjør noe hvis en annen favoritt allerede toggles
+    if (togglingFavoriteId) return;
+
+    setTogglingFavoriteId(courseId); // Marker denne banen som "toggler"
+
+    try {
+      const result = await toggleFavorite(courseId); // Kall server action
+
+      if (result.success && result.favorites) {
+        // Oppdater favorittlisten lokalt med den nye listen fra serveren
+        setFavorites(result.favorites);
+      } else {
+        console.error("Failed to toggle favorite:", result.error);
+        // Valgfritt: Vis feilmelding til brukeren
+        // Siden vi henter initielle favoritter, kan vi la være å reversere UI
+        // med mindre feilen er kritisk.
+      }
+    } catch (error) {
+        console.error("Error calling toggleFavorite action:", error);
+         // Valgfritt: Vis feilmelding til brukeren
+    } finally {
+      setTogglingFavoriteId(null); // Nullstill "toggler"-status uansett resultat
     }
   };
 
+  // Filtrer og sorter baner (samme logikk som før)
   const filteredCourses = courses.filter(
     (course) =>
-      course.name.toLowerCase().includes(searchTerm.toLowerCase()) && // Søk etter banenavn
-      (difficultyFilter === "" || course.difficulty === difficultyFilter) && // Filtrer på vanskelighetsgrad
-      (locationFilter === "" || course.location.split(",")[0] === locationFilter) // Filtrer på sted
+      course.name.toLowerCase().includes(searchTerm.toLowerCase()) &&
+      (difficultyFilter === "" || course.difficulty === difficultyFilter) &&
+      (locationFilter === "" || course.location.split(",")[0] === locationFilter)
   );
 
   const sortedCourses = [...filteredCourses].sort((a, b) => {
     if (sortBy === "popular") {
-      return b.totalReviews - a.totalReviews;
+      return (b.totalReviews ?? 0) - (a.totalReviews ?? 0); // Bruk ?? 0 for sikkerhet
     }
     if (sortBy === "highestRated") {
-      if (a.averageRating === 5 && b.averageRating < 5) return -1;
-      if (b.averageRating === 5 && a.averageRating < 5) return 1;
-      if (a.averageRating === 5 && b.averageRating === 5) {
-        return b.totalReviews - a.totalReviews;
+       const ratingA = a.averageRating ?? 0;
+       const ratingB = b.averageRating ?? 0;
+       const reviewsA = a.totalReviews ?? 0;
+       const reviewsB = b.totalReviews ?? 0;
+
+      // Prioriter 5 stjerner
+      if (ratingA === 5 && ratingB < 5) return -1;
+      if (ratingB === 5 && ratingA < 5) return 1;
+      // Hvis begge er 5 stjerner, sorter etter flest reviews
+      if (ratingA === 5 && ratingB === 5) {
+        return reviewsB - reviewsA;
       }
-      if (a.averageRating !== b.averageRating) {
-        return b.averageRating - a.averageRating;
+      // Ellers, sorter etter rating (høyest først)
+      if (ratingA !== ratingB) {
+        return ratingB - ratingA;
       }
-      return b.totalReviews - a.totalReviews;
+      // Hvis rating er lik (og ikke 5), sorter etter flest reviews
+      return reviewsB - reviewsA;
     }
-    return 0;
+    return 0; // Ingen sortering valgt
   });
 
   return (
     <div className="max-w-6xl mx-auto py-10 px-4">
       <h1 className="text-3xl font-bold mb-6 text-center text-gray-900">Baneoversikt</h1>
 
-      {/* 📌 Søkefelt og filtre */}
+      {/* 📌 Søkefelt og filtre (uendret) */}
       <div className="flex flex-col md:flex-row gap-4 mb-6">
         {/* Søkefelt */}
         <Input
@@ -145,20 +195,31 @@ export default function BaneoversiktPage() {
         </select>
       </div>
 
-      {/* 📌 Kart */}
-      <Map />
+      {/* 📌 Kart (uendret) */}
+      <Map /> {/* Antar Map ikke trenger favorittdata direkte */}
 
       {/* 📌 Baneoversikt */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mt-6 items-start">
-        {sortedCourses.map((course) => (
-          <CourseCard
-            key={course.id}
-            course={course}
-            isFavorite={favorites.includes(course.id)}
-            onToggleFavorite={handleToggleFavorite}
-          />
-        ))}
-      </div>
+      {isLoading ? (
+        // Vis en enkel lastemelding eller skeletons hvis du har
+        <div className="text-center py-10">Laster baner...</div>
+      ) : sortedCourses.length === 0 ? (
+        <div className="text-center py-10 text-gray-600">Ingen baner funnet med de valgte filtrene.</div>
+      ) : (
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mt-6 items-start">
+          {sortedCourses.map((course) => (
+            <CourseCard
+              key={course.id}
+              course={course}
+              // Sjekk om denne banens ID er i favorittlisten
+              isFavorite={favorites.includes(course.id)}
+              // Send med funksjonen for å toggle
+              onToggleFavorite={handleToggleFavorite}
+              // Send med status for om *denne spesifikke* banen toggles
+              isToggling={togglingFavoriteId === course.id}
+            />
+          ))}
+        </div>
+      )}
     </div>
   );
 }
