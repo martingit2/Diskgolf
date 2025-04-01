@@ -1,11 +1,12 @@
-/** 
- * Filnavn: nextauth.ts
- * Beskrivelse: NextAuth-konfigurasjon for håndtering av autentisering i DiskGolf-applikasjonen.
- * Inneholder import av autentiseringskonfigurasjonen og initialiserer NextAuth.
+/**
+ * pages/api/auth/[...nextauth].ts
+ * Filnavn: [...nextauth].ts (navnet er viktig for Next.js)
+ * Beskrivelse: NextAuth API rutehandler. Bruker den komplette authOptions-konfigurasjonen fra rotens auth.ts.
  * Utvikler: Martin Pettersen
  */
 
 import NextAuth from "next-auth";
-import authConfig from "@/auth.config";
 
-export default NextAuth(authConfig);
+import { authOptions } from "@/auth"; 
+
+export default NextAuth(authOptions);

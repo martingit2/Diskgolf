@@ -54,7 +54,11 @@ const MapComponent = () => {
         setCourses(data);
       } catch (err) {
         console.error("Feil ved henting av kursdata:", err);
-        setError("Kunne ikke laste inn baner");
+        if (err instanceof Error) {
+            setError(`Kunne ikke laste inn baner: ${err.message}`);
+        } else {
+            setError("En ukjent feil oppstod under lasting av baner");
+        }
       } finally {
         setLoading(false);
       }
@@ -91,9 +95,12 @@ const MapComponent = () => {
 
             return (
               <Marker key={course.id} position={[course.latitude, course.longitude]} icon={greenMarkerIcon}>
-                <Popup>
-                  <Card className="w-72 shadow-md border border-gray-200 rounded-lg overflow-hidden">
-                    <div className="relative w-full h-40">
+                {/* maxWidth prop på Popup for å tillate bredere innhold */}
+                <Popup maxWidth={400}>
+                  {/* max-w-80 (320px) på kortet */}
+                  <Card className="max-w-80 shadow-md border border-gray-200 rounded-lg overflow-hidden">
+                    {/* Høyde beholdes på h-32 */}
+                    <div className="relative w-full h-32">
                       <Image
                         src={
                           course.image ||
@@ -156,7 +163,7 @@ const MapComponent = () => {
                       </div>
 
                       {/* Knapper med spacing */}
-                      <div className="mt-5 flex flex-col gap-3">
+                      <div className="mt-4 flex flex-col gap-3">
                         <Button
                           className="w-full bg-gray-900 text-white hover:bg-gray-700 transition-all flex items-center gap-2 justify-center"
                           onClick={() => router.push(`/courses/${course.id}`)}
