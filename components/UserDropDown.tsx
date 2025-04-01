@@ -27,6 +27,7 @@ import { useState, useRef, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { User } from "@/app/types";
 import Image from "next/image";
+import { signOut } from "next-auth/react";
 
 function UserDropdown({
   isMobile,
@@ -148,15 +149,18 @@ function UserDropdown({
                   Innstillinger
                 </button>
                 <button
-                  onClick={() => {
-                    closeDropdown();
-                    // Legg til din logout-funksjon her
-                    router.push("/api/auth/signout");
-                  }}
-                  className="group flex w-full items-center px-4 py-2 text-sm text-gray-900 hover:bg-gray-100"
-                >
-                  Logg ut
-                </button>
+    onClick={async () => { // Gjør gjerne onClick async hvis du vil 'await' signOut
+        closeDropdown();
+        // Kall signOut() - den tar seg av navigering og API-kall
+        // Du kan spesifisere en callbackUrl for å sende brukeren et sted etterpå
+        await signOut({ callbackUrl: '/' }); // Sender brukeren til forsiden etter utlogging
+        // Alternativt, uten spesifikk callbackUrl, vil den bruke standard (ofte forsiden):
+        // await signOut();
+    }}
+    className="group flex w-full items-center px-4 py-2 text-sm text-gray-900 hover:bg-gray-100"
+>
+    Logg ut
+</button>
               </>
             ) : (
               <>

@@ -230,7 +230,7 @@ model TwoFactorConfirmation {
 model Membership {
   userId  String
   clubId  String
-  user    User   @relation(fields: [userId], references: [id])
+  user    User   @relation(fields: [userId], references: [id], onDelete: Cascade)
   club    Club   @relation(fields: [clubId], references: [id])
   isPrimary Boolean @default(false) 
   @@id([userId, clubId]) // Sett en sammensatt primærnøkkel
@@ -359,7 +359,7 @@ model CompletedGameScore {
   courseId  String
   course    Course  @relation(fields: [courseId], references: [id])
   userId    String? // Gjør optional for konsistens
-  user      User?   @relation(fields: [userId], references: [id])
+  user      User?   @relation(fields: [userId], references: [id], onDelete: Cascade)
   playerName String // Legg til for å lagre gjestenavn
   holeNumber Int
   strokes    Int
@@ -392,7 +392,7 @@ model Tournament {
   
   // Organisasjonsrelasjoner
   organizerId     String
-  organizer       User            @relation("TournamentOrganizer", fields: [organizerId], references: [id])
+  organizer       User            @relation("TournamentOrganizer", fields: [organizerId], references: [id], onDelete: Restrict)
   clubId          String?
   club            Club?           @relation(fields: [clubId], references: [id])
   
@@ -412,7 +412,7 @@ model TournamentScore {
   tournamentId  String
   tournament    Tournament @relation(fields: [tournamentId], references: [id])
   playerId      String
-  player        User       @relation(fields: [playerId], references: [id])
+  player        User       @relation(fields: [playerId], references: [id], onDelete: Cascade) 
   
   // Enkel scorelagring - kan utvides senere
   totalScore    Int        // Totalt antall kast (inkl OB)
@@ -447,7 +447,7 @@ model TournamentGameParticipation {
   gameSessionId     String
   gameSession       TournamentGameSession @relation(fields: [gameSessionId], references: [id], onDelete: Cascade)
   playerId          String              // Kobling til User-modellen
-  player            User                @relation("UserTournamentGameParticipations", fields: [playerId], references: [id])
+  player            User                @relation("UserTournamentGameParticipations", fields: [playerId], references: [id], onDelete: Cascade)
   isReady           Boolean             @default(false)
   // Kan legge til score-relatert info her hvis det forenkler, f.eks. currentHole
 
@@ -461,7 +461,7 @@ model TournamentGameScore {
   gameSessionId String
   gameSession   TournamentGameSession @relation(fields: [gameSessionId], references: [id], onDelete: Cascade)
   playerId      String
-  player        User      @relation("UserTournamentGameScores", fields: [playerId], references: [id])
+  player        User      @relation("UserTournamentGameScores", fields: [playerId], references: [id], onDelete: Cascade)
   holeNumber    Int
   strokes       Int
   obCount       Int
@@ -491,7 +491,7 @@ model NewsArticle {
   content     String   @db.Text // Innholdet (bruk Text for lengre tekster, egnet for RTE HTML)
   imageUrl    String?  // Valgfri URL til et bilde
   authorId    String   // ID til brukeren som skrev artikkelen
-  author      User     @relation("AuthoredNews", fields: [authorId], references: [id]) // Relasjon til User
+  author      User     @relation("AuthoredNews", fields: [authorId], references: [id], onDelete: Restrict)
   isPublished Boolean  @default(false) // Status for publisering
   publishedAt DateTime? // Tidspunkt for publisering (valgfritt)
   createdAt   DateTime @default(now()) // Tidspunkt for opprettelse

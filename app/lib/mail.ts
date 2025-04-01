@@ -1,89 +1,114 @@
-/** 
+/**
  * Filnavn: mail.ts
- * Beskrivelse: Hjelpefunksjoner for å sende e-poster til brukere for tofaktorautentisering, 
- * passordtilbakestilling og e-postbekreftelse. Bruker Resend API for e-postutsending.
+ * Beskrivelse: Hjelpefunksjoner for å sende e-poster til brukere for tofaktorautentisering,
+ * passordtilbakestilling og e-postbekreftelse. Bruker Resend API for e-postutsending
+ * og inline margin på <p>-tags for pålitelig linjeavstand.
  * Utvikler: Martin Pettersen
  */
-
 
 import { Resend } from "resend";
 
 if (!process.env.RESEND_API_KEY) {
-  console.log("RESEND_API_KEY:", process.env.RESEND_API_KEY);
-  throw new Error("RESEND_API_KEY mangler. Sjekk .env-filen.");
+  console.error("FATAL ERROR: RESEND_API_KEY mangler. Sjekk .env-filen.");
+  throw new Error("RESEND_API_KEY er ikke satt. Kan ikke sende e-poster.");
 }
 
 const resend = new Resend(process.env.RESEND_API_KEY);
 
-const domain = process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000";
+// Base URL setup (samme som før)
+const protocol =
+  process.env.NODE_ENV === "production" ||
+  (process.env.NEXT_PUBLIC_APP_URL &&
+    !process.env.NEXT_PUBLIC_APP_URL.startsWith("http://localhost"))
+    ? "https"
+    : "http";
+const domain = process.env.NEXT_PUBLIC_APP_URL
+  ? process.env.NEXT_PUBLIC_APP_URL.replace(/^https?:\/\//, "")
+  : "localhost:3000";
+const baseUrl = `${protocol}://${domain}`;
+const fromEmail = `konto@epost.diskgolf.app`; // Beholdt din originale from-adresse
+const appName = "DiskGolf App";
+
+// Stil for <p>-tagger for å sikre avstand (inline)
+const pStyle = 'style="margin: 0 0 1em 0; padding: 0; font-size: 16px; line-height: 1.5;"'; // 1em bunnmarg, nullstiller andre
+const linkStyle = 'style="color: #2ecc71; text-decoration: underline; font-weight: bold;"'; // Stil for lenker
+const codeStyle = 'style="font-size: 1.3em; color: #2ecc71; font-weight: bold;"'; // Stil for 2FA kode
 
 export const sendTwoFactorTokenEmail = async (email: string, token: string) => {
   try {
     await resend.emails.send({
-      from: "konto@epost.diskgolf.app",
+      from: fromEmail,
       to: email,
-      subject: "Din sikkerhetskode for tofaktorautentisering",
+      subject: `[${appName}] Din sikkerhetskode`,
       html: `
-        <p>Hei,</p>
-        <p>Din sikkerhetskode for å logge inn er:</p>
-        <h2 style="color: #2ecc71;">${token}</h2>
-        <p>Vennligst skriv inn denne koden i innloggingsskjemaet for å fullføre innloggingen.</p>
-        <p>Hvis du ikke har forespurt denne koden, kan du se bort fra denne e-posten.</p>
-        <p>Vennlig hilsen,<br />DiscGolf-teamet</p>
+        <div style="font-family: Arial, sans-serif; max-width: 600px; margin: auto; padding: 20px; border: 1px solid #eee; border-radius: 5px;">
+          <p ${pStyle}>Hei,</p>
+          <p ${pStyle}>Din sikkerhetskode for å logge inn på ${appName} er:</p>
+          <p ${pStyle}><strong ${codeStyle}>${token}</strong></p>
+          <p ${pStyle}>Vennligst skriv inn denne koden i innloggingsskjemaet for å fullføre innloggingen. Koden er gyldig i 5 minutter.</p>
+          <p ${pStyle}>Hvis du ikke har forespurt denne koden, kan du se bort fra denne e-posten.</p>
+          <p ${pStyle}>Vennlig hilsen,<br />${appName} Team</p>
+        </div>
       `,
     });
-    console.log("2FA-kode sendt til:", email);
+    console.log(`INFO: 2FA-kode sendt til ${email}`);
   } catch (error) {
-    console.error("Feil ved sending av 2FA-kode:", error);
+    console.error(`ERROR: Kunne ikke sende 2FA-kode til ${email}:`, error);
     throw new Error("Kunne ikke sende 2FA-kode. Prøv igjen senere.");
   }
 };
 
 export const sendPasswordResetEmail = async (email: string, token: string) => {
-  const resetLink = `${domain}/auth/new-password?token=${token}`;
-  console.log("Generert tilbakestillingslenke:", resetLink);
+  const resetLink = `${baseUrl}/auth/new-password?token=${token}`;
+  console.log("DEBUG: Generert tilbakestillingslenke:", resetLink);
 
   try {
     await resend.emails.send({
-      from: "konto@epost.diskgolf.app",
+      from: fromEmail,
       to: email,
-      subject: "Tilbakestill passordet ditt",
+      subject: `[${appName}] Tilbakestill passordet ditt`,
       html: `
-        <p>Hei,</p>
-        <p>Vi har mottatt en forespørsel om å tilbakestille passordet ditt.</p>
-        <p>Klikk på lenken nedenfor for å tilbakestille passordet:</p>
-        <p><a href="${resetLink}" style="color: #2ecc71; text-decoration: none;">Tilbakestill passordet ditt</a></p>
-        <p>Lenken er gyldig i 24 timer. Hvis du ikke har bedt om dette, kan du se bort fra denne e-posten.</p>
-        <p>Vennlig hilsen,<br />DiscGolf-teamet</p>
+        <div style="font-family: Arial, sans-serif; max-width: 600px; margin: auto; padding: 20px; border: 1px solid #eee; border-radius: 5px;">
+          <p ${pStyle}>Hei,</p>
+          <p ${pStyle}>Vi har mottatt en forespørsel om å tilbakestille passordet for din konto hos ${appName}.</p>
+          <p ${pStyle}>Klikk på lenken nedenfor for å tilbakestille passordet:</p>
+          <p ${pStyle}><a href="${resetLink}" ${linkStyle}>Tilbakestill passordet ditt</a></p>
+          <p ${pStyle}>Lenken er gyldig i 1 time.</p>
+          <p ${pStyle}>Hvis du ikke har bedt om dette, kan du trygt se bort fra denne e-posten.</p>
+          <p ${pStyle}>Vennlig hilsen,<br />${appName} Team</p>
+        </div>
       `,
     });
-    console.log("Tilbakestillings-e-post sendt til:", email);
+    console.log(`INFO: Passordtilbakestilling sendt til ${email}`);
   } catch (error) {
-    console.error("Feil ved sending av tilbakestillings-e-post:", error);
+    console.error(`ERROR: Kunne ikke sende tilbakestilling til ${email}:`, error);
     throw new Error("Kunne ikke sende tilbakestillingslenke. Prøv igjen senere.");
   }
 };
 
 export const sendVerificationEmail = async (email: string, token: string) => {
-  const confirmLink = `${domain}/auth/new-verification?token=${token}`;
+  const confirmLink = `${baseUrl}/auth/new-verification?token=${token}`;
+  console.log("DEBUG: Generert bekreftelseslenke:", confirmLink);
 
   try {
     await resend.emails.send({
-      from: "konto@epost.diskgolf.app",
+      from: fromEmail,
       to: email,
-      subject: "Bekreft e-postadressen din",
+      subject: `[${appName}] Bekreft din e-postadresse`,
       html: `
-        <p>Hei,</p>
-        <p>Takk for at du registrerte deg hos DiscGolf!</p>
-        <p>Klikk på lenken nedenfor for å bekrefte e-postadressen din:</p>
-        <p><a href="${confirmLink}" style="color: #2ecc71; text-decoration: none;">Bekreft e-postadressen</a></p>
-        <p>Hvis du ikke har registrert deg hos oss, kan du se bort fra denne e-posten.</p>
-        <p>Vennlig hilsen,<br />DiscGolf-teamet</p>
+        <div style="font-family: Arial, sans-serif; max-width: 600px; margin: auto; padding: 20px; border: 1px solid #eee; border-radius: 5px;">
+          <p ${pStyle}>Hei,</p>
+          <p ${pStyle}>Takk for at du registrerte deg hos ${appName}!</p>
+          <p ${pStyle}>Klikk på lenken nedenfor for å bekrefte e-postadressen din og aktivere kontoen:</p>
+          <p ${pStyle}><a href="${confirmLink}" ${linkStyle}>Bekreft e-postadressen</a></p>
+          <p ${pStyle}>Hvis du ikke har registrert deg hos oss, kan du se bort fra denne e-posten.</p>
+          <p ${pStyle}>Vennlig hilsen,<br />${appName} Team</p>
+        </div>
       `,
     });
-    console.log("Bekreftelses-e-post sendt til:", email);
+    console.log(`INFO: E-postbekreftelse sendt til ${email}`);
   } catch (error) {
-    console.error("Feil ved sending av bekreftelses-e-post:", error);
+    console.error(`ERROR: Kunne ikke sende bekreftelse til ${email}:`, error);
     throw new Error("Kunne ikke sende bekreftelseslenke. Prøv igjen senere.");
   }
 };
