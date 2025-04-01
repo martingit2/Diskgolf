@@ -1,84 +1,107 @@
 // app/api/tournaments/[id]/standings/route.ts
-import { PrismaClient } from "@prisma/client";
+import { PrismaClient, TournamentGameScore } from "@prisma/client"; // Importer TournamentGameScore
 import { NextResponse } from "next/server";
-// Autentisering er ikke nødvendig for dette offentlige endepunktet
 
 const prisma = new PrismaClient();
 
+// Definer en type for det beregnede resultatet per spiller
+interface PlayerStandings {
+    playerId: string;
+    playerName: string;
+    playerImage: string | null;
+    totalScore: number;
+    totalOb: number;
+    // Vi trenger ikke strokes per hull her, men kan legge til hvis nødvendig
+}
+
 export async function GET(
     request: Request,
-    // --- KORRIGERT TYPESIGNATUR HER ---
     { params }: { params: Promise<{ id: string }> }
 ) {
-    // --- LØS PROMISET HER ---
     const awaitedParams = await params;
-    const tournamentId = awaitedParams.id; // Bruk den awaited verdien
+    const tournamentId = awaitedParams.id;
 
-    // Valider at tournamentId finnes etter await
     if (!tournamentId) {
-        return NextResponse.json(
-            { error: "Mangler turnerings-ID." },
-            { status: 400 }
-        );
+        return NextResponse.json({ error: "Mangler turnerings-ID." }, { status: 400 });
     }
 
     try {
-        // Bruk tournamentId fra awaitedParams
-        // Sjekk om turneringen finnes (god praksis, selv om ikke strengt nødvendig for å hente scores)
-        const tournamentExists = await prisma.tournament.count({
-             where: { id: tournamentId },
-             // Optional: Sjekk også status hvis du kun vil vise standings for COMPLETED/IN_PROGRESS
-             // where: { id: tournamentId, status: { in: ['COMPLETED', 'IN_PROGRESS']} }
-        });
-        if (tournamentExists === 0) {
-             return NextResponse.json({ error: "Turnering ikke funnet." }, { status: 404 });
-        }
-
-        // Hent lagrede scores for den gitte turneringen
-        const standings = await prisma.tournamentScore.findMany({
+        // 1. Finn den (eneste) spill-sesjonen for denne turneringen
+        const gameSession = await prisma.tournamentGameSession.findFirst({
             where: { tournamentId: tournamentId },
+            // Trenger bare ID for å hente scores, men inkluderer relasjoner for spillerinfo
             include: {
-                player: { // Inkluder spillerinfo for visning
-                    select: {
-                        id: true,
-                        name: true,
-                        image: true // Inkluder profilbilde
-                    }
-                }
+                 tournament: { // For å sjekke eksistens
+                      select: { id: true }
+                 },
+                 participants: { // For å hente spillerinfo
+                      include: {
+                           player: { select: { id: true, name: true, image: true } }
+                      }
+                 }
             },
-            orderBy: [ // Sorteringskriterier for rangering
-                 { totalScore: "asc" }, // Lavest totalsum først
-                 { totalOb: "asc" },    // Færrest OB ved lik score
-                 { player: { name: 'asc' }} // Alfabetisk på navn ved helt lik score/OB
-            ]
+            // Hvis det mot formodning skulle være flere, ta den siste (høyest rundeNr)
+            orderBy: { roundNumber: 'desc' }
         });
 
-        // Returner tom liste hvis ingen scores er funnet (bedre enn 404)
-        if (standings.length === 0) {
-             return NextResponse.json([]);
+        // Sjekk om turnering og sesjon finnes
+        if (!gameSession || !gameSession.tournament) {
+            return NextResponse.json({ error: "Turnering eller tilhørende spillrunde ikke funnet." }, { status: 404 });
         }
 
-        // Formater data med rangering
-        let currentRank = 0;
-        const formattedStandings = standings.map((score, index) => {
-            // Bestem rangering (inkludert delte plasser)
-            if (index === 0 || score.totalScore > standings[index - 1].totalScore || score.totalOb > standings[index - 1].totalOb) {
-                currentRank = index + 1; // Ny rangering hvis score eller OB er dårligere enn forrige
+        // 2. Hent alle scores for den funnede spill-sesjonen
+        const sessionScores: TournamentGameScore[] = await prisma.tournamentGameScore.findMany({
+            where: { gameSessionId: gameSession.id },
+        });
+
+        // 3. Beregn totale resultater per spiller
+        const playerResults: { [playerId: string]: Omit<PlayerStandings, 'playerName' | 'playerImage'> } = {};
+
+        for (const score of sessionScores) {
+            if (!playerResults[score.playerId]) {
+                playerResults[score.playerId] = { playerId: score.playerId, totalScore: 0, totalOb: 0 };
             }
+            playerResults[score.playerId].totalOb += score.obCount;
+            // TotalScore = summen av (strokes + obCount) for alle hull
+            playerResults[score.playerId].totalScore += (score.strokes + score.obCount);
+        }
+
+        // 4. Kombiner med spillerinfo og lag en liste
+        const resultsWithInfo: PlayerStandings[] = gameSession.participants.map(participant => {
+            const stats = playerResults[participant.playerId];
             return {
-                rank: currentRank, // Legg til rangering
-                playerId: score.player.id,
-                playerName: score.player.name || `Spiller ${score.player.id.substring(0, 6)}`, // Fallback navn
-                playerImage: score.player.image,
-                totalScore: score.totalScore,
-                totalOb: score.totalOb,
-                // Vurder å fjerne 'strokes' her hvis den ikke trengs i oversikten
-                // for å redusere datamengden. Kan hentes ved behov senere.
-                // strokes: score.strokes
+                playerId: participant.playerId,
+                playerName: participant.player.name || `Spiller ${participant.playerId.substring(0, 6)}`,
+                playerImage: participant.player.image,
+                totalScore: stats?.totalScore ?? 0, // Bruk 0 hvis ingen score finnes (burde ikke skje hvis de deltok)
+                totalOb: stats?.totalOb ?? 0,
             };
         });
 
-        return NextResponse.json(formattedStandings);
+        // 5. Sorter for rangering
+        resultsWithInfo.sort((a, b) => {
+            if (a.totalScore !== b.totalScore) return a.totalScore - b.totalScore; // Lavest score
+            if (a.totalOb !== b.totalOb) return a.totalOb - b.totalOb; // Færrest OB
+            return a.playerName.localeCompare(b.playerName); // Alfabetisk
+        });
+
+        // 6. Legg til rangering
+        let currentRank = 0;
+        const rankedStandings = resultsWithInfo.map((player, index) => {
+            // Ny rangering hvis score eller OB er dårligere enn forrige
+            if (index === 0 || player.totalScore > resultsWithInfo[index - 1].totalScore || player.totalOb > resultsWithInfo[index - 1].totalOb) {
+                currentRank = index + 1;
+            }
+            return {
+                ...player,
+                rank: currentRank,
+                tournamentId: tournamentId // Legg til for lenking i frontend
+            };
+        });
+
+        // Returner den beregnede og sorterte listen
+        return NextResponse.json(rankedStandings);
+
     } catch (error) {
         console.error(`Feil ved henting av stilling for turnering ${tournamentId}:`, error);
         return NextResponse.json(
@@ -86,7 +109,6 @@ export async function GET(
             { status: 500 }
         );
     } finally {
-        // Koble fra etter operasjonen
         await prisma.$disconnect();
     }
 }

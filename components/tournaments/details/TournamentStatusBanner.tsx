@@ -1,95 +1,178 @@
 // components/tournaments/details/TournamentStatusBanner.tsx
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
-import { Loader2, Play, ExternalLink } from 'lucide-react';
+import { Card, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'; // Bruk Card for struktur
+import { Loader2, Play, Users, ListChecks } from 'lucide-react'; // Importer flere ikoner
 
-// Definer nødvendige props
-interface User { id: string; /* ... andre felter ... */} // Minimum user type
+// Definer User interface minimum
+interface User {
+  id: string;
+  // ... andre potensielle brukerfelter
+}
+
+// Definer propstyper
 interface TournamentStatusBannerProps {
-    // tournament: any; // Send med hele hvis du trenger mer info, ellers bare status?
-    user: User | null;
-    isOrganizer: boolean;
-    isParticipant: boolean;
-    activeSessionId: string | null;
-    isLoadingSessionId: boolean;
-    isStartingRound: boolean;
-    onStartRound: () => Promise<void>; // Callback for å starte runde
+  user: User | null;
+  isOrganizer: boolean;
+  isParticipant: boolean;
+  activeSessionId: string | null;
+  activeSessionStatus: 'waiting' | 'inProgress' | 'completed' | null; // Den nye status-propen
+  isLoadingSessionId: boolean; // For å vise lasting mens sesjons-ID hentes
+  isStartingRound: boolean; // For å vise lasting når runde startes
+  onStartRound: () => Promise<void>; // Callback for å starte runde
 }
 
 export function TournamentStatusBanner({
-    user,
-    isOrganizer,
-    isParticipant,
-    activeSessionId,
-    isLoadingSessionId,
-    isStartingRound,
-    onStartRound
+  user,
+  isOrganizer,
+  isParticipant,
+  activeSessionId,
+  activeSessionStatus, // Bruk denne
+  isLoadingSessionId,
+  isStartingRound,
+  onStartRound,
 }: TournamentStatusBannerProps) {
-    // Ikke vis noe hvis bruker ikke er logget inn eller verken deltaker/arrangør
-    // (eller tilpass logikken hvis f.eks. tilskuere skal se noe)
-    // if (!user || (!isOrganizer && !isParticipant)) {
-    //     return null;
-    // }
 
-    // Bestem farge/tekst basert på status
-    const bannerBg = activeSessionId ? 'bg-green-50 border-green-200' : 'bg-yellow-50 border-yellow-200';
-    const textColor = activeSessionId ? 'text-green-800' : 'text-yellow-800';
-    const spinnerColor = activeSessionId ? 'text-green-600' : 'text-yellow-600';
-    const statusText = isLoadingSessionId ? 'Sjekker spillstatus...' :
-                       activeSessionId ? 'Turneringen pågår!' : 'Turneringen pågår! Venter på at spillet skal klargjøres...';
+  // --- Logikk for å bestemme innhold og utseende ---
 
-    return (
-        <div className={`my-5 p-4 rounded-lg border ${bannerBg}`}>
-            <div className="flex flex-col sm:flex-row items-center justify-between gap-3">
-                <div className='flex items-center'>
-                    {isLoadingSessionId ? (
-                        <Loader2 className="h-5 w-5 mr-2 animate-spin text-gray-500" />
-                    ) : (
-                        <Loader2 className={`h-5 w-5 mr-2 animate-spin ${spinnerColor}`} />
-                    )}
-                    <p className={`font-medium ${textColor}`}>
-                        {statusText}
-                    </p>
-                </div>
+  let bannerVariant: "default" | "warning" | "info" | "success" = "default";
+  let title: string = "Turnering";
+  let description: React.ReactNode = "Laster status...";
+  let actionContent: React.ReactNode = null;
 
-                {/* Knapper */}
-                <div className="w-full sm:w-auto">
-                    {activeSessionId ? (
-                        // Sesjon er aktiv - knapp for deltakere
-                         isParticipant || isOrganizer ? ( // Både deltaker og arrangør kan gå til lobby
-                            <Link href={`/turnerings-spill/${activeSessionId}/lobby`} className="block">
-                                <Button className="w-full bg-green-600 hover:bg-green-700">
-                                    <Play className="mr-2 h-4 w-4" /> Gå til Spillobby
-                                </Button>
-                            </Link>
-                         ) : null // Ikke vis knapp for andre
-                    ) : (
-                        // Sesjon er IKKE aktiv (eller laster) - knapp for arrangør
-                        isOrganizer && !isLoadingSessionId && (
-                            <Button
-                                onClick={onStartRound}
-                                disabled={isStartingRound}
-                                variant="secondary"
-                                className="w-full bg-yellow-500 hover:bg-yellow-600 text-black"
-                            >
-                                {isStartingRound ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Play className="mr-2 h-4 w-4" />}
-                                {isStartingRound ? 'Starter Runde...' : 'Start Runde 1'}
-                            </Button>
-                        )
-                    )}
-                </div>
-            </div>
-            {/* Ekstra info for arrangør */}
-            {isOrganizer && !activeSessionId && !isLoadingSessionId && (
-                 <p className="text-xs text-yellow-700 mt-2 text-center sm:text-left">
-                      Klikk "Start Runde" for å opprette spillobbyen slik at deltakere kan bli med.
-                 </p>
-            )}
-             {isOrganizer && activeSessionId && (
-                 <p className="text-xs text-green-700 mt-2 text-center sm:text-left">
-                      Spillobbyen er klar.
-                 </p>
+  if (isLoadingSessionId) {
+    // Viser lasting mens vi sjekker om det finnes en aktiv sesjon
+    bannerVariant = "default";
+    title = "Sjekker rundestatus...";
+    description = <Loader2 className="h-5 w-5 animate-spin text-gray-500" />;
+  } else if (activeSessionId) {
+    // Vi har funnet en aktiv sesjon
+    if (activeSessionStatus === 'waiting') {
+      bannerVariant = "info";
+      title = "Spillobby er klar";
+      description = "Runden venter på at spillere skal bli klare.";
+      if (isParticipant || isOrganizer) { // Både deltakere og arrangører kan gå til lobby
+        actionContent = (
+          <Link href={`/turnerings-spill/${activeSessionId}/lobby`}>
+            <Button size="sm" className="bg-blue-600 hover:bg-blue-700">
+              <Users className="mr-2 h-4 w-4" /> Gå til Spillobby
+            </Button>
+          </Link>
+        );
+      }
+    } else if (activeSessionStatus === 'inProgress') {
+      bannerVariant = "success";
+      title = "Runden spilles nå!";
+      description = "Resultater oppdateres live.";
+      const playButton = (isParticipant || isOrganizer) ? ( // Arrangør kan også gå til spillet for å se
+        <Link href={`/turnerings-spill/${activeSessionId}/play`}>
+          <Button size="sm" variant="secondary">
+            <Play className="mr-2 h-4 w-4" /> Gå til Spill
+          </Button>
+        </Link>
+      ) : null;
+      const resultsButton = (
+          <Link href={`/turnerings-spill/${activeSessionId}/results`}>
+              <Button size="sm" variant="outline">
+                  <ListChecks className="mr-2 h-4 w-4" /> Se Leaderboard
+              </Button>
+          </Link>
+      );
+       // Vis begge knappene hvis brukeren kan spille
+      actionContent = (
+          <div className="flex flex-wrap gap-2 mt-2">
+              {playButton}
+              {resultsButton}
+          </div>
+      );
+
+    } else if (activeSessionStatus === 'completed') {
+        // Selvom 'active-session' API ikke burde returnere completed, håndterer vi det
+        bannerVariant = "default";
+        title = "Runde Fullført";
+        description = "Denne runden av turneringen er ferdigspilt.";
+        actionContent = (
+             <Link href={`/turnerings-spill/${activeSessionId}/results`}>
+                 <Button size="sm" variant="outline">
+                     <ListChecks className="mr-2 h-4 w-4" /> Se Sluttresultater
+                 </Button>
+             </Link>
+        );
+    } else {
+        // Fallback hvis status er null selv om ID finnes (bør ikke skje)
+        bannerVariant = "default";
+        title = "Turneringen pågår";
+        description = "En runde er aktiv, men status er ukjent.";
+    }
+  } else {
+    // Ingen aktiv sesjon funnet
+    if (isOrganizer) {
+      bannerVariant = "warning";
+      title = "Klar til å starte Runde 1?";
+      description = "Ingen aktiv spillrunde funnet. Start runden for å åpne lobbyen.";
+      actionContent = (
+        <Button
+          size="sm"
+          onClick={onStartRound}
+          disabled={isStartingRound}
+          className="bg-yellow-500 hover:bg-yellow-600 text-black"
+        >
+          {isStartingRound ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Play className="mr-2 h-4 w-4" />}
+          {isStartingRound ? 'Starter...' : 'Start Runde 1'}
+        </Button>
+      );
+    } else {
+        // For vanlige brukere/deltakere når ingen runde er aktiv
+        bannerVariant = "default";
+        title = "Turneringen er i gang"; // Eller hent status fra tournament-objektet?
+        description = "Venter på at arrangøren skal starte neste runde.";
+        // Ingen handling for ikke-arrangører her
+    }
+  }
+
+  // Definer CSS klasser basert på variant
+  const cardClass = {
+    default: "bg-gray-50 border-gray-200",
+    warning: "bg-yellow-50 border-yellow-200",
+    info: "bg-blue-50 border-blue-200",
+    success: "bg-green-50 border-green-200",
+  }[bannerVariant];
+
+  const titleClass = {
+    default: "text-gray-700",
+    warning: "text-yellow-800", // Mørkere gul for bedre kontrast
+    info: "text-blue-700",
+    success: "text-green-700",
+  }[bannerVariant];
+
+  const descriptionClass = {
+    default: "text-gray-600",
+    warning: "text-yellow-700", // Mørkere gul
+    info: "text-blue-600",
+    success: "text-green-600",
+  }[bannerVariant];
+
+
+  return (
+    // Bruk Card for en penere struktur
+    <Card className={`mt-6 ${cardClass}`}>
+      <CardHeader>
+        <div className="flex flex-col sm:flex-row justify-between items-start gap-3">
+             {/* Tittel og beskrivelse */}
+             <div className="flex-1">
+                <CardTitle className={`text-lg font-semibold ${titleClass}`}>{title}</CardTitle>
+                <CardDescription className={`mt-1 text-sm ${descriptionClass}`}>
+                    {description}
+                </CardDescription>
+             </div>
+             {/* Handlingsknapper (hvis noen) */}
+             {actionContent && (
+                 <div className="w-full sm:w-auto flex-shrink-0 mt-2 sm:mt-0">
+                     {actionContent}
+                 </div>
              )}
         </div>
-    );
+      </CardHeader>
+    </Card>
+  );
 }
