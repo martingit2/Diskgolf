@@ -420,6 +420,7 @@ model TournamentScore {
   
   submittedAt   DateTime   @default(now())
   isVerified    Boolean    @default(false)
+   @@unique([tournamentId, playerId])
 }
 
 
