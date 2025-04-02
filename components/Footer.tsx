@@ -90,7 +90,7 @@ export default function Footer() {
                    className="inline-block h-4 w-px bg-green-400 mx-2 sm:mx-3 opacity-60" // Solid grønn linje med litt redusert opacity
                  />
               )}
-              <Link href={link.href} className="hover:text-gray-300 transition-colors">
+              <Link href={link.href} className="hover:text-green-400 transition-colors">
                 {link.label}
               </Link>
             </li>
@@ -99,7 +99,7 @@ export default function Footer() {
       </div>
 
       {/* Copyright-informasjon */}
-      <p className="mt-5 text-xs text-gray-300"> {/* Increased margin top */}
+      <p className="mt-5 text-xs text-green-300"> {/* Increased margin top */}
          © {new Date().getFullYear()} Diskgolf.app. Alle rettigheter forbeholdt.
       </p>
     </footer>

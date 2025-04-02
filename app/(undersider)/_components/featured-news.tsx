@@ -1,51 +1,81 @@
-// Fil: app/(undersider)/_components/featured-news.tsx
+// Fil: featured-news.tsx
+// DEV NOTE: Viser 1 hovedartikkel og 2 sekundære i et responsivt, moderne grid.
 
 import React from 'react';
-// Importer KORTET og typen fra den andre filen
-import { FeaturedNewsCard, NewsArticleWithDetails } from './featured-news-card';
+import { motion } from 'framer-motion';
+import { FeaturedNewsCard, NewsArticleWithDetails } from './featured-news-card'; // Importer det oppdaterte kortet
+import { cn } from '@/app/lib/utils'; // Importer cn
 
 interface FeaturedNewsProps {
-  articles: NewsArticleWithDetails[]; // Tar imot en liste/array
+  articles: NewsArticleWithDetails[];
   title?: string; // Valgfri tittel for seksjonen
+  className?: string;
 }
 
-// Sørg for at denne funksjonen eksporteres!
-export function FeaturedNews({ articles, title = "Fremhevede Nyheter" }: FeaturedNewsProps) {
-  // Ikke render noe hvis det ikke er noen fremhevede artikler
+// Animasjonsvarianter (kan gjenbrukes fra NewsPage eller defineres her)
+const containerStagger = {
+  hidden: { opacity: 0 },
+  visible: {
+    opacity: 1,
+    transition: { staggerChildren: 0.1, delayChildren: 0.1 },
+  },
+};
+
+const itemFadeUp = {
+  hidden: { opacity: 0, y: 20 },
+  visible: { opacity: 1, y: 0, transition: { duration: 0.6, ease: [0.4, 0, 0.2, 1] } },
+};
+
+export function FeaturedNews({ articles, title, className }: FeaturedNewsProps) {
+  // Trenger minst én artikkel for å vise noe
   if (!articles || articles.length === 0) {
     return null;
   }
 
-  // Ta den første artikkelen som hovedartikkel
+  // Del opp artiklene
   const mainArticle = articles[0];
-  // Ta de neste to som sekundære (hvis de finnes)
-  const secondaryArticles = articles.slice(1, 3);
+  const secondaryArticles = articles.slice(1, 3); // Tar KUN de to neste
 
   return (
-    <section aria-labelledby="featured-news-title">
-      <h2 id="featured-news-title" className="mb-6 text-2xl font-bold tracking-tight text-gray-900 dark:text-white md:mb-8 md:text-3xl">
-        {title}
-      </h2>
+    <motion.section
+      aria-label={title || "Fremhevede nyheter"} // Bruk aria-label hvis tittel ikke vises
+      className={cn("mb-16 md:mb-24", className)} // Legg til mulighet for ekstern className
+      variants={containerStagger}
+      initial="hidden"
+      animate="visible"
+    >
+      {/* Valgfri Tittel (hvis ønskelig) */}
+      {title && (
+         <h2 className="mb-8 text-center text-3xl font-semibold tracking-tight text-gray-900 dark:text-gray-100 md:mb-12 md:text-4xl">
+             {title}
+         </h2>
+      )}
 
-      {/* Layout: Grid med 1 kolonne på små skjermer, 3 kolonner på store */}
+      {/* Hoved Grid Layout */}
       <div className="grid grid-cols-1 gap-6 lg:grid-cols-3 lg:gap-8">
 
-        {/* Hovedartikkel (tar opp 2 av 3 kolonner på store skjermer) */}
-        <div className="lg:col-span-2">
-          {/* Bruker FeaturedNewsCard for hovedartikkelen */}
-          <FeaturedNewsCard article={mainArticle} priority={true} />
-        </div>
+        {/* Hovedartikkel - Tar 2 kolonner */}
+        <motion.div className="lg:col-span-2" variants={itemFadeUp}>
+          {/* Pass priority={true} og isMainArticle={true} */}
+          <FeaturedNewsCard
+             article={mainArticle}
+             priority={true}
+             isMainArticle={true}
+           />
+        </motion.div>
 
-        {/* Sekundære artikler */}
+        {/* Sekundære Artikler - Tar 1 kolonne, legger seg under hverandre */}
         {secondaryArticles.length > 0 && (
           <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-1 lg:gap-8">
             {secondaryArticles.map((article) => (
-              // Bruker FeaturedNewsCard for hver sekundærartikkel
-              <FeaturedNewsCard key={article.id} article={article} />
+              <motion.div key={article.id} variants={itemFadeUp}>
+                {/* priority={false}, isMainArticle={false} (default) */}
+                <FeaturedNewsCard article={article} />
+              </motion.div>
             ))}
           </div>
         )}
       </div>
-    </section>
+    </motion.section>
   );
 }

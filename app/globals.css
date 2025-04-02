@@ -97,16 +97,23 @@
   }
 }
 
-/* Leaflet z-index (viktig for å unngå overlapp med andre UI-elementer) */
-.leaflet-bottom,
-.leaflet-control,
-.leaflet-pane,
-.leaflet-top {
-  z-index: 400 !important; /* Sørg for at kartkontroller er over annet innhold, men under modaler etc. */
+
+/* Sikrer at kartet ligger bak alt annet */
+.leaflet-container {
+  z-index: 0 !important;
 }
-/* Juster popup spesifikt hvis nødvendig */
+
+/* Kartkontroller skal være synlige, men under modaler */
+.leaflet-top, 
+.leaflet-bottom {
+  z-index: 400 !important;
+}
+
+/* Popups og markører skal være over kontroller, men under modaler */
+.leaflet-pane,
+.leaflet-marker-pane,
 .leaflet-popup-pane {
-    z-index: 500 !important;
+  z-index: 450 !important;
 }
 
 

@@ -5,8 +5,6 @@
  * Utvikler: Martin Pettersen
  */
 
-
-
 "use client";
 
 import {
@@ -127,7 +125,7 @@ function UserDropdown({
       {isDropdownOpen && (
         <div
           className={cn(
-            "mt-2 origin-top-right divide-y divide-gray-100 rounded-md bg-white shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none",
+            "mt-2 origin-top-right divide-y divide-gray-100 rounded-md bg-white shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none z-50", // Legg til z-50 her
             isMobile ? "absolute left-0 w-full" : "absolute right-0 w-56"
           )}
         >
@@ -149,18 +147,14 @@ function UserDropdown({
                   Innstillinger
                 </button>
                 <button
-    onClick={async () => { // Gjør gjerne onClick async hvis du vil 'await' signOut
-        closeDropdown();
-        // Kall signOut() - den tar seg av navigering og API-kall
-        // Du kan spesifisere en callbackUrl for å sende brukeren et sted etterpå
-        await signOut({ callbackUrl: '/' }); // Sender brukeren til forsiden etter utlogging
-        // Alternativt, uten spesifikk callbackUrl, vil den bruke standard (ofte forsiden):
-        // await signOut();
-    }}
-    className="group flex w-full items-center px-4 py-2 text-sm text-gray-900 hover:bg-gray-100"
->
-    Logg ut
-</button>
+                  onClick={async () => {
+                    closeDropdown();
+                    await signOut({ callbackUrl: '/' });
+                  }}
+                  className="group flex w-full items-center px-4 py-2 text-sm text-gray-900 hover:bg-gray-100"
+                >
+                  Logg ut
+                </button>
               </>
             ) : (
               <>
@@ -197,7 +191,7 @@ function UserDropdown({
           if (!open) closeDialog();
         }}
       >
-        <DialogContent className="p-0 w-auto bg-transparent border-none">
+        <DialogContent className="p-0 w-auto bg-transparent border-none z-[60]"> {/* Legg til z-[60] her */}
           <DialogTitle className="sr-only">
             {dialogState.type === "login" && "Logg inn"}
             {dialogState.type === "register" && "Opprett bruker"}

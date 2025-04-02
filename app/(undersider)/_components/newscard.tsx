@@ -1,23 +1,27 @@
+// FILE: app/(undersider)/_components/newscard.tsx
+
 import React from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 import { NewsArticle, Category } from '@prisma/client';
-import { Eye, EyeOff, Loader2, Pencil, Trash2, Newspaper, ArrowRight } from 'lucide-react'; // Fjernet ExternalLink da den ikke ble brukt
-import { Card, CardContent, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
+import { Eye, EyeOff, Loader2, Pencil, Trash2, ArrowRight, CalendarDays, User, ImageDown } from 'lucide-react';
+import { Card, CardFooter, CardTitle } from '@/components/ui/card';
 import { Button, buttonVariants } from '@/components/ui/button';
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from '@/components/ui/alert-dialog';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 import { Badge } from '@/components/ui/badge';
 import { cn } from '@/app/lib/utils';
-import { ArticleMetadata } from './news-article-metadata'; // Antar denne stien er korrekt
+import { format } from 'date-fns';
+import { nb } from 'date-fns/locale';
+import { ArticleMetadata } from './article-metadata';
+import { useRouter } from 'next/navigation';
 
-// Type definisjon
+// --- Types (Unchanged) ---
 type NewsArticleWithDetails = NewsArticle & {
   author: { name: string | null; image: string | null } | null;
   categories: Pick<Category, 'id' | 'name' | 'slug'>[];
 };
 
-// Props interface
 interface NewsCardProps {
   article: NewsArticleWithDetails;
   isAdmin: boolean;
@@ -27,19 +31,27 @@ interface NewsCardProps {
   onTogglePublish: (article: NewsArticleWithDetails) => void;
 }
 
-// Hjelpefunksjon for utdrag
-function createExcerptFallback(text: string | null | undefined, maxLength = 100): string {
+// --- Helper Functions (Unchanged) ---
+function createExcerptFallback(text: string | null | undefined, maxLength = 75): string {
   if (!text) return '';
-  // Fjerner HTML-tags før lengdeberegning og utdrag
   const cleanedText = text.replace(/<[^>]*>/g, '');
   if (cleanedText.length <= maxLength) return cleanedText;
   const truncated = cleanedText.substring(0, maxLength);
-  // Sørger for å ikke kutte midt i et ord
   const lastSpaceIndex = truncated.lastIndexOf(' ');
   return (lastSpaceIndex > 0 ? truncated.substring(0, lastSpaceIndex) : truncated).trim() + '...';
 }
 
-// --- HOVEDKOMPONENT ---
+function formatDate(date: Date | null | undefined): string {
+  if (!date) return 'Ukjent dato';
+  try {
+    return format(new Date(date), "d. MMM yyyy", { locale: nb });
+  } catch (error) {
+    console.error("DEV_ERROR: Invalid date format passed to NewsCard:", date, error);
+    return 'Ugyldig dato';
+  }
+}
+
+// --- Main Component: Ultimate Premium NewsCard v2 ---
 export function NewsCard({
   article,
   isAdmin,
@@ -48,202 +60,147 @@ export function NewsCard({
   onDelete,
   onTogglePublish,
 }: NewsCardProps) {
-  // Feilhåndtering hvis artikkel mangler ID
+
+  const router = useRouter();
+
   if (!article?.id) {
-    console.error("FEIL: NewsCard mottok artikkel uten ID:", article);
+    console.error("DEV_ERROR: NewsCard received invalid article data:", article);
     return (
-        <Card className="border-destructive p-4">
-            <p className="text-destructive-foreground">Feil: Mangler artikkeldata.</p>
-        </Card>
+      <Card className="aspect-video border-destructive bg-destructive/5 p-4 rounded-lg shadow-none flex items-center justify-center text-center">
+        <p className="text-sm font-medium text-destructive-foreground">Kunne ikke laste artikkelkort.</p>
+      </Card>
     );
   }
 
-  // Data for visning
   const displayExcerpt = article.excerpt || createExcerptFallback(article.content);
-  // Bruk publishedAt hvis det finnes, ellers createdAt
   const displayDate = article.publishedAt ? new Date(article.publishedAt) : new Date(article.createdAt);
-  const authorDisplay = article.author ?? { name: 'Ukjent forfatter', image: null };
-  const linkHref = `/nyheter/${article.id}`; // Standard lenkeformat
+  const linkHref = `/nyheter/${article.id}`;
+  const isDraft = !article.isPublished;
+  const primaryCategory = article.categories?.[0];
+
+  // --- Event Handlers (Unchanged) ---
+  const handleCategoryClick = (e: React.MouseEvent, slug: string) => {
+    e.preventDefault();
+    e.stopPropagation();
+    router.push(`/nyheter/kategori/${slug}`);
+  };
+
+  const handleAdminActionClick = (e: React.MouseEvent, action: () => void) => {
+     e.preventDefault();
+     e.stopPropagation();
+     action();
+  };
+   const handleAlertTriggerClick = (e: React.MouseEvent) => {
+     e.preventDefault();
+     e.stopPropagation();
+   };
+
+  // Define the text shadow style using Tailwind arbitrary property.
+  // Format: [text-shadow:offsetX_offsetY_blurRadius_color] Underscore replaces space.
+  // Using rgb(0 0 0 / 0.6) for black with 60% opacity. Adjust values as needed.
+  const textShadowClass = "[text-shadow:0_1px_3px_rgb(0_0_0_/_0.6)]";
 
   return (
-    <TooltipProvider delayDuration={100}>
+    <TooltipProvider delayDuration={200}>
       <Card className={cn(
-        "group relative flex h-full flex-col overflow-hidden border transition-all duration-300", // Grunnleggende stiler + generell 'border'
-
-        // 1. Sett generell kantfarge/stil FØRST (basert på publiseringsstatus)
-        !article.isPublished && isAdmin
-          ? "border-dashed border-orange-400 dark:border-orange-600/70" // Kladd-stil (oransje, stiplet)
-          : "border-border dark:border-border/70", // Standard kantfarge for publiserte
-
-        // 2. Overstyr KUN venstre kant med grønn ETTERPÅ
-        "border-l-4 border-l-green-500 dark:border-l-green-400", // <-- ALLTID SYNLIG GRØNN KANT (Vinner over generell farge på venstre side)
-
-        // 3. Hover-effekter (trenger ikke lenger `hover:border-border` da base/betinget farge er satt)
-        "hover:shadow-xl", // Skygge på hover
-        !article.isPublished && isAdmin && "hover:border-orange-500 dark:hover:border-orange-500" // Spesifikk hover for kladd (hvis ønskelig)
-
+        "group relative flex h-full flex-col overflow-hidden rounded-lg",
+        "border border-black/5 dark:border-white/5",
+        "bg-card text-card-foreground shadow-md dark:shadow-black/20",
+        "transition-all duration-300 ease-in-out hover:shadow-lg",
+        isDraft && isAdmin && "border-dashed border-amber-400/70 dark:border-amber-500/60 ring-1 ring-amber-400/20 dark:ring-amber-500/15",
       )}>
 
-        {/* Kladd-merke for admin */}
-        {!article.isPublished && isAdmin && (
-          <Badge
-             variant="outline"
-             className="absolute right-2 top-2 z-10 rounded-full border-orange-300 bg-orange-100/80 px-2 py-0.5 text-[10px] font-semibold text-orange-800 shadow-sm backdrop-blur-sm dark:border-orange-700 dark:bg-orange-900/70 dark:text-orange-200"
-           >
-             Kladd
-          </Badge>
-        )}
+        {/* Clickable Area */}
+        <Link href={linkHref} className="block relative w-full aspect-video overflow-hidden" aria-label={`Les mer om ${article.title}`}>
+          {/* Background Image */}
+          <div className="absolute inset-0 bg-gradient-to-b from-neutral-100 to-neutral-200 dark:from-neutral-800 dark:to-neutral-900">
+            {article.imageUrl ? (
+              <Image src={article.imageUrl} alt="" fill sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw" className="object-cover opacity-0 transition-all duration-500 ease-in-out group-hover:scale-[1.03]" onLoadingComplete={(img) => img.classList.remove('opacity-0')} loading="lazy" quality={75} />
+            ) : (
+              <div className="flex h-full w-full items-center justify-center"><ImageDown className="h-12 w-12 text-neutral-400/60 dark:text-neutral-600/60" strokeWidth={1.5} /></div>
+            )}
+          </div>
 
-        {/* Link rundt bilde og innhold for bedre klikkbarhet */}
-        <Link href={linkHref} className="flex flex-grow flex-col" aria-label={`Les mer om ${article.title}`}>
-          <CardHeader className="p-0">
-            {/* Bilde-seksjon */}
-            <div className="relative aspect-video w-full overflow-hidden bg-muted">
-              {article.imageUrl ? (
-                <Image
-                  src={article.imageUrl}
-                  alt={`Bilde for ${article.title}`}
-                  fill
-                  style={{ objectFit: 'cover' }} // object-cover er standard, men dette er mer eksplisitt
-                  sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw" // Responsive bildestørrelser
-                  className="opacity-0 transition-transform duration-500 ease-in-out group-hover:scale-105" // Hover-effekt + fade-in
-                  onLoadingComplete={(img) => img.classList.remove('opacity-0')} // Fjerner opacity når bildet er lastet
-                  loading="lazy" // Lazy loading for bilder utenfor viewport
-                />
-              ) : (
-                // Fallback hvis bilde mangler
-                <div className="flex h-full w-full items-center justify-center bg-gradient-to-br from-muted to-muted/60 dark:from-slate-800 dark:to-slate-800/40">
-                  <Newspaper className="h-12 w-12 text-muted-foreground/20 dark:text-slate-600" strokeWidth={1}/>
-                </div>
+          {/* Gradient Overlay */}
+          <div className="absolute inset-0 bg-gradient-to-t from-black/75 via-black/50 to-transparent pointer-events-none" aria-hidden="true" />
+
+          {/* Content Overlay */}
+          <div className="absolute inset-0 flex flex-col p-4 md:p-5 text-white pointer-events-none">
+            {/* Top Section */}
+            <div className="flex justify-between items-start pointer-events-auto">
+              {primaryCategory && !isDraft && (
+                <button onClick={(e) => handleCategoryClick(e, primaryCategory.slug)} className={cn(buttonVariants({ variant: 'default', size: 'sm' }), "h-auto cursor-pointer rounded border border-white/20 bg-green-600/90 px-2 py-0.5 text-[10px] font-medium text-white shadow-md backdrop-blur-sm transition-colors hover:bg-green-700 focus-visible:ring-2 focus-visible:ring-white/50 focus:outline-none")}>
+                  {primaryCategory.name}
+                </button>
               )}
+              {!primaryCategory && !isDraft && <div className="w-0 h-0"></div>}
+              {isDraft && isAdmin && ( <Badge variant="outline" className="ml-auto cursor-default rounded border border-amber-300/50 bg-amber-50/90 px-2 py-0.5 text-[10px] font-medium text-amber-800 shadow-md backdrop-blur-sm dark:border-amber-600/50 dark:bg-amber-950/80 dark:text-amber-200 pointer-events-auto"> Kladd </Badge> )}
             </div>
-          </CardHeader>
 
-          {/* Innhold (tittel, metadata, utdrag, kategorier) */}
-          <CardContent className="flex-grow space-y-2 p-4 pb-3">
-            {/* Tittel */}
-            <CardTitle className="line-clamp-2 text-lg font-semibold leading-snug transition-colors group-hover:text-primary">
-              {article.title}
-            </CardTitle>
-             {/* Metadata (bruker importert komponent) */}
-             <ArticleMetadata author={authorDisplay} date={displayDate} className="text-xs" variant="compact" />
-            {/* Utdrag */}
-            <p className="line-clamp-3 pt-1 text-sm text-muted-foreground">
-              {displayExcerpt}
-            </p>
-            {/* Kategorier */}
-            {article.categories && article.categories.length > 0 && (
-              <div className="flex flex-wrap gap-1.5 pt-2">
-                {/* Viser maks 3 kategorier */}
-                {article.categories.slice(0, 3).map(cat => (
-                   <Badge key={cat.slug} variant="secondary" className="cursor-default whitespace-nowrap text-[10px] font-normal">
-                       {cat.name}
-                   </Badge>
-                ))}
-                {/* Viser "+ N" hvis det er flere enn 3 */}
-                {article.categories.length > 3 && (
-                  <Badge variant="secondary" className="cursor-default text-[10px] font-normal">
-                    + {article.categories.length - 3}
-                  </Badge>
-                )}
+            {/* Spacer */}
+            <div className="flex-grow" />
+
+            {/* Bottom Content Block */}
+            {/* Applied textShadowClass to relevant text elements. */}
+            <div className="space-y-1.5 pointer-events-auto">
+              <CardTitle className={cn("line-clamp-2 text-base font-semibold leading-snug transition-colors group-hover:text-green-300 sm:text-lg md:text-xl", textShadowClass)}>
+                {article.title}
+              </CardTitle>
+
+              {/* Metadata - Pass shadow class */}
+              <ArticleMetadata
+                author={article.author}
+                date={displayDate}
+                variant="compact"
+                className={cn("text-white/80", textShadowClass)} // Pass shadow class here
+              />
+
+              {/* Excerpt */}
+              <p className={cn("line-clamp-2 text-xs text-white/90  leading-relaxed", textShadowClass)}>
+                  {displayExcerpt}
+              </p>
+
+              {/* "Read More" Affordance */}
+              <div className={cn("group/link inline-flex items-center pt-1 text-xs font-medium text-green-300 dark:text-green-400", textShadowClass)} aria-hidden="true">
+                 Les mer
+                 <ArrowRight className="ml-1 h-3.5 w-3.5 transition-transform duration-200 group-hover/link:translate-x-0.5" />
               </div>
-            )}
-          </CardContent>
-        </Link>
-
-        {/* Footer med "Les mer" og admin-handlinger */}
-        <CardFooter className="flex items-center justify-between border-t bg-muted/30 p-3 dark:bg-slate-800/30">
-          {/* "Les mer"-knapp */}
-          <Link
-            href={linkHref}
-            className={cn(
-              buttonVariants({ variant: "link", size: "sm" }),
-              "px-1 text-sm font-medium text-primary hover:text-primary/90" // Bruker link variant
-            )}
-          >
-            Les mer
-            <ArrowRight className="ml-1 h-4 w-4" />
-          </Link>
-
-          {/* Admin-handlinger */}
-          {isAdmin && (
-            <div className="flex space-x-1">
-              {/* Publiser/Avpubliser */}
-              <Tooltip>
-                <TooltipTrigger asChild>
-                  <Button
-                    variant="ghost"
-                    size="icon"
-                    className="h-7 w-7"
-                    onClick={(e) => { e.stopPropagation(); onTogglePublish(article); }} // Stopp propagering for å unngå link-klikk
-                    disabled={isLoadingAction}
-                    aria-label={article.isPublished ? 'Avpubliser artikkel' : 'Publiser artikkel'}
-                  >
-                    {isLoadingAction ? <Loader2 className="h-4 w-4 animate-spin" /> : article.isPublished ? <EyeOff className="h-4 w-4 text-amber-600" /> : <Eye className="h-4 w-4 text-green-600" />}
-                  </Button>
-                </TooltipTrigger>
-                <TooltipContent>{article.isPublished ? 'Avpubliser' : 'Publiser'}</TooltipContent>
-              </Tooltip>
-
-              {/* Rediger */}
-              <Tooltip>
-                <TooltipTrigger asChild>
-                  <Button
-                    variant="ghost"
-                    size="icon"
-                    className="h-7 w-7"
-                    onClick={(e) => { e.stopPropagation(); onEdit(article); }}
-                    disabled={isLoadingAction}
-                    aria-label="Rediger artikkel"
-                  >
-                    <Pencil className="h-4 w-4 text-blue-600" />
-                  </Button>
-                </TooltipTrigger>
-                <TooltipContent>Rediger</TooltipContent>
-              </Tooltip>
-
-              {/* Slett */}
-              <AlertDialog onOpenChange={(open) => !open && document.body.style.pointerEvents === ''}> {/* Workaround for shadcn UI Tooltip/Dialog issue */}
-                <Tooltip>
-                  <TooltipTrigger asChild>
-                    <AlertDialogTrigger asChild>
-                      <Button
-                        variant="ghost"
-                        size="icon"
-                        className="h-7 w-7"
-                        onClick={(e) => e.stopPropagation()} // Stopp propagering
-                        disabled={isLoadingAction}
-                        aria-label="Slett artikkel"
-                      >
-                        <Trash2 className="h-4 w-4 text-destructive" />
-                      </Button>
-                    </AlertDialogTrigger>
-                  </TooltipTrigger>
-                  <TooltipContent>Slett</TooltipContent>
-                </Tooltip>
-                <AlertDialogContent onClick={(e) => e.stopPropagation()}> {/* Stopp propagering her også */}
-                  <AlertDialogHeader>
-                    <AlertDialogTitle>Er du sikker?</AlertDialogTitle>
-                    <AlertDialogDescription>
-                      Handlingen kan ikke angres. Dette vil permanent slette nyhetsartikkelen:
-                      <strong className="mt-2 block break-words font-medium">"{article.title}"</strong>
-                    </AlertDialogDescription>
-                  </AlertDialogHeader>
-                  <AlertDialogFooter>
-                    <AlertDialogCancel disabled={isLoadingAction}>Avbryt</AlertDialogCancel>
-                    <AlertDialogAction
-                      onClick={() => onDelete(article.id)} // Ikke nødvendig å stoppe propagering her
-                      disabled={isLoadingAction}
-                      className={buttonVariants({variant: "destructive"})} // Bruk destructive variant
-                    >
-                      {isLoadingAction ? <><Loader2 className="mr-2 h-4 w-4 animate-spin" /> Sletter...</> : 'Ja, slett artikkelen'}
-                    </AlertDialogAction>
-                  </AlertDialogFooter>
-                </AlertDialogContent>
-              </AlertDialog>
             </div>
-          )}
-        </CardFooter>
+          </div>
+        </Link> {/* END Clickable Area */}
+
+
+        {/* Admin Actions Footer (Separate) */}
+        {isAdmin && (
+          <CardFooter className="z-20 border-t border-black/10 bg-neutral-100/90 px-3 py-1.5 dark:border-white/10 dark:bg-neutral-900/90 flex items-center justify-end space-x-0.5 backdrop-blur-sm">
+              {/* Publish/Unpublish */}
+              <Tooltip> <TooltipTrigger asChild>
+                  <Button variant="ghost" size="icon" className="h-6 w-6" onClick={(e) => handleAdminActionClick(e, () => onTogglePublish(article))} disabled={isLoadingAction} aria-label={isDraft ? 'Publiser' : 'Avpubliser'}>
+                    {isLoadingAction ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : isDraft ? <Eye className="h-4 w-4 text-green-600" /> : <EyeOff className="h-4 w-4 text-amber-600" />}
+                  </Button>
+              </TooltipTrigger> <TooltipContent side="top" className="text-xs"><p>{isDraft ? 'Publiser' : 'Gjør til kladd'}</p></TooltipContent> </Tooltip>
+
+              {/* Edit */}
+              <Tooltip> <TooltipTrigger asChild>
+                  <Button variant="ghost" size="icon" className="h-6 w-6" onClick={(e) => handleAdminActionClick(e, () => onEdit(article))} disabled={isLoadingAction} aria-label="Rediger">
+                    {isLoadingAction ? <Loader2 className="h-3.5 w-3.5 animate-spin"/> : <Pencil className="h-4 w-4 text-blue-600" />}
+                  </Button>
+              </TooltipTrigger> <TooltipContent side="top" className="text-xs"><p>Rediger</p></TooltipContent> </Tooltip>
+
+              {/* Delete */}
+              <AlertDialog onOpenChange={(open) => !open && (document.body.style.pointerEvents = '')}>
+                <Tooltip> <TooltipTrigger asChild>
+                    <Button variant="ghost" size="icon" className="h-6 w-6 text-destructive/80 hover:text-destructive hover:bg-destructive/10" onClick={handleAlertTriggerClick} disabled={isLoadingAction} aria-label="Slett">
+                      {isLoadingAction ? <Loader2 className="h-3.5 w-3.5 animate-spin"/> : <Trash2 className="h-4 w-4" />}
+                    </Button>
+                </TooltipTrigger> <TooltipContent side="top" className="text-xs"><p>Slett</p></TooltipContent> </Tooltip>
+                <AlertDialogContent onClick={(e) => e.stopPropagation()}>
+                   <AlertDialogHeader> <AlertDialogTitle>Bekreft sletting</AlertDialogTitle> <AlertDialogDescription> Er du sikker på at du vil permanent slette artikkelen <strong className="font-medium text-foreground">"{article.title}"</strong>? Handlingen kan ikke angres. </AlertDialogDescription> </AlertDialogHeader>
+                   <AlertDialogFooter className="mt-2"> <AlertDialogCancel disabled={isLoadingAction}>Avbryt</AlertDialogCancel> <AlertDialogAction onClick={() => onDelete(article.id)} disabled={isLoadingAction} className={buttonVariants({variant: "destructive"})}> {isLoadingAction ? <><Loader2 className="mr-2 h-4 w-4 animate-spin" /> Sletter...</> : 'Ja, slett'} </AlertDialogAction> </AlertDialogFooter>
+                 </AlertDialogContent>
+              </AlertDialog>
+          </CardFooter>
+        )}
       </Card>
     </TooltipProvider>
   );
