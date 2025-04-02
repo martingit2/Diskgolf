@@ -74,7 +74,7 @@ function Header() {
           </span>
           <Link href="/" className="-m-1.5 p-1.5">
             <span className="sr-only">DiskGolf</span>
-            <Image src="/lightgreen.png" alt="Logo" width={48} height={48} />
+            <Image src="/lightgreen.png" alt="Logo" width={46} height={42} />
           </Link>
         </div>
         <div className="flex lg:hidden">
