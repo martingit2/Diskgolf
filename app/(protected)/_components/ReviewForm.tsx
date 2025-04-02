@@ -1,34 +1,35 @@
-/** 
- * Filnavn: ReviewForm.tsx
- * Beskrivelse: Komponent for å la brukere sende inn anmeldelser av en discgolfbane. 
- *              Inkluderer stjernevurdering, tekstfelt for kommentarer og en dialogbasert modal for innsending.
- * Funksjonalitet:
- *   - Lar brukere gi en vurdering fra 1 til 5 stjerner.
- *   - Sender anmeldelsen til API-et (/api/reviews) ved innsending.
- *   - Viser feilmeldinger hvis innsendingen mislykkes.
- *   - Lukker modalen automatisk ved vellykket innsending.
- * Utvikler: Said Hussain Khawajazada
- */
-
-
+// Utviklere Martin og Said
 "use client";
 
 import { useState } from "react";
 import { Dialog, DialogContent, DialogTrigger, DialogTitle } from "@/components/ui/dialog";
 
-export default function ReviewForm({ courseId, totalReviews, averageRating = 0 }: { courseId: string; totalReviews: number; averageRating?: number }) {
+// 1. Oppdater props-typen til å inkludere 'size' (valgfri)
+type ReviewFormProps = {
+  courseId: string;
+  totalReviews: number;
+  averageRating?: number;
+  size?: 'small' | 'default'; // Gjør 'size' valgfri, med spesifikke verdier
+};
+
+export default function ReviewForm({
+  courseId,
+  totalReviews,
+  averageRating = 0,
+  size = 'default' // 2. Sett en standardverdi for 'size'
+}: ReviewFormProps) {
 
   const [rating, setRating] = useState(0);
   const [comment, setComment] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState("");
-  const [isOpen, setIsOpen] = useState(false); // ✅ Controls modal visibility
+  const [isOpen, setIsOpen] = useState(false);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsSubmitting(true);
     setError("");
-  
+
     try {
       const response = await fetch("/api/reviews", {
         method: "POST",
@@ -38,74 +39,84 @@ export default function ReviewForm({ courseId, totalReviews, averageRating = 0 }
         body: JSON.stringify({
           courseId,
           rating,
-          comment: comment || "", // Ensure no `null` values
+          comment: comment || "",
         }),
       });
-  
+
       let result;
-            try {
-            result = await response.json();
-            } catch (err) {
-            console.error("❌ Kunne ikke parse serverrespons:", err);
-            setError("Ugyldig svar fra serveren. Er du logget inn?");
-            return;
-            }
+      try {
+        result = await response.json();
+      } catch (err) {
+        console.error("❌ Kunne ikke parse serverrespons:", err);
+        setError("Ugyldig svar fra serveren. Er du logget inn?");
+        setIsSubmitting(false); // Stopp submitting her
+        return;
+      }
 
-            if (!response.ok) {
-            setError(result?.error || "Kunne ikke sende inn anmeldelsen. Logg inn og prøv igjen.");
-            return;
-            }
+      if (!response.ok) {
+        setError(result?.error || "Kunne ikke sende inn anmeldelsen. Logg inn og prøv igjen.");
+        setIsSubmitting(false); // Stopp submitting her
+        return;
+      }
 
-  
       setRating(0);
       setComment("");
       alert("✅ Anmeldelse sendt!");
-      setIsOpen(false); // ✅ Close the modal after submission
+      setIsOpen(false); // Lukk modalen
     } catch (err) {
-        console.error("❌ Error submitting review:", err);
-      
-        // ✅ Ensure `err` is treated as an Error object
-        if (err instanceof Error) {
-          setError(err.message);
-        } else {
-          setError("Ukjent feil oppstod. Prøv igjen."); // ✅ Fallback message for unknown errors
-        }
+      console.error("❌ Error submitting review:", err);
+      if (err instanceof Error) {
+        setError(err.message);
+      } else {
+        setError("Ukjent feil oppstod. Prøv igjen.");
       }
-       finally {
-      setIsSubmitting(false);
+    } finally {
+      // Sikrer at isSubmitting alltid settes til false til slutt
+       if (isSubmitting) { // Sjekk for å unngå unødvendig state-oppdatering
+          setIsSubmitting(false);
+       }
     }
   };
-  
+
+  // 3. Bruk 'size' til å justere klasser
+  const triggerTextSize = size === 'small' ? 'text-xs' : 'text-sm';
+  const triggerStarSize = size === 'small' ? 'text-base' : 'text-lg'; // Bruk text-størrelse for stjerner
+  const modalTitleSize = size === 'small' ? 'text-md' : 'text-lg';
+  const modalStarSize = size === 'small' ? 'text-xl' : 'text-2xl';
+  const buttonPadding = size === 'small' ? 'px-3 py-1.5 text-sm' : 'px-4 py-2';
+  const errorTextSize = size === 'small' ? 'text-xs' : 'text-sm';
+
 
   return (
     <>
-      {/* ⭐ Trigger: Clicking on stars opens modal */}
+      {/* Trigger */}
       <Dialog open={isOpen} onOpenChange={setIsOpen}>
         <DialogTrigger asChild>
-          <div className="flex items-center gap-2 cursor-pointer" onClick={() => setIsOpen(true)}>
+          {/* Bruk betingede klasser for trigger */}
+          <div className="flex items-center gap-1 cursor-pointer" onClick={() => setIsOpen(true)}>
           {Array.from({ length: 5 }, (_, i) => (
-            <span key={i} className={i < Math.round(averageRating) ? "text-yellow-500" : "text-gray-300"}>
+            <span key={i} className={`${i < Math.round(averageRating) ? "text-yellow-500" : "text-gray-300"} ${triggerStarSize}`}>
                 ★
             </span>
             ))}
-
-            <span className="text-gray-600 text-sm">
-                {totalReviews > 0 ? `(${totalReviews} anmeldelser)` : "(Skriv anmeldelse)"}
+            <span className={`text-gray-600 ${triggerTextSize}`}>
+                {totalReviews > 0 ? `(${totalReviews})` : "(Skriv anm.)"} {/* Forkortet tekst for small */}
             </span>
-
           </div>
         </DialogTrigger>
 
-        {/* 📌 Modal Content */}
-        <DialogContent className="p-6 rounded-lg">
-            <DialogTitle className="text-lg font-semibold">Skriv en anmeldelse</DialogTitle>
+        {/* Modal Content */}
+        <DialogContent className="p-4 rounded-lg max-w-sm"> {/* Litt mindre padding/bredde */}
+            {/* Bruk betinget klasse for tittel */}
+            <DialogTitle className={`${modalTitleSize} font-semibold`}>Skriv en anmeldelse</DialogTitle>
 
-          {/* ⭐ Star Rating Input */}
-          <div className="flex space-x-2 my-2">
+          {/* Star Rating Input */}
+          {/* Bruk betinget klasse for stjerner */}
+          <div className="flex space-x-1 my-2 justify-center"> {/* Sentrer stjerner */}
             {[1, 2, 3, 4, 5].map((star) => (
               <span
                 key={star}
-                className={`cursor-pointer text-2xl ${star <= rating ? "text-yellow-500" : "text-gray-300"}`}
+                className={`cursor-pointer ${modalStarSize} ${star <= rating ? "text-yellow-500" : "text-gray-300"}`}
                 onClick={() => setRating(star)}
               >
                 ★
@@ -113,26 +124,28 @@ export default function ReviewForm({ courseId, totalReviews, averageRating = 0 }
             ))}
           </div>
 
-          {/* 📝 Comment Input */}
+          {/* Comment Input */}
           <textarea
-            className="w-full p-2 border rounded-md"
-            rows={3}
-            placeholder="Skriv en kommentar (valgfritt)"
+            className={`w-full p-2 border rounded-md ${triggerTextSize}`} // Bruk samme tekststørrelse som trigger
+            rows={size === 'small' ? 2 : 3} // Færre rader for small
+            placeholder="Kommentar (valgfritt)"
             value={comment}
             onChange={(e) => setComment(e.target.value)}
           />
 
-          {/* 📌 Submit Button */}
+          {/* Submit Button */}
+          {/* Bruk betinget klasse for padding/tekststørrelse */}
           <button
-            className="bg-blue-500 text-white px-4 py-2 rounded mt-3 w-full disabled:bg-gray-400"
+            className={`bg-blue-500 text-white rounded mt-2 w-full disabled:bg-gray-400 ${buttonPadding}`}
             onClick={handleSubmit}
             disabled={isSubmitting || rating === 0}
           >
-            {isSubmitting ? "Sender inn..." : "Send inn anmeldelse"}
+            {isSubmitting ? "Sender..." : "Send inn"} {/* Kortere tekst */}
           </button>
 
-          {/* ❌ Error Message */}
-          {error && <p className="text-red-500 mt-2">{error}</p>}
+          {/* Error Message */}
+          {/* Bruk betinget klasse for tekststørrelse */}
+          {error && <p className={`text-red-500 mt-1.5 ${errorTextSize}`}>{error}</p>}
         </DialogContent>
       </Dialog>
     </>

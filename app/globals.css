@@ -1,6 +1,9 @@
+/* globals.css */
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+
 @layer base {
   :root {
     --background: 0 0% 100%;
@@ -34,11 +37,12 @@
     --primary-text: #013B94;
     --hover-bg: #e2e8f0;
     --menu-bg: #1e40af;
+  }
 
   .bg-header {
     background-color: var(--header-bg);
     }
-    
+
   .text-gradient {
     background: var(--gradient-text);
     -webkit-background-clip: text;
@@ -47,16 +51,16 @@
 
 
   /* Kartcontainer-styling */
-.custom-map {
-  border: 6px solid var(--headerColor); 
-  border-radius: 12px; 
-  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.4); 
-  background-color: #fff; 
-  overflow: hidden; 
-}
-    
+  .custom-map {
+    border: 6px solid var(--headerColor);
+    border-radius: 12px;
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.4);
+    background-color: #fff;
+    overflow: hidden;
   }
+
   .dark {
+    /* ... dark mode variables ... */
     --background: 222.2 84% 4.9%;
     --foreground: 210 40% 98%;
     --card: 222.2 84% 4.9%;
@@ -80,8 +84,10 @@
     --chart-2: 160 60% 45%;
     --chart-3: 30 80% 55%;
     --chart-4: 280 65% 60%;
-    --chart-5: 340 75% 55%}
+    --chart-5: 340 75% 55%;
+  }
 }
+
 @layer base {
   * {
     @apply border-border;
@@ -91,14 +97,37 @@
   }
 }
 
-
-
+/* Leaflet z-index (viktig for å unngå overlapp med andre UI-elementer) */
 .leaflet-bottom,
 .leaflet-control,
 .leaflet-pane,
 .leaflet-top {
-  z-index: 0 !important;
+  z-index: 400 !important; /* Sørg for at kartkontroller er over annet innhold, men under modaler etc. */
 }
+/* Juster popup spesifikt hvis nødvendig */
+.leaflet-popup-pane {
+    z-index: 500 !important;
+}
+
+
+.leaflet-popup-content-wrapper {
+  padding: 0 !important;
+  border-radius: 10px !important; /* Matcher rounded-lg */
+  background-color: transparent !important; /* Viktig */
+  box-shadow: none !important; /* Viktig */
+  overflow: hidden !important; /* Viktig */
+}
+
+.leaflet-popup-content {
+  margin: 0 !important;
+  width: 250px !important;
+  background-color: transparent !important; /* Sørg for at card styrer */
+  /* Hindre at Leaflet legger til scrollbar for tidlig */
+  max-height: none !important;
+  overflow-y: auto !important; /* Tillat scroll HVIS innholdet blir for høyt */
+}
+
+
 
 .avatar {
   width: 60px;
@@ -122,8 +151,6 @@
 .bane-carousel-swiper .swiper-button-next::after,
 .bane-carousel-swiper .swiper-button-prev::after {
   color: #4ade80; /* Tailwind's green-400 (en lys grønnfarge) */
-
-  /* font-size: 1.8rem; */
   transition: color 0.2s ease-in-out; /* Legg til en myk overgang */
 }
 
@@ -144,8 +171,6 @@
 
 
 /* === Styling for Swiper controls in ReviewCarousel === */
-
-/* -- Navigasjonspiler -- */
 .review-carousel-swiper .swiper-button-next::after,
 .review-carousel-swiper .swiper-button-prev::after {
   color: #4ade80; /* Tailwind's green-400 (lys grønn) */
@@ -158,8 +183,6 @@
   color: #22c55e; /* Tailwind's green-500 (litt mørkere) */
 }
 
-/* -- Pagination Prikker (Overstyrer evt. standard/renderBullet hvis nødvendig) -- */
-/* Disse reglene sikrer at prikkene matcher BaneCarousel hvis renderBullet ikke er nok */
 .review-carousel-swiper .swiper-pagination-bullet {
     background-color: #16a34a !important; /* green-600 */
     opacity: 0.7; /* Litt svakere for inaktive */
