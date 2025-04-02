@@ -1,17 +1,16 @@
-// app/(undersider)/tournament/[id]/page.tsx ELLER der filen din ligger
+// app/tournament/[id]/page.tsx
 "use client";
 
-import { useState, useEffect, use, useCallback } from "react"; // Lagt til useCallback
-import { useRouter } from "next/navigation";
+import { useState, useEffect, use } from "react";
+import { useRouter } from "next/navigation"; // Bruk next/navigation
 import Link from "next/link";
 import { toast } from "react-hot-toast";
 import { Button } from "@/components/ui/button";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Skeleton } from "@/components/ui/skeleton";
-import { TournamentStatus } from "@prisma/client";
-import { Loader2, Play, ExternalLink, Settings, ListChecks } from "lucide-react"; // Nye ikoner
+import { Skeleton } from "@/components/ui/skeleton"; // Sørg for at denne komponenten er lagt til via shadcn/ui
+import { TournamentStatus } from "@prisma/client"; // Importer enum for status
 
-// Interfaces (Tournament, User - som før)
+// Interface som matcher data fra GET /api/tournaments/[id]
 interface Tournament {
   id: string;
   name: string;
@@ -45,12 +44,12 @@ interface Tournament {
   };
 }
 
+// Interface for brukerdata
 interface User {
   id: string;
   name: string | null;
   email: string | null;
 }
-
 
 export default function TournamentPage({ params }: { params: Promise<{ id: string }> }) {
   const [tournament, setTournament] = useState<Tournament | null>(null);
@@ -58,24 +57,26 @@ export default function TournamentPage({ params }: { params: Promise<{ id: strin
   const [loading, setLoading] = useState(true);
   const [isRegistering, setIsRegistering] = useState(false);
   const [isUpdatingStatus, setIsUpdatingStatus] = useState(false);
-  const [activeSessionId, setActiveSessionId] = useState<string | null>(null); // NY: For aktiv spill-ID
-  const [isLoadingSessionId, setIsLoadingSessionId] = useState(false); // NY: Laster spill-ID?
-  const [isStartingRound, setIsStartingRound] = useState(false); // NY: Starter runde?
-
   const router = useRouter();
-  const { id: tournamentId } = use(params);
+
+  // Hent ID fra params promise
+  const { id: tournamentId } = use(params); // Unngå å bruke variabelnavnet 'id' hvis User også har 'id'
 
   // Hent brukerdata
   useEffect(() => {
     fetch("/api/auth")
       .then((res) => (res.ok ? res.json() : null))
       .then((data) => setUser(data))
-      .catch(() => setUser(null));
+      .catch((error) => {
+        console.error("Feil ved henting av bruker:", error);
+        setUser(null);
+      });
   }, []);
 
   // Hent turneringsdata
   useEffect(() => {
-    if (!tournamentId) return;
+    if (!tournamentId) return; // Ikke hent hvis ID mangler
+
     setLoading(true);
     fetch(`/api/tournaments/${tournamentId}`)
       .then((res) => {
@@ -92,242 +93,165 @@ export default function TournamentPage({ params }: { params: Promise<{ id: strin
         router.push("/turneringer"); // Send til oversikt ved feil
       })
       .finally(() => setLoading(false));
-  }, [tournamentId, router]);
-
-
-  // --- NY FUNKSJON: Hent aktiv sesjons-ID ---
-  const fetchActiveSession = useCallback(async () => {
-      if (!tournamentId || !user) return; // Trenger ID og bruker
-      setIsLoadingSessionId(true);
-      try {
-          const res = await fetch(`/api/tournaments/${tournamentId}/active-session`);
-          if (!res.ok) {
-              console.error("Kunne ikke hente aktiv sesjon:", res.statusText);
-              setActiveSessionId(null);
-              return;
-          }
-          const data = await res.json();
-          setActiveSessionId(data.sessionId);
-      } catch (error) {
-          console.error("Feil ved henting av aktiv sesjon:", error);
-          setActiveSessionId(null);
-      } finally {
-          setIsLoadingSessionId(false);
-      }
-  }, [tournamentId, user]);
-
-   // --- NY EFFEKT: Kall fetchActiveSession når turneringen er IN_PROGRESS ---
-   useEffect(() => {
-       // Sjekk at tournament finnes før vi sjekker status
-       if (tournament && tournament.status === TournamentStatus.IN_PROGRESS) {
-           fetchActiveSession();
-       } else {
-           setActiveSessionId(null); // Nullstill hvis status ikke er IN_PROGRESS eller tournament er null
-       }
-   }, [tournament, fetchActiveSession]); // Kjør når tournament (og dermed status) endres
-
+  }, [tournamentId, router]); // Kjør på nytt hvis ID endres
 
   // Påmeldingslogikk
   const handleRegister = async () => {
-      if (!user) { toast.error("Du må være logget inn for å melde deg på"); return; }
-      // Sjekk at tournament finnes før vi bruker det
-      if (!tournament) return;
-      setIsRegistering(true);
-      try {
-          const response = await fetch("/api/tournaments/register", {
-              method: "POST",
-              headers: { "Content-Type": "application/json" },
-              body: JSON.stringify({
-                  tournamentId: tournament.id,
-                  playerId: user.id,
-              }),
-          });
-          if (!response.ok) { /* ... feilhåndtering ... */ throw new Error("..."); }
-          const updatedTournament = await response.json();
-          setTournament(updatedTournament);
-          toast.success("Påmelding vellykket!");
-      } catch (error) { /* ... feilhåndtering ... */ }
-      finally { setIsRegistering(false); }
-  };
+    if (!user) { toast.error("Du må være logget inn for å melde deg på"); return; }
+    if (!tournament) return;
 
-  // --- NY FUNKSJON: Start runde (for arrangør) ---
-  const handleStartRound = async () => {
-      // Sjekk at tournament og user finnes, og at bruker er arrangør
-      if (!tournament || !user || user.id !== tournament.organizer.id || isStartingRound) return;
+    setIsRegistering(true);
+    try {
+      const response = await fetch("/api/tournaments/register", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          tournamentId: tournament.id,
+          playerId: user.id,
+        }),
+      });
 
-      setIsStartingRound(true);
-      try {
-          const response = await fetch(`/api/tournaments/${tournament.id}/start-round`, {
-              method: 'POST',
-          });
-          if (!response.ok) {
-              const errorData = await response.json();
-              throw new Error(errorData.error || "Kunne ikke starte runde.");
-          }
-          const data = await response.json();
-          setActiveSessionId(data.sessionId);
-          toast.success("Runde startet og spillobby er klar!");
-      } catch (error) {
-          console.error("Feil ved start av runde:", error);
-          toast.error(error instanceof Error ? error.message : "Ukjent feil.");
-      } finally {
-          setIsStartingRound(false);
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.error || "Påmelding feilet");
       }
+      // Oppdater turneringsobjektet i state med data fra API-responsen
+      const updatedTournament = await response.json();
+      setTournament(updatedTournament);
+      toast.success("Påmelding vellykket!");
+    } catch (error) {
+      console.error("Påmelding feilet:", error);
+      toast.error(error instanceof Error ? error.message : "Påmelding feilet");
+    } finally {
+      setIsRegistering(false);
+    }
   };
 
-
-  // Statusoppdatering
+  // Statusoppdateringslogikk (for arrangør)
   const handleStatusUpdate = async (newStatus: TournamentStatus) => {
-      // Sjekk at tournament og user finnes, og at bruker er arrangør
-      if (!user || !tournament || user.id !== tournament.organizer.id) return;
-      setIsUpdatingStatus(true);
-      try {
-          const response = await fetch("/api/tournaments/status", {
-             method: "POST",
-             headers: { "Content-Type": "application/json" },
-             body: JSON.stringify({ tournamentId: tournament.id, status: newStatus }),
-          });
-          if (!response.ok) { /* ... feilhåndtering ... */ throw new Error("..."); }
-          const updatedTournament = await response.json();
-          setTournament(updatedTournament); // Oppdater state med ny turneringsdata
-          toast.success("Status oppdatert!");
-          // Merk: fetchActiveSession vil kjøre automatisk via useEffect hvis status blir IN_PROGRESS
-      } catch (error) { /* ... feilhåndtering ... */ }
-      finally { setIsUpdatingStatus(false); }
+    if (!user || !tournament || user.id !== tournament.organizer.id) return;
+
+    setIsUpdatingStatus(true);
+    try {
+      const response = await fetch("/api/tournaments/status", { // Kaller riktig API
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          tournamentId: tournament.id,
+          status: newStatus,
+        }),
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.error || "Statusoppdatering feilet");
+      }
+      const updatedTournament = await response.json();
+      setTournament(updatedTournament); // Oppdater state med returnert data
+      toast.success("Status oppdatert!");
+    } catch (error) {
+      console.error("Statusoppdatering feilet:", error);
+      toast.error(error instanceof Error ? error.message : "Statusoppdatering feilet");
+    } finally {
+      setIsUpdatingStatus(false);
+    }
   };
 
-  // Loading State
+  // --- Loading State ---
   if (loading) {
-     return ( // Returnerer Skeleton UI
-       <div className="max-w-4xl mx-auto p-6 space-y-6">
-           <div className="flex justify-between items-start">
-               <Skeleton className="h-8 w-3/4 rounded" />
-               <Skeleton className="h-10 w-20 rounded" />
-           </div>
-           <Skeleton className="h-5 w-1/2 rounded" />
-          <div className="mt-6 grid grid-cols-1 md:grid-cols-2 gap-6">
-              <div className="space-y-4">
-                  <Skeleton className="h-6 w-1/3 rounded" />
-                  <Skeleton className="h-4 w-full rounded" />
-                  <Skeleton className="h-4 w-full rounded" />
-                  <Skeleton className="h-4 w-2/3 rounded" />
-              </div>
-              <div className="space-y-4">
-                 <Skeleton className="h-6 w-1/2 rounded" />
-                 <Skeleton className="h-8 w-full rounded" />
-                 <Skeleton className="h-8 w-full rounded" />
-              </div>
+    return (
+      <div className="max-w-4xl mx-auto p-6 space-y-6">
+          <div className="flex justify-between items-start">
+              <Skeleton className="h-8 w-3/4 rounded" />
+              <Skeleton className="h-10 w-20 rounded" />
           </div>
-       </div>
-     );
+          <Skeleton className="h-5 w-1/2 rounded" />
+         <div className="mt-6 grid grid-cols-1 md:grid-cols-2 gap-6">
+             <div className="space-y-4">
+                 <Skeleton className="h-6 w-1/3 rounded" />
+                 <Skeleton className="h-4 w-full rounded" />
+                 <Skeleton className="h-4 w-full rounded" />
+                 <Skeleton className="h-4 w-2/3 rounded" />
+             </div>
+             <div className="space-y-4">
+                <Skeleton className="h-6 w-1/2 rounded" />
+                <Skeleton className="h-8 w-full rounded" />
+                <Skeleton className="h-8 w-full rounded" />
+             </div>
+         </div>
+      </div>
+    );
   }
 
-  // Ingen turnering funnet (etter lasting)
+  // --- Ingen turnering funnet ---
   if (!tournament) {
+    // Feilmelding håndteres i fetch, men en fallback kan være greit
     return <div className="max-w-4xl mx-auto p-6 text-center text-red-500">Turnering ikke funnet.</div>;
   }
 
-  // --- Beregnede verdier (bruk ! siden vi nå vet at tournament finnes) ---
+  // --- Beregnede verdier ---
   const isOrganizer = user?.id === tournament.organizer.id;
   const isParticipant = tournament.participants.some((p) => p.id === user?.id);
   const isRegistrationOpen = tournament.status === TournamentStatus.REGISTRATION_OPEN;
-  const canRegister = user && !isOrganizer && !isParticipant && isRegistrationOpen && (!tournament.maxParticipants || tournament._count.participants < tournament.maxParticipants);
-  const canViewStandings = tournament.status === TournamentStatus.COMPLETED;
-  const isInProgress = tournament.status === TournamentStatus.IN_PROGRESS;
+  const canRegister =
+    user && // Må være logget inn
+    !isOrganizer && // Arrangør kan ikke melde seg på? (Valgfritt)
+    !isParticipant && // Ikke allerede påmeldt
+    isRegistrationOpen && // Påmelding må være åpen
+    (!tournament.maxParticipants || // Enten ubegrenset plasser
+      tournament._count.participants < tournament.maxParticipants); // eller ledige plasser
+
+  // *** KORRIGERT LINJE ***
+  const canViewResults = tournament.status === TournamentStatus.IN_PROGRESS || tournament.status === TournamentStatus.COMPLETED;
+  // *** KORRIGERT LINJE ***
+  const canRegisterResults = isOrganizer && (tournament.status === TournamentStatus.IN_PROGRESS || tournament.status === TournamentStatus.COMPLETED);
 
   return (
-    <div className="max-w-4xl mx-auto p-6 bg-gray-50 min-h-screen"> {/* Lys bakgrunn */}
-
+    <div className="max-w-4xl mx-auto p-6">
       {/* Overskrift og Rediger-knapp */}
-      <div className="flex justify-between items-start mb-6">
+      <div className="flex justify-between items-start mb-4">
         <div>
-          <h1 className="text-3xl font-bold text-gray-900">{tournament.name}</h1>
-          <p className="text-gray-700 mt-1 text-sm">
+          <h1 className="text-3xl font-bold">{tournament.name}</h1>
+          <p className="text-gray-600 mt-1 text-sm">
             Arrangert av {tournament.organizer.name || 'Ukjent arrangør'}
             {tournament.club && ` • ${tournament.club.name}`}
           </p>
           <p className="text-gray-600 text-sm">
-            Bane: <Link href={`/course/${tournament.course.id}`} className="text-blue-600 hover:underline hover:text-blue-800">{tournament.course.name}</Link> ({tournament.location})
+            Bane: <Link href={`/course/${tournament.course.id}`} className="text-blue-600 hover:underline">{tournament.course.name}</Link> ({tournament.location})
           </p>
         </div>
         {isOrganizer && (
           <Link href={`/tournament/${tournament.id}/edit`}>
-            <Button variant="outline" className="border-gray-300 text-gray-700 hover:bg-gray-100">
-                <Settings className="mr-2 h-4 w-4"/> Rediger
-            </Button>
+            <Button variant="outline">Rediger</Button>
           </Link>
         )}
       </div>
 
-       {/* Status/Handlings-banner for IN_PROGRESS */}
-        {isInProgress && (
-            <div className={`my-5 p-4 rounded-lg border ${activeSessionId ? 'bg-green-50 border-green-200' : 'bg-yellow-50 border-yellow-200'}`}>
-                 <div className="flex flex-col sm:flex-row items-center justify-between gap-3">
-                     <div className='flex items-center'>
-                         {/* Viser lasting-ikon spesifikt for sesjons-ID */}
-                         {isLoadingSessionId ? (
-                             <Loader2 className="h-5 w-5 mr-2 animate-spin text-gray-500" />
-                         ) : (
-                             <Loader2 className={`h-5 w-5 mr-2 animate-spin ${activeSessionId ? 'text-green-600' : 'text-yellow-600'}`} />
-                         )}
-                         <p className={`font-medium ${activeSessionId ? 'text-green-800' : 'text-yellow-800'}`}>
-                             {isLoadingSessionId ? 'Sjekker spillstatus...' :
-                              activeSessionId ? 'Turneringen pågår!' : 'Turneringen pågår! Venter på at spillet skal klargjøres...'}
-                         </p>
-                     </div>
-
-                     {/* Knapper basert på rolle og sesjonsstatus */}
-                     {activeSessionId ? (
-                         // Sesjon er aktiv
-                         isParticipant && (
-                             <Link href={`/turnerings-spill/${activeSessionId}/lobby`}>
-                                 <Button className="bg-green-600 hover:bg-green-700">
-                                     <Play className="mr-2 h-4 w-4"/> Gå til Spillobby
-                                 </Button>
-                             </Link>
-                         )
-                     ) : (
-                         // Sesjon er IKKE aktiv (eller laster)
-                         isOrganizer && !isLoadingSessionId && ( // Vis kun hvis lasting er ferdig
-                             <Button
-                                 onClick={handleStartRound}
-                                 disabled={isStartingRound}
-                                 variant="secondary"
-                                 className="bg-yellow-500 hover:bg-yellow-600 text-black"
-                             >
-                                 {isStartingRound ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Play className="mr-2 h-4 w-4"/>}
-                                 {isStartingRound ? 'Starter Runde...' : 'Start Runde 1'}
-                             </Button>
-                         )
-                     )}
-                 </div>
-             </div>
-        )}
-
-
       {/* Hovedinnhold Grid */}
       <div className="mt-6 grid grid-cols-1 md:grid-cols-2 gap-6">
+
         {/* Turneringsdetaljer */}
-        <div className="bg-white p-6 rounded-lg shadow-md border border-gray-200">
-          <h2 className="text-xl font-semibold mb-3 border-b border-gray-200 pb-2 text-gray-800">Turneringsinfo</h2>
-          <div className="space-y-2 text-sm text-gray-700">
-             <p><strong>Start:</strong> {new Date(tournament.startDate).toLocaleString('nb-NO', { dateStyle: 'medium', timeStyle: 'short' })}</p>
-             {tournament.endDate && ( <p><strong>Slutt:</strong> {new Date(tournament.endDate).toLocaleString('nb-NO', { dateStyle: 'medium', timeStyle: 'short' })}</p> )}
-             <p><strong>Status:</strong> <span className={`font-semibold px-2 py-0.5 rounded-full text-xs ${
-                 tournament.status === TournamentStatus.REGISTRATION_OPEN ? 'bg-green-100 text-green-800' :
-                 tournament.status === TournamentStatus.IN_PROGRESS ? 'bg-yellow-100 text-yellow-800' :
-                 tournament.status === TournamentStatus.COMPLETED ? 'bg-gray-100 text-gray-800' :
-                 'bg-blue-100 text-blue-800' // PLANNING
+        <div className="bg-white p-6 rounded-lg shadow">
+          <h2 className="text-xl font-semibold mb-3 border-b pb-2">Turneringsinfo</h2>
+          <div className="space-y-2 text-sm">
+            <p><strong>Start:</strong> {new Date(tournament.startDate).toLocaleString('nb-NO', { dateStyle: 'medium', timeStyle: 'short' })}</p>
+            {tournament.endDate && (
+              <p><strong>Slutt:</strong> {new Date(tournament.endDate).toLocaleString('nb-NO', { dateStyle: 'medium', timeStyle: 'short' })}</p>
+            )}
+             <p><strong>Status:</strong> <span className={`font-medium ${
+                 tournament.status === TournamentStatus.REGISTRATION_OPEN ? 'text-green-600' :
+                 tournament.status === TournamentStatus.IN_PROGRESS ? 'text-yellow-600' :
+                 tournament.status === TournamentStatus.COMPLETED ? 'text-gray-600' : 'text-blue-600' // PLANNING
              }`}>{tournament.status.replace("_", " ")}</span></p>
              <p><strong>Påmeldte:</strong> {tournament._count.participants} {tournament.maxParticipants ? `/ ${tournament.maxParticipants}` : '(ubegrenset)'}</p>
-             {tournament.description && ( <p className="mt-4 pt-4 border-t border-gray-200">{tournament.description}</p> )}
-             {/* Lenke til Endelig Stilling */}
-             {canViewStandings && (
-                 <div className="mt-4 pt-4 border-t border-gray-200">
+             {tournament.description && (
+               <p className="mt-4 pt-4 border-t">{tournament.description}</p>
+             )}
+              {/* Lenke til Resultater/Stilling */}
+             {canViewResults && (
+                 <div className="mt-4 pt-4 border-t">
                      <Link href={`/tournament/${tournament.id}/standings`}>
-                         <Button variant="link" className="p-0 h-auto text-blue-600 hover:text-blue-800">
-                            <ListChecks className="mr-1 h-4 w-4"/> Se Sluttstilling
-                         </Button>
+                         <Button variant="link" className="p-0 h-auto">Se Stilling</Button>
                      </Link>
                  </div>
              )}
@@ -335,70 +259,89 @@ export default function TournamentPage({ params }: { params: Promise<{ id: strin
         </div>
 
         {/* Deltakere */}
-        <div className="bg-white p-6 rounded-lg shadow-md border border-gray-200">
-          <div className="flex justify-between items-center mb-3 border-b border-gray-200 pb-2">
-            <h2 className="text-xl font-semibold text-gray-800">Påmeldte spillere</h2>
+        <div className="bg-white p-6 rounded-lg shadow">
+          <div className="flex justify-between items-center mb-3 border-b pb-2">
+            <h2 className="text-xl font-semibold">Påmeldte spillere</h2>
             {/* Påmeldingsknapp */}
-            {canRegister && ( <Button onClick={handleRegister} disabled={isRegistering} size="sm" className="bg-blue-600 hover:bg-blue-700 text-white"> {isRegistering ? <Loader2 className="h-4 w-4 animate-spin"/> : "Meld på"} </Button> )}
-            {/* Meldinger */}
-             {isParticipant && !isOrganizer && ( <span className="text-sm text-green-600 font-medium">✓ Påmeldt</span> )}
-             {!canRegister && isRegistrationOpen && !isParticipant && tournament.maxParticipants && tournament._count.participants >= tournament.maxParticipants && ( <span className="text-sm text-red-600 font-medium">Fulltegnet</span> )}
-             {!isRegistrationOpen && !isParticipant && !isInProgress && tournament.status !== 'COMPLETED' && ( <span className="text-sm text-gray-500">Påmelding stengt</span> )}
+            {canRegister && (
+              <Button
+                onClick={handleRegister}
+                disabled={isRegistering}
+                size="sm"
+                className="bg-blue-600 hover:bg-blue-700 text-white"
+              >
+                {isRegistering ? "Melder på..." : "Meld meg på"}
+              </Button>
+            )}
+            {/* Melding hvis påmeldt */}
+            {isParticipant && !isOrganizer && (
+                <span className="text-sm text-green-600 font-medium">Du er påmeldt</span>
+            )}
+             {/* Melding hvis fullt */}
+             {!canRegister && isRegistrationOpen && !isParticipant && tournament.maxParticipants && tournament._count.participants >= tournament.maxParticipants && (
+                  <span className="text-sm text-red-600 font-medium">Turneringen er full</span>
+             )}
+             {/* Melding hvis ikke åpen */}
+             {!isRegistrationOpen && !isParticipant && (
+                 <span className="text-sm text-gray-500">Påmelding er ikke åpen</span>
+             )}
           </div>
-            {/* Deltakerliste */}
-           {tournament.participants.length > 0 ? (
-                <ul className="mt-4 space-y-2 text-sm">
-                    {tournament.participants.map((player) => (
-                        <li key={player.id} className="flex items-center justify-between border-b border-gray-100 pb-1 last:border-b-0">
-                            <span className="text-gray-800">{player.name || `Bruker ${player.id.substring(0,6)}`}</span>
-                            {/* TODO: Fjern-knapp */}
-                        </li>
-                    ))}
-                </ul>
-            ) : ( <p className="mt-4 text-gray-500 text-sm">Ingen påmeldte ennå.</p> )}
+
+          {tournament.participants.length > 0 ? (
+            <ul className="mt-4 space-y-2 text-sm">
+              {tournament.participants.map((player) => (
+                <li key={player.id} className="flex items-center justify-between">
+                  <span>{player.name || `Bruker ${player.id.substring(0,6)}`}</span>
+                  {/* TODO: Knapp for å fjerne deltaker (kun for arrangør) */}
+                  {/* {isOrganizer && (
+                    <Button
+                      onClick={() => { toast("Fjerningsfunksjon må lages"); }}
+                      variant="ghost" size="sm" className="text-red-500 hover:text-red-700 h-auto p-1"
+                    >
+                      Fjern
+                    </Button>
+                  )} */}
+                </li>
+              ))}
+            </ul>
+          ) : (
+            <p className="mt-4 text-gray-500 text-sm">Ingen påmeldte ennå.</p>
+          )}
         </div>
       </div>
 
-      {/* Administrasjon */}
+      {/* Administrasjon (kun for arrangør) */}
       {isOrganizer && (
-        <div className="mt-6 bg-white p-6 rounded-lg shadow-md border border-gray-200">
-          <h2 className="text-xl font-semibold mb-3 border-b border-gray-200 pb-2 text-gray-800">
-             <Settings className="inline-block mr-2 h-5 w-5 align-text-bottom"/> Administrasjon
-          </h2>
-          <div className="mt-4 flex flex-wrap gap-x-6 gap-y-4 items-center">
+        <div className="mt-6 bg-white p-6 rounded-lg shadow">
+          <h2 className="text-xl font-semibold mb-3 border-b pb-2">Administrasjon</h2>
+          <div className="mt-4 flex flex-wrap gap-4 items-center">
             {/* Statusvelger */}
             <div className="flex items-center gap-2">
-              <label htmlFor="statusSelect" className="text-sm font-medium text-gray-700">Endre status:</label>
-              <Select value={tournament.status} onValueChange={(value) => handleStatusUpdate(value as TournamentStatus)} disabled={isUpdatingStatus}>
-                  <SelectTrigger id="statusSelect" className="w-[180px] bg-white border-gray-300" disabled={isUpdatingStatus}>
+              <label htmlFor="statusSelect" className="text-sm font-medium">Endre status:</label>
+              <Select
+                value={tournament.status}
+                onValueChange={(value) => handleStatusUpdate(value as TournamentStatus)}
+                disabled={isUpdatingStatus}
+              >
+                  <SelectTrigger id="statusSelect" className="w-[180px]" disabled={isUpdatingStatus}>
                       <SelectValue placeholder="Velg status" />
                   </SelectTrigger>
                   <SelectContent>
-                      {Object.values(TournamentStatus).map(s => ( <SelectItem key={s} value={s}>{s.replace("_", " ")}</SelectItem> ))}
+                      {Object.values(TournamentStatus).map(s => (
+                          <SelectItem key={s} value={s}>{s.replace("_", " ")}</SelectItem>
+                      ))}
                   </SelectContent>
               </Select>
-              {isUpdatingStatus && <Loader2 className="h-4 w-4 animate-spin text-gray-500"/>}
+              {isUpdatingStatus && <span className="text-xs text-gray-500">Oppdaterer...</span>}
             </div>
 
-            {/* Start Runde / Gå til Lobby Knapper */}
-            {isInProgress && !activeSessionId && (
-                 <Button onClick={handleStartRound} disabled={isStartingRound || isLoadingSessionId} variant="secondary" className="bg-yellow-500 hover:bg-yellow-600 text-black">
-                     {isStartingRound ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Play className="mr-2 h-4 w-4"/>}
-                     {isStartingRound ? 'Starter...' : 'Start Runde 1'}
-                 </Button>
-            )}
-            {isInProgress && activeSessionId && (
-                  <Link href={`/turnerings-spill/${activeSessionId}/lobby`}>
-                      <Button variant="outline" className="border-gray-300 text-gray-700 hover:bg-gray-100">
-                          <ExternalLink className="mr-2 h-4 w-4"/> Gå til Spillobby
-                      </Button>
-                  </Link>
+             {/* Lenke til Registrer resultater */}
+            {canRegisterResults && (
+                <Link href={`/tournament/${tournament.id}/results`}>
+                    <Button variant="default" className="bg-green-600 hover:bg-green-700">Registrer resultater</Button>
+                </Link>
             )}
           </div>
-           {/* Info om status/spill */}
-            {isInProgress && !activeSessionId && !isLoadingSessionId && <p className="text-xs text-gray-500 mt-3">Klikk "Start Runde" for å la deltakere gå til spillobbyen.</p>}
-             {isInProgress && isLoadingSessionId && <p className="text-xs text-gray-500 mt-3">Sjekker spillstatus...</p>}
-            {isInProgress && activeSessionId && <p className="text-xs text-green-600 mt-3">Spillobbyen er klar. Deltakere kan nå bli med.</p>}
         </div>
       )}
     </div>
