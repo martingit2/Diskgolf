@@ -12,11 +12,13 @@ import Link from "next/link";
 export default function Footer() {
   // Definerer rekkefølgen på lenkene basert på beste praksis: Kjernefunksjoner -> Ressurser -> Om/Juridisk
   const footerLinks = [
+
     { href: "/baner", label: "Baneoversikt" },
     { href: "/medlemskap", label: "Medlemskap" },
     { href: "/guide", label: "Guide til Discgolf" },
     { href: "/faq", label: "FAQ" },
     { href: "/om-oss", label: "Om oss" },
+    { href: "/kontakt", label: "Kontakt oss" },
     { href: "/personvern", label: "Personvern" },
     { href: "/vilkar", label: "Vilkår for bruk" },
   ];

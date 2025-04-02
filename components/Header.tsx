@@ -143,14 +143,14 @@ function Header() {
           <Link href="/nyheter" className="text-sm font-semibold leading-6 text-white hover:text-green-400">
       Nyheter
      </Link>
-     <Link href="/klubber" className="text-sm font-semibold leading-6 text-white hover:text-green-400">
-     Klubber
+     <Link href="/spill" className="text-sm font-semibold leading-6 text-white hover:text-green-400">
+     Banespill
      </Link>
      <Link href="/turneringer" className="text-sm font-semibold leading-6 hover:text-green-400 text-white">
     Turneringer
       </Link>
-      <Link href="/kontakt" className="text-sm font-semibold leading-6 text-white hover:text-green-400">
-       Kontakt oss
+      <Link href="/klubber" className="text-sm font-semibold leading-6 text-white hover:text-green-400">
+       Klubber
        </Link>
    
 
