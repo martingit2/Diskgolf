@@ -96,7 +96,7 @@ export default function PrivacyPolicyPage() {
             <li><span className="font-semibold">Kommunikasjon:</span> Innholdet i henvendelser sendt til vår support (f.eks. via e-post eller kontaktskjema), inkludert din e-postadresse og navnet du oppgir.</li>
           </ul>
            {/* --- DUMMY DATA END --- */}
-          <p className="text-gray-700 leading-relaxed mt-4 text-sm text-gray-500 italic">
+          <p className="text-gray-700 leading-relaxed mt-4 text-sm italic">
              Husk: Den faktiske innsamlingen avhenger av funksjonene du bruker og tillatelsene du gir.
           </p>
         </motion.section>

@@ -342,7 +342,7 @@ export default function DiscgolfGuidePage() {
 
          {/* Section 9: Final Call to Action (Reused from Om Oss) */}
         <motion.section
-          className="text-center bg-gradient-to-r from-green-600 to-blue-600 rounded-xl p-10 sm:p-16 shadow-xl mt-12 max-w-5xl mx-auto" // Centered with max-width
+         className="text-center bg-gradient-to-r  from-green-500 via-green-900  to-green-500  rounded-xl p-10 sm:p-16 shadow-xl mt-12" 
           initial="hidden"
           whileInView="visible"
           viewport={{ once: true, amount: 0.5 }}
