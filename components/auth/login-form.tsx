@@ -71,7 +71,7 @@ const LoginForm = ({ onForgotPassword, onRegister, onLoginSuccess }: LoginFormPr
 
   return (
     <CardWrapper
-      headerLabel="Velkommen tilbake e"
+      headerLabel="Velkommen tilbake"
       backButtonLabel="Har du ikke konto?"
       backButtonHref="/"
       onBackButtonClick={onRegister}
