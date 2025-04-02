@@ -1,4 +1,4 @@
-// app/api/tournaments/status/route.ts
+// /app/api/tournaments/status/route.ts
 import { PrismaClient, TournamentStatus } from "@prisma/client";
 import { NextResponse } from "next/server";
 import { getServerSession } from "next-auth/next";
@@ -53,13 +53,26 @@ export async function POST(request: Request) {
     const updatedTournament = await prisma.tournament.update({
       where: { id: tournamentId },
       data: { status: status as TournamentStatus },
-       include: { // Returner oppdatert turnering med nødvendig info for frontend
-          course: { select: { id: true, name: true, location: true } },
-          organizer: { select: { id: true, name: true } },
-          club: { select: { id: true, name: true } },
-          participants: { select: { id: true, name: true } },
-          _count: { select: { participants: true } },
-      },
+       // --- VIKTIG: Inkluder ALLE data som trengs for å re-rendre siden korrekt ---
+       include: {
+            // Sørg for at denne matcher 'include' i GET /api/tournaments/[id]
+            course: {
+                select: {
+                    id: true,
+                    name: true,
+                    location: true,
+                    image: true, // <-- Legg til denne
+                    par: true,     // <-- Legg til denne
+                    numHoles: true // <-- Legg til denne
+                    // Inkluder 'baskets' hvis TournamentDetailsCard trenger det
+                    // baskets: {select: {id: true}}
+                }
+            },
+            organizer: { select: { id: true, name: true } },
+            club: { select: { id: true, name: true } },
+            participants: { select: { id: true, name: true } }, // Trengs for isParticipant og listen
+            _count: { select: { participants: true } }, // Trengs for antall/maks
+        },
     });
 
     return NextResponse.json(updatedTournament);

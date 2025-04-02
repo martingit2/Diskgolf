@@ -8,7 +8,7 @@ import { toast } from "react-hot-toast";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 import { TournamentStatus } from "@prisma/client";
-import { Loader2, Play, Settings, ListChecks, AlertCircle, TrendingUp, ArrowRight } from "lucide-react";
+import { Loader2, Play, Settings, ListChecks, AlertCircle, TrendingUp, ArrowRight, LogIn, LogOut } from "lucide-react"; // La til LogIn, LogOut for knapper
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 
 // Komponenter
@@ -55,6 +55,7 @@ export default function TournamentPage({ params }: { params: Promise<{ id: strin
     const [user, setUser] = useState<User | null>(null);
     const [loading, setLoading] = useState(true);
     const [isRegistering, setIsRegistering] = useState(false);
+    const [isUnregistering, setIsUnregistering] = useState(false); // NY: State for avmelding
     const [isUpdatingStatus, setIsUpdatingStatus] = useState(false);
     const [isStartingRound, setIsStartingRound] = useState(false);
     const [activeSessionId, setActiveSessionId] = useState<string | null>(null);
@@ -75,15 +76,28 @@ export default function TournamentPage({ params }: { params: Promise<{ id: strin
     // --- Callbacks for Datahenting ---
     useEffect(() => { fetch("/api/auth").then((res) => (res.ok ? res.json() : null)).then(setUser).catch(() => setUser(null)); }, []);
 
-    useEffect(() => {
+    const fetchTournamentData = useCallback(async () => {
         if (!tournamentId) return;
         setLoading(true);
-        fetch(`/api/tournaments/${tournamentId}`)
-            .then((res) => { if (!res.ok) throw new Error(res.status === 404 ? "Turnering ikke funnet" : "Kunne ikke hente turnering"); return res.json(); })
-            .then(setTournament)
-            .catch((error) => { console.error("Feil henting turnering:", error); toast.error(error.message); router.push("/turneringer"); })
-            .finally(() => setLoading(false));
-    }, [tournamentId, router]);
+        try {
+            const res = await fetch(`/api/tournaments/${tournamentId}`);
+            if (!res.ok) throw new Error(res.status === 404 ? "Turnering ikke funnet" : "Kunne ikke hente turnering");
+            const data = await res.json();
+            setTournament(data);
+        } catch (error) {
+            console.error("Feil henting turnering:", error);
+            toast.error(error instanceof Error ? error.message : "Kunne ikke laste turnering.");
+            router.push("/turneringer");
+        } finally {
+            setLoading(false);
+        }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [tournamentId, router]); // Bare kjør når tournamentId endres
+
+    useEffect(() => {
+        fetchTournamentData();
+    }, [fetchTournamentData]); // Hent data når komponenten lastes
+
 
     const fetchActiveSession = useCallback(async () => {
         if (!tournamentId || !user) return;
@@ -126,17 +140,14 @@ export default function TournamentPage({ params }: { params: Promise<{ id: strin
         finally { setIsLoadingLeaderboard(false); }
     }, [activeSessionId, activeSessionStatus, calculateResults]);
 
-    // Hent endelige resultater (standings)
     const fetchStandings = useCallback(async () => {
         if (!tournamentId) return;
         setIsLoadingStandings(true); setStandingsError(null);
-        console.log(`Fetching final standings for tournament ${tournamentId}`); // Logging
         try {
             const res = await fetch(`/api/tournaments/${tournamentId}/standings`);
             if (!res.ok) { let err = "Kunne ikke hente resultater."; try { err = (await res.json()).error || err; } catch (e) {} throw new Error(err); }
             const data: StandingPlayer[] = await res.json();
-            console.log("Fetched final standings data:", data); // Logging
-            setStandings(data); // Data har allerede tournamentId fra API
+            setStandings(data);
         } catch (err) { console.error("Feil henting standings:", err); setStandingsError(err instanceof Error ? err.message : "Ukjent feil"); setStandings([]); }
         finally { setIsLoadingStandings(false); }
     }, [tournamentId]);
@@ -147,16 +158,64 @@ export default function TournamentPage({ params }: { params: Promise<{ id: strin
     useEffect(() => { if (tournament?.status === TournamentStatus.COMPLETED) fetchStandings(); else { setStandings([]); setStandingsError(null); } }, [tournament?.status, fetchStandings]);
 
     // --- Handlings-Callbacks ---
-    const handleRegister = useCallback(async () => { if (!user || !tournament) return; setIsRegistering(true); try { const r = await fetch("/api/tournaments/register",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({tournamentId:tournament.id,playerId:user.id})}); if(!r.ok){const e=await r.json().catch(()=>({}));throw new Error(e.error||"Påmelding feilet")} setTournament(await r.json());toast.success("Påmeldt!")} catch(e){console.error(e);toast.error(e instanceof Error?e.message:"Feil")} finally{setIsRegistering(false)} }, [user, tournament]);
+
+    // PÅMELDING
+    const handleRegister = useCallback(async () => {
+        if (!user || !tournament) return;
+        setIsRegistering(true);
+        try {
+            const response = await fetch("/api/tournaments/register", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ tournamentId: tournament.id, playerId: user.id })
+            });
+            if (!response.ok) {
+                const err = await response.json().catch(() => ({ error: 'Ukjent feil under påmelding' }));
+                throw new Error(err.error || "Påmelding feilet");
+            }
+            const updatedTournamentData = await response.json();
+            setTournament(updatedTournamentData); // Oppdater state med ny turneringsdata
+            toast.success("Påmeldt!");
+        } catch (e) {
+            console.error("Feil ved påmelding:", e);
+            toast.error(e instanceof Error ? e.message : "En feil oppstod under påmelding.");
+        } finally {
+            setIsRegistering(false);
+        }
+    }, [user, tournament]);
+
+    // AVMELDING (NY)
+    const handleUnregister = useCallback(async () => {
+        if (!user || !tournament) return;
+        setIsUnregistering(true); // Sett laste-state for avmelding
+        try {
+            const response = await fetch("/api/tournaments/unregister", { // Kall det nye endepunktet
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ tournamentId: tournament.id, playerId: user.id })
+            });
+            if (!response.ok) {
+                const err = await response.json().catch(() => ({ error: 'Ukjent feil under avmelding' }));
+                throw new Error(err.error || "Avmelding feilet");
+            }
+            const updatedTournamentData = await response.json();
+            setTournament(updatedTournamentData); // Oppdater state med ny turneringsdata
+            toast.success("Avmeldt!");
+        } catch (e) {
+            console.error("Feil ved avmelding:", e);
+            toast.error(e instanceof Error ? e.message : "En feil oppstod under avmelding.");
+        } finally {
+            setIsUnregistering(false); // Reset laste-state for avmelding
+        }
+    }, [user, tournament]);
+
+
     const handleStartRound = useCallback(async () => { if (!tournament || !user || user.id !== tournament.organizer.id || isStartingRound) return; setIsStartingRound(true); try { const r = await fetch(`/api/tournaments/${tournament.id}/start-round`,{method:'POST'}); if(!r.ok){const e=await r.json().catch(()=>({}));throw new Error(e.error||"Kunne ikke starte runde")} const { sessionId } = await r.json(); setActiveSessionId(sessionId); setActiveSessionStatus('waiting'); toast.success("Runde startet, lobby er klar!") } catch(e){console.error(e);toast.error(e instanceof Error?e.message:"Feil")} finally{setIsStartingRound(false)} }, [tournament, user, isStartingRound]);
 
-    // --- OPPGRADERT handleStatusUpdate ---
     const handleStatusUpdate = useCallback(async (newStatus: TournamentStatus) => {
         if (!user || !tournament || user.id !== tournament.organizer.id) return;
         setIsUpdatingStatus(true);
-        let statusUpdateSuccess = false;
         try {
-            // 1. Oppdater status
             const statusResponse = await fetch("/api/tournaments/status", {
                 method: "POST", headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({ tournamentId: tournament.id, status: newStatus })
@@ -164,48 +223,39 @@ export default function TournamentPage({ params }: { params: Promise<{ id: strin
             if (!statusResponse.ok) { const err = await statusResponse.json().catch(() => ({})); throw new Error(err.error || "Statusoppdatering feilet"); }
 
             const updatedTournament = await statusResponse.json();
-            setTournament(updatedTournament); // Viktig: Oppdater state FØR finalize
+            setTournament(updatedTournament);
             toast.success("Status oppdatert!");
-            statusUpdateSuccess = true;
 
-            // 2. Kall finalize hvis status er COMPLETED
             if (newStatus === TournamentStatus.COMPLETED) {
-                console.log(`Status satt til COMPLETED for ${tournament.id}. Kaller finalize API...`);
                 toast.loading("Lagrer endelige resultater...");
-
                 const finalizeResponse = await fetch(`/api/tournaments/${tournament.id}/finalize`, { method: 'POST' });
                 toast.dismiss();
-
                 if (!finalizeResponse.ok) { const finalizeError = await finalizeResponse.json().catch(() => ({})); throw new Error(finalizeError.error || "Kunne ikke lagre resultater."); }
-
                 const finalizeResult = await finalizeResponse.json();
-                console.log("Finalize API response:", finalizeResult);
                 toast.success(finalizeResult.message || "Endelige resultater lagret!");
-                fetchStandings(); // Hent standings på nytt for å vise dem
+                fetchStandings();
             }
-
         } catch (e) {
             console.error("Feil under statusoppdatering/finalisering:", e);
             toast.error(e instanceof Error ? e.message : "En feil oppstod");
         } finally {
             setIsUpdatingStatus(false);
         }
-    }, [user, tournament, fetchStandings]); // Legg til fetchStandings
-    // --- SLUTT OPPGRADERING ---
+    }, [user, tournament, fetchStandings]);
 
 
     // --- Render ---
-    if (loading) { return ( <div className="max-w-4xl mx-auto p-6 space-y-6"> <Skeleton className="h-48 w-full" /> <Skeleton className="h-12 w-1/2" /> <div className="grid grid-cols-1 md:grid-cols-2 gap-6"><Skeleton className="h-64 w-full" /><Skeleton className="h-64 w-full" /></div> </div> ); }
-    if (!tournament) { return <div className="max-w-4xl mx-auto p-6 text-center text-red-500">Turnering ikke funnet.</div>; }
+    if (loading) { return ( <div className="max-w-4xl mx-auto p-6 space-y-6"> <Skeleton className="h-48 w-full rounded-lg" /> <Skeleton className="h-10 w-1/2 mt-4 rounded" /> <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mt-6"><Skeleton className="h-64 w-full rounded-lg" /><Skeleton className="h-64 w-full rounded-lg" /></div> </div> ); }
+    if (!tournament) { return <div className="max-w-4xl mx-auto p-6 text-center text-red-500 font-medium">Turnering ikke funnet. <Link href="/turneringer" className="text-blue-600 hover:underline ml-2">Tilbake til oversikten</Link></div>; }
 
     const isOrganizer = user?.id === tournament.organizer.id;
-    const isParticipant = tournament.participants.some((p) => p.id === user?.id);
+    const isParticipant = !!user && tournament.participants.some((p) => p.id === user.id); // Forenklet sjekk
     const isInProgress = tournament.status === TournamentStatus.IN_PROGRESS;
     const isCompleted = tournament.status === TournamentStatus.COMPLETED;
     const isRegistrationOpen = tournament.status === TournamentStatus.REGISTRATION_OPEN;
 
     return (
-        <div className="max-w-4xl mx-auto p-6 bg-gray-50 min-h-screen space-y-6">
+        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8 bg-gray-50 min-h-screen space-y-6">
 
             {/* Vis Vinner Display FØR header når ferdig */}
             {isCompleted && (
@@ -259,21 +309,31 @@ export default function TournamentPage({ params }: { params: Promise<{ id: strin
 
 
             {/* Hovedinnhold Grid */}
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6"> {/* Justert grid for større skjermer */}
                 <TournamentDetailsCard tournament={tournament} />
                 <TournamentParticipantsCard
-                    tournament={tournament} user={user} isOrganizer={isOrganizer}
-                    isParticipant={isParticipant} isRegistrationOpen={isRegistrationOpen}
-                    isRegistering={isRegistering} onRegister={handleRegister}
+                    tournament={tournament}
+                    user={user}
+                    isOrganizer={isOrganizer}
+                    isParticipant={isParticipant}
+                    isRegistrationOpen={isRegistrationOpen}
+                    isRegistering={isRegistering}
+                    isUnregistering={isUnregistering} // Send med ny state
+                    onRegister={handleRegister}
+                    onUnregister={handleUnregister} // Send med ny callback
                 />
             </div>
 
             {/* Admin Panel */}
             {isOrganizer && (
                 <TournamentAdminPanel
-                    tournament={tournament} isOrganizer={isOrganizer} isUpdatingStatus={isUpdatingStatus}
-                    activeSessionId={activeSessionId} isLoadingSessionId={isLoadingSessionId}
-                    isStartingRound={isStartingRound} onStatusUpdate={handleStatusUpdate}
+                    tournament={tournament}
+                    isOrganizer={isOrganizer}
+                    isUpdatingStatus={isUpdatingStatus}
+                    activeSessionId={activeSessionId}
+                    isLoadingSessionId={isLoadingSessionId}
+                    isStartingRound={isStartingRound}
+                    onStatusUpdate={handleStatusUpdate}
                     onStartRound={handleStartRound}
                  />
              )}

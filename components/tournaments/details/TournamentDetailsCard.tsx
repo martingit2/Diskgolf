@@ -3,28 +3,40 @@ import Link from 'next/link';
 import Image from 'next/image';
 import { TournamentStatus } from '@prisma/client';
 import { Button } from '@/components/ui/button';
-import { ListChecks, CalendarDays, MapPin, Disc, User, Users } from 'lucide-react';
+import {
+    ListChecks,     // For resultater
+    CalendarDays,   // For tidsplan
+    Users,          // For påmelding
+    Info,           // For beskrivelse
+    Target,         // For banedetaljer (Hull, Par)
+    TrendingUp,     // For banedistanse
+    AlertTriangle,  // For OB-soner
+    Disc            // Gjenbruker Disc for hovedtittel
+} from 'lucide-react';
 
+// Oppdatert interface: La til 'name', forventer mer baneinfo
 interface TournamentDetailsCardProps {
     tournament: {
         id: string;
+        name: string; // Lagt til denne for alt-text
         startDate: string;
         endDate: string | null;
         status: TournamentStatus;
         maxParticipants: number | null;
         description: string | null;
-        location: string;
-        image: string | null;
+        image: string | null; // Turneringsbilde (valgfritt)
         course: {
             id: string;
-            name: string;
+            name: string; // Trengs for banenavn i Banedetaljer-tittel
             location: string | null;
-            image: string | null;
+            image: string | null; // Banebilde
             par: number | null;
             numHoles: number | null;
+            // NYE FELTER FORVENTET FRA API:
+            totalDistance?: number | null; // Total distanse for banen
+            obZones?: { id: string; }[]; // Liste over OB-soner (trenger bare lengden her)
         };
-        organizer: { id: string; name: string | null };
-        club: { id: string; name: string } | null;
+        // organizer og club trengs ikke lenger her hvis de kun vises i header
         _count: {
             participants: number;
         };
@@ -36,136 +48,155 @@ export function TournamentDetailsCard({ tournament }: TournamentDetailsCardProps
     const startDate = new Date(tournament.startDate);
     const endDate = tournament.endDate ? new Date(tournament.endDate) : null;
 
-    // Hjelpefunksjoner
-    const getStatusClasses = (status: TournamentStatus) => {
+    // --- Hjelpefunksjoner (uendret) ---
+    const getStatusClasses = (status: TournamentStatus): string => {
         switch (status) {
-            case TournamentStatus.REGISTRATION_OPEN: return 'bg-green-100 text-green-800';
-            case TournamentStatus.IN_PROGRESS: return 'bg-yellow-100 text-yellow-800';
-            case TournamentStatus.COMPLETED: return 'bg-gray-100 text-gray-800';
-            case TournamentStatus.PLANNING: return 'bg-blue-100 text-blue-800';
-            default: return 'bg-gray-100 text-gray-800';
+            case TournamentStatus.REGISTRATION_OPEN: return 'bg-green-100 text-green-800 border border-green-200';
+            case TournamentStatus.IN_PROGRESS: return 'bg-yellow-100 text-yellow-800 border border-yellow-200';
+            case TournamentStatus.COMPLETED: return 'bg-gray-100 text-gray-700 border border-gray-200';
+            case TournamentStatus.PLANNING: return 'bg-blue-100 text-blue-800 border border-blue-200';
+            default: return 'bg-gray-100 text-gray-800 border border-gray-200';
         }
     };
 
-    const formatDate = (date: Date) => {
-        return date.toLocaleString('nb-NO', { 
-            day: 'numeric', 
-            month: 'long', 
-            year: 'numeric',
-            hour: '2-digit',
-            minute: '2-digit'
+    const formatDate = (date: Date): string => {
+        return date.toLocaleString('nb-NO', {
+            day: 'numeric', month: 'short', year: 'numeric',
+            hour: '2-digit', minute: '2-digit'
         });
     };
 
+    const numObZones = tournament.course?.obZones?.length ?? 0;
+
     return (
-        <div className="bg-white rounded-lg shadow-md border border-gray-200 overflow-hidden">
-            {/* Banebilde */}
-            {tournament.course?.image && (
-                <div className="relative w-full h-48">
+        <div className="bg-white rounded-lg shadow-md border border-gray-200 overflow-hidden flex flex-col h-full">
+            {/* Bilde (Prioriterer turneringsbilde) */}
+            {(tournament.image || tournament.course?.image) && (
+                <div className="relative w-full h-48 flex-shrink-0">
                     <Image
-                        src={tournament.course.image}
-                        alt={`Bilde av ${tournament.course.name}`}
+                        src={tournament.image || tournament.course.image || '/placeholder-image.webp'}
+                        // Bruker tournament.name hvis det er turneringsbilde
+                        alt={tournament.image ? `Bilde for ${tournament.name}` : `Bilde av ${tournament.course?.name || 'bane'}`}
                         fill
                         className="object-cover"
                         sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+                        priority={false}
                     />
+                     <div className="absolute inset-0 bg-gradient-to-t from-black/5 via-transparent to-transparent pointer-events-none"></div>
                 </div>
             )}
 
-            <div className="p-6">
-                <h2 className="text-xl font-semibold mb-4 border-b border-gray-200 pb-2 text-gray-800 flex items-center gap-2">
-                    <Disc className="h-5 w-5" />
-                    <span>Turneringsinfo</span>
-                </h2>
+            {/* Kortinnhold */}
+            <div className="p-5 md:p-6 flex-grow flex flex-col space-y-4"> {/* Bruker space-y for generell avstand */}
 
-                <div className="space-y-4 text-sm text-gray-700">
-                    {/* Baneinformasjon */}
-                    <div className="space-y-2">
-                        <h3 className="font-semibold text-gray-900">Bane: {tournament.course?.name}</h3>
-                        {tournament.course?.location && (
-                            <p className="flex items-center gap-2 text-muted-foreground">
-                                <MapPin className="h-4 w-4" />
-                                {tournament.course.location}
-                            </p>
-                        )}
-                        <div className="flex gap-4">
-                            {tournament.course?.par && (
-                                <p className="text-muted-foreground">
-                                    Par: {tournament.course.par}
-                                </p>
-                            )}
-                            {tournament.course?.numHoles && (
-                                <p className="text-muted-foreground">
-                                    Hull: {tournament.course.numHoles}
-                                </p>
-                            )}
+                {/* Banedetaljer Seksjon */}
+                <div> {/* Ikke behov for mb/pb her pga overordnet space-y */}
+                     <h3 className="text-base font-semibold text-gray-800 mb-2.5 flex items-center gap-2">
+                         <Target size={16} className="text-gray-500" />
+                         {/* Viser banenavn for kontekst */}
+                         <span>Banedetaljer ({tournament.course?.name ?? 'Ukjent bane'})</span>
+                     </h3>
+                     {/* Grid for baneinfo */}
+                     <div className="grid grid-cols-2 gap-x-4 gap-y-1.5 text-sm text-gray-600 border-l-2 border-gray-100 pl-3">
+                        <div className="flex items-center gap-1.5" title="Antall hull">
+                            <Target size={14} className="text-gray-400 flex-shrink-0" />
+                             <span>Hull: <span className="font-medium text-gray-800">{tournament.course?.numHoles ?? 'Ukjent'}</span></span>
                         </div>
-                    </div>
+                         <div className="flex items-center gap-1.5" title="Banens par">
+                             <Target size={14} className="text-gray-400 flex-shrink-0" />
+                             <span>Par: <span className="font-medium text-gray-800">{tournament.course?.par ?? 'Ukjent'}</span></span>
+                         </div>
+                         <div className="flex items-center gap-1.5" title="Total banelengde">
+                             <TrendingUp size={14} className="text-gray-400 flex-shrink-0" />
+                             <span>Lengde: <span className="font-medium text-gray-800">
+                                 {tournament.course?.totalDistance != null ? `${tournament.course.totalDistance.toFixed(0)} m` : 'Ukjent'}
+                                 </span>
+                             </span>
+                         </div>
+                         <div className="flex items-center gap-1.5" title="Antall OB-soner">
+                             <AlertTriangle size={14} className="text-gray-400 flex-shrink-0" />
+                             <span>OB-soner: <span className="font-medium text-gray-800">{numObZones > 0 ? numObZones : 'Ingen'}</span></span>
+                         </div>
+                     </div>
+                 </div>
 
-                    <div className="border-t border-gray-200 pt-4 space-y-2">
-                        <h3 className="font-semibold text-gray-900">Arrangør</h3>
-                        <p className="flex items-center gap-2 text-muted-foreground">
-                            <User className="h-4 w-4" />
-                            {tournament.organizer.name || 'Ukjent arrangør'}
-                        </p>
-                        {tournament.club && (
-                            <p className="text-muted-foreground">
-                                Klubb: {tournament.club.name}
-                            </p>
-                        )}
-                    </div>
+                {/* Separator */}
+                <hr className="border-gray-100" />
 
-                    <div className="border-t border-gray-200 pt-4 space-y-2">
-                        <h3 className="font-semibold text-gray-900 flex items-center gap-2">
-                            <CalendarDays className="h-4 w-4" />
-                            <span>Tidsplan</span>
-                        </h3>
-                        <p className="text-muted-foreground">
-                            Starter: {formatDate(startDate)}
+                {/* Tidsplan Seksjon */}
+                <div>
+                    <h3 className="text-base font-semibold text-gray-800 mb-2 flex items-center gap-2">
+                        <CalendarDays size={16} className="text-gray-500" />
+                        <span>Tidsplan</span>
+                    </h3>
+                    <div className="space-y-1 text-sm text-gray-600 border-l-2 border-gray-100 pl-3">
+                        <p>
+                            Starter: <span className="font-medium text-gray-800">{formatDate(startDate)}</span>
                         </p>
                         {endDate && (
-                            <p className="text-muted-foreground">
-                                Slutter: {formatDate(endDate)}
+                            <p>
+                                Slutter: <span className="font-medium text-gray-800">{formatDate(endDate)}</span>
                             </p>
                         )}
                     </div>
+                </div>
 
-                    <div className="border-t border-gray-200 pt-4 space-y-2">
-                        <h3 className="font-semibold text-gray-900 flex items-center gap-2">
-                            <Users className="h-4 w-4" />
-                            <span>Påmelding</span>
-                        </h3>
-                        <p className="text-muted-foreground">
-                            Påmeldte: {tournament._count.participants} {tournament.maxParticipants ? `/ ${tournament.maxParticipants}` : '(ubegrenset)'}
-                        </p>
-                        <p className="text-muted-foreground">
-                            Status:{' '}
-                            <span className={`font-medium px-2 py-0.5 rounded-full text-xs ${getStatusClasses(tournament.status)}`}>
-                                {tournament.status.replace("_", " ")}
+                {/* Separator */}
+                <hr className="border-gray-100" />
+
+                {/* Påmelding Seksjon */}
+                <div>
+                    <h3 className="text-base font-semibold text-gray-800 mb-2 flex items-center gap-2">
+                        <Users size={16} className="text-gray-500" />
+                        <span>Påmelding</span>
+                    </h3>
+                    <div className="space-y-1.5 text-sm text-gray-600 border-l-2 border-gray-100 pl-3">
+                        <p>
+                            Plasser: <span className="font-medium text-gray-800">
+                                {tournament._count.participants} {tournament.maxParticipants ? `/ ${tournament.maxParticipants}` : '(Ubegrenset)'}
                             </span>
                         </p>
+                        <div className="flex items-center gap-2">
+                            <span>Status:</span>
+                            <span className={`inline-block font-semibold px-2.5 py-0.5 rounded-full text-xs leading-tight ${getStatusClasses(tournament.status)}`}>
+                                {tournament.status.replace("_", " ").charAt(0).toUpperCase() + tournament.status.replace("_", " ").slice(1).toLowerCase()}
+                            </span>
+                        </div>
                     </div>
+                </div>
 
-                    {tournament.description && (
-                        <div className="border-t border-gray-200 pt-4">
-                            <h3 className="font-semibold text-gray-900 mb-2">Beskrivelse</h3>
-                            <p className="text-muted-foreground whitespace-pre-wrap">
+                {/* Beskrivelse Seksjon (kun hvis den finnes) */}
+                {tournament.description && (
+                    <>
+                        {/* Separator */}
+                        <hr className="border-gray-100" />
+                        <div className="flex-grow"> {/* flex-grow for å skyve resultater ned */}
+                            <h3 className="text-base font-semibold text-gray-800 mb-2 flex items-center gap-2">
+                                <Info size={16} className="text-gray-500" />
+                                <span>Beskrivelse</span>
+                            </h3>
+                            <p className="text-sm text-gray-600 whitespace-pre-wrap border-l-2 border-gray-100 pl-3">
                                 {tournament.description}
                             </p>
                         </div>
-                    )}
+                    </>
+                )}
 
-                    {/* Lenke til Endelig Stilling */}
-                    {canViewStandings && (
-                        <div className="border-t border-gray-200 pt-4">
-                            <Link href={`/turnerings-spill/${tournament.id}/results`}>
-                                <Button variant="link" className="p-0 h-auto text-blue-600 hover:text-blue-800">
-                                    <ListChecks className="mr-1 h-4 w-4" /> Se Sluttstilling
-                                </Button>
-                            </Link>
+                {/* Resultater Seksjon (kun hvis ferdig) */}
+                {canViewStandings && (
+                    <>
+                        {/* Separator (kun hvis beskrivelse ikke finnes) */}
+                        {!tournament.description && <hr className="border-gray-100 flex-grow"/>}
+
+                        <div className="mt-auto pt-3"> {/* mt-auto skyver denne til bunnen */}
+                             <Link href={`/turnerings-spill/${tournament.id}/results`} className="inline-block w-full sm:w-auto">
+                                 <Button variant="outline" size="sm" className="w-full sm:w-auto border-blue-200 text-blue-700 bg-blue-50 hover:bg-blue-100 hover:border-blue-300 transition-colors duration-150">
+                                     <ListChecks className="mr-1.5 h-4 w-4" /> Se Resultater
+                                 </Button>
+                             </Link>
                         </div>
-                    )}
-                </div>
+                    </>
+                )}
             </div>
         </div>
     );
