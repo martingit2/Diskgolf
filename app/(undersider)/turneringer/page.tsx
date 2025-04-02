@@ -526,7 +526,7 @@ const Turneringer = () => {
                 <Tabs value={activeTab} onValueChange={(value) => setActiveTab(value as 'upcoming' | 'past')} className="w-full">
                     <TabsList className="grid w-full grid-cols-2 max-w-md mx-auto h-11 rounded-lg p-1 bg-gray-200/80 mb-8">
                         <TabsTrigger value="upcoming" className="h-full rounded-[6px] data-[state=active]:bg-white data-[state=active]:shadow-md data-[state=active]:text-green-600 font-semibold transition-all duration-200">Kommende</TabsTrigger>
-                        <TabsTrigger value="past" className="h-full rounded-[6px] data-[state=active]:bg-white data-[state=active]:shadow-md data-[state=active]:text-red-800 font-semibold transition-all duration-200">Ferdige</TabsTrigger>
+                        <TabsTrigger value="past" className="h-full rounded-[6px] data-[state=active]:bg-white data-[state=active]:shadow-md data-[state=active]:text-red-800 font-semibold transition-all duration-200">Avsluttede</TabsTrigger>
                     </TabsList>
 
                     {/* Content for Upcoming Tab */}

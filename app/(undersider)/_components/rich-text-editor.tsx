@@ -1,9 +1,10 @@
 // components/rich-text-editor.tsx
 'use client';
 
-import { useEditor, EditorContent, Editor, BubbleMenu } from '@tiptap/react';
+import { useEditor, EditorContent, Editor } from '@tiptap/react'; // Fjernet ubrukt BubbleMenu
 import StarterKit from '@tiptap/starter-kit';
 import Link from '@tiptap/extension-link';
+import Placeholder from '@tiptap/extension-placeholder'; // <-- Importer Placeholder
 import React, { useState, useCallback, useEffect, useRef } from 'react';
 import { Toggle } from '@/components/ui/toggle';
 import { Button } from '@/components/ui/button';
@@ -14,7 +15,7 @@ import {
 import { cn } from '@/app/lib/utils';
 
 
-// --- Toolbar Komponent (Uendret) ---
+// --- Toolbar Komponent (Uendret fra din versjon) ---
 interface ToolbarProps {
     editor: Editor | null;
     isHtmlMode: boolean;
@@ -22,18 +23,29 @@ interface ToolbarProps {
 }
 
 const Toolbar: React.FC<ToolbarProps> = ({ editor, isHtmlMode, onToggleHtmlMode }) => {
-    // ... (Toolbar-kode forblir den samme som i forrige korrekte versjon) ...
      if (!editor && !isHtmlMode) {
         return null;
     }
 
+    // Oppdatert handleLink for å håndtere fjerning av lenke
     const handleLink = useCallback(() => {
-        if (!editor || !editor.can().toggleLink({ href: '' })) return;
+        if (!editor) return; // Sjekk for editor først
         const previousUrl = editor.getAttributes('link').href;
-        const url = window.prompt('Skriv inn URL', previousUrl || '');
-        if (url === null) return;
-        editor.chain().focus().extendMarkRange('link').toggleLink({ href: url }).run();
+        const url = window.prompt('Skriv inn URL (la stå tom for å fjerne lenken)', previousUrl || '');
+
+        if (url === null) { // Bruker avbrøt
+            return;
+        }
+
+        if (url === '') { // Bruker vil fjerne lenken
+            editor.chain().focus().extendMarkRange('link').unsetLink().run();
+            return;
+        }
+
+        // Sett eller oppdater lenken
+        editor.chain().focus().extendMarkRange('link').setLink({ href: url }).run();
     }, [editor]);
+
 
     return (
         <div className="flex flex-wrap items-center justify-between gap-1 rounded-t-md border border-input bg-transparent p-2 print:hidden">
@@ -45,7 +57,8 @@ const Toolbar: React.FC<ToolbarProps> = ({ editor, isHtmlMode, onToggleHtmlMode 
                     <Toggle size="sm" pressed={editor.isActive('italic')} onPressedChange={() => editor.chain().focus().toggleItalic().run()} disabled={!editor.can().chain().focus().toggleItalic().run()} aria-label="Italic" title="Italic"> <Italic className="h-4 w-4" /> </Toggle>
                     <Toggle size="sm" pressed={editor.isActive('bulletList')} onPressedChange={() => editor.chain().focus().toggleBulletList().run()} aria-label="Bullet List" title="Bullet List"> <List className="h-4 w-4" /> </Toggle>
                     <Toggle size="sm" pressed={editor.isActive('orderedList')} onPressedChange={() => editor.chain().focus().toggleOrderedList().run()} aria-label="Numbered List" title="Numbered List"> <ListOrdered className="h-4 w-4" /> </Toggle>
-                    <Toggle size="sm" pressed={editor.isActive('link')} onPressedChange={handleLink} disabled={!editor.can().toggleLink({ href: '' })} aria-label="Link" title="Link"> <LinkIcon className="h-4 w-4" /> </Toggle>
+                    {/* Endret disabled sjekk for Link */}
+                    <Toggle size="sm" pressed={editor.isActive('link')} onPressedChange={handleLink} aria-label="Link" title="Link"> <LinkIcon className="h-4 w-4" /> </Toggle>
                     <Toggle size="sm" pressed={false} onPressedChange={() => editor.chain().focus().setHorizontalRule().run()} disabled={!editor.can().setHorizontalRule()} aria-label="Horizontal Rule" title="Horizontal Rule"> <Minus className="h-4 w-4" /> </Toggle>
                 </>}
             </div>
@@ -62,7 +75,7 @@ const Toolbar: React.FC<ToolbarProps> = ({ editor, isHtmlMode, onToggleHtmlMode 
 // --- Hoved RichTextEditor Komponent ---
 interface RichTextEditorProps {
     content: string;
-    onChange: (newContent: string) => void; // Denne skal kalles med siste innhold
+    onChange: (newContent: string) => void;
     disabled?: boolean;
     className?: string;
     placeholder?: string;
@@ -70,55 +83,80 @@ interface RichTextEditorProps {
 
 const RichTextEditor: React.FC<RichTextEditorProps> = ({
     content,
-    onChange, // Dette er funksjonen fra form-biblioteket (f.eks. field.onChange)
+    onChange,
     disabled = false,
     className,
-    placeholder
+    placeholder = 'Skriv her...' // Sett default placeholder
 }) => {
     const [viewMode, setViewMode] = useState<'wysiwyg' | 'html'>('wysiwyg');
     const [rawHtml, setRawHtml] = useState<string>(content);
-    const isUpdatingInternally = useRef(false);
+    const isUpdatingInternally = useRef(false); // For å unngå loops
 
     const editor = useEditor({
         extensions: [
-            StarterKit.configure({ /* ... */ }),
-            Link.configure({ openOnClick: false, autolink: true, linkOnPaste: true }),
+            StarterKit.configure({
+                // Konfigurasjoner her om nødvendig
+            }),
+            Link.configure({
+                openOnClick: false,
+                autolink: true,
+                linkOnPaste: true,
+            }),
+             Placeholder.configure({ // <-- Legg til Placeholder extension
+                 placeholder: placeholder,
+                 // Du kan legge til klasser for placeholderen her om nødvendig:
+                 // emptyEditorClass: 'is-editor-empty',
+                 // emptyNodeClass: 'is-node-empty',
+             }),
         ],
-        content: content,
-        editable: !disabled,
+        content: content, // Startinnhold
+        editable: !disabled, // Editor kan redigeres hvis ikke disabled
+        // Kalles når editor-innhold endres
         onUpdate: ({ editor }) => {
-            // Kun kall onChange fra WYSIWYG-modus
             if (viewMode === 'wysiwyg' && !isUpdatingInternally.current) {
                 const currentHtml = editor.getHTML();
-                setRawHtml(currentHtml); // Synkroniser rå HTML
-                onChange(currentHtml); // *** Kall parent onChange ***
+                setRawHtml(currentHtml); // Synkroniser HTML-state
+                onChange(currentHtml); // Kall parent onChange
             }
-            isUpdatingInternally.current = false;
+            isUpdatingInternally.current = false; // Reset flagg
         },
         editorProps: {
             attributes: {
-                class: cn(/* ... klasser ... */),
-                'data-placeholder': placeholder || 'Skriv her...',
+                // --- ✨ KORREKT BRUK AV cn() MED MINIMUMSHØYDE ✨ ---
+                class: cn(
+                    'prose prose-sm sm:prose lg:prose-lg xl:prose-xl max-w-none focus:outline-none', // Tailwind Typography klasser
+                    'rounded-b-md border border-input border-t-0 bg-background px-3 py-2', // Standard boks-styling
+                    'min-h-[250px]', // <--- MINIMUMSHØYDE SATT HER
+                    disabled ? 'cursor-not-allowed opacity-50' : '',
+                    // Fjernet data-placeholder, Placeholder extension håndterer dette
+                ),
             },
         },
     });
 
-    // Effekt for eksterne 'content'-endringer (Uendret)
+    // Effekt for å håndtere eksterne endringer i 'content' prop (fra din versjon)
     useEffect(() => {
         const editorHtml = editor?.getHTML();
-        // Sjekk mot både editor og rawHtml for å fange alle tilfeller
         const contentChangedExternally = (editor && content !== editorHtml) || content !== rawHtml;
 
-        if (editor && contentChangedExternally) {
-             isUpdatingInternally.current = true;
-             editor.commands.setContent(content, false);
-             setRawHtml(content);
+        if (editor && contentChangedExternally && !isUpdatingInternally.current) {
+             isUpdatingInternally.current = true; // Sett flagg FØR oppdatering
+             editor.commands.setContent(content, false); // false for ikke å trigge onUpdate
+             setRawHtml(content); // Synkroniser rawHtml også
              // Ikke kall onChange her, endringen kom utenfra
+             // Reset flagg etter en liten forsinkelse for å unngå race conditions
+             // setTimeout(() => { isUpdatingInternally.current = false; }, 0);
+             // Eller reset i onUpdate som vi allerede gjør
         }
-    }, [content, editor]); // Bare avhengig av content og editor
+        // Hvis flagget var satt, reset det når effekten kjører igjen
+        // else if (isUpdatingInternally.current) {
+        //     isUpdatingInternally.current = false;
+        // }
+
+    }, [content, editor, rawHtml]); // Avhengig av content, editor og rawHtml
 
 
-    // Funksjon for å bytte modus (Uendret - kaller onChange ved bytte TILBAKE til WYSIWYG)
+    // Funksjon for å bytte modus (fra din versjon)
     const toggleHtmlMode = useCallback((event: React.MouseEvent<HTMLButtonElement>) => {
         event.stopPropagation();
         if (!editor) return;
@@ -126,38 +164,32 @@ const RichTextEditor: React.FC<RichTextEditorProps> = ({
         if (viewMode === 'wysiwyg') {
             setRawHtml(editor.getHTML());
             setViewMode('html');
-            // Ikke kall onChange her, brukeren har ikke endret noe ennå
         } else {
             try {
                 isUpdatingInternally.current = true;
-                editor.commands.setContent(rawHtml, true);
+                editor.commands.setContent(rawHtml, true); // true for å parse og validere
                 setViewMode('wysiwyg');
                 const validatedHtml = editor.getHTML();
                 if(rawHtml !== validatedHtml) {
-                    setRawHtml(validatedHtml);
+                    setRawHtml(validatedHtml); // Oppdater hvis Tiptap endret noe
                 }
-                onChange(validatedHtml); // *** Kall parent onChange med validert HTML ***
+                onChange(validatedHtml); // Kall parent onChange med validert HTML
             } catch (error) {
                 console.error("Ugyldig HTML:", error);
                 alert("Kunne ikke bytte tilbake: HTML-koden inneholder feil.");
-                isUpdatingInternally.current = false;
+                isUpdatingInternally.current = false; // Reset flagg ved feil også
             }
         }
     }, [editor, viewMode, rawHtml, onChange]);
 
-    // --- ***** VIKTIG ENDRING HER ***** ---
-    // Håndterer endringer i HTML-tekstområdet
+    // Håndterer endringer i HTML-tekstområdet (fra din versjon)
     const handleRawHtmlChange = (event: React.ChangeEvent<HTMLTextAreaElement>) => {
         const newHtml = event.target.value;
         setRawHtml(newHtml); // Oppdater lokal state
-        // *** Kall parent onChange direkte med den nye rå HTML-en ***
-        // Dette sikrer at form-biblioteket får den siste verdien
-        // selv om brukeren ikke bytter tilbake til WYSIWYG-modus.
-        onChange(newHtml);
+        onChange(newHtml); // Kall parent onChange direkte
     };
-    // --- ***** SLUTT PÅ ENDRING ***** ---
 
-    // Rydd opp editor ved unmount (Uendret)
+    // Rydd opp editor ved unmount (fra din versjon)
     useEffect(() => {
         return () => {
             editor?.destroy();
@@ -165,17 +197,13 @@ const RichTextEditor: React.FC<RichTextEditorProps> = ({
     }, [editor]);
 
 
+    // Klasser for HTML Textarea, legg til samme minimumshøyde
     const editorTextareaClasses = cn(
-        'min-h-[200px] w-full max-w-none rounded-b-md border border-input border-t-0 bg-background px-3 py-2',
-        'font-mono text-sm',
+        'min-h-[250px] w-full max-w-none rounded-b-md border border-input border-t-0 bg-background px-3 py-2', // <-- MATCH min-h
+        'font-mono text-sm whitespace-pre-wrap', // Viser linjeskift riktig
         'ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2',
         disabled ? 'cursor-not-allowed opacity-50' : ''
     );
-
-    // Debugging log (Uendret)
-    // if(viewMode === 'html') {
-    //     console.log("Rendering Textarea:", { disabledProp: disabled, rawHtmlValue: rawHtml });
-    // }
 
     return (
         <div className={cn(
@@ -187,17 +215,19 @@ const RichTextEditor: React.FC<RichTextEditorProps> = ({
 
             {viewMode === 'wysiwyg' ? (
                  <div key="wysiwyg-editor">
+                    {/* Bruker Tiptaps EditorContent for visning */}
                     <EditorContent editor={editor} />
                  </div>
             ) : (
                 <Textarea
                     key="html-editor"
                     value={rawHtml}
-                    onChange={handleRawHtmlChange} // *** Viktig: Denne kaller nå parent onChange ***
+                    onChange={handleRawHtmlChange}
                     disabled={disabled}
                     placeholder="Skriv eller lim inn HTML-kode her..."
                     className={editorTextareaClasses}
                     aria-label="HTML kode editor"
+                    spellCheck="false" // Skru av stavekontroll for kode
                 />
             )}
         </div>
