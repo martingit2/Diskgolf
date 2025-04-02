@@ -302,8 +302,8 @@ export default function AboutPage() {
          </motion.section>
 
 {/* Seksjon 7: Ny Call to Action (CTA) */}
-<motion.section
-          className="text-center bg-gradient-to-r from-green-600 to-blue-600 rounded-xl p-10 sm:p-16 shadow-xl mt-12" // Lagt til mt-12 for ekstra avstand
+        <motion.section
+          className="text-center bg-gradient-to-r from-gray-900 via-green-600  to-gray-900  rounded-xl p-10 sm:p-16 shadow-xl mt-12" // Lagt til mt-12 for ekstra avstand
           initial="hidden"
           whileInView="visible"
           viewport={{ once: true, amount: 0.5 }}
