@@ -8,52 +8,42 @@
 import { useCallback } from "react";
 import useRegisterModal from "@/app/hooks/useRegisterModal";
 import useLoginModal from "@/app/hooks/useLoginModal";
-import useResetPasswordModal from "@/app/hooks/useResetmodal"; // Endret importnavn
 import Modal from "./Modal";
-import LoginForm from "../auth/login-form"; // Importer den refaktoriserte formen
+import LoginForm from "../auth/login-form";
+// IMPORTER MED KORREKT FILNAVN-CASING
+import useResetPasswordModal from "@/app/hooks/useResetModal"; // <-- Endret til stor M
 
 const LoginModal = () => {
   const loginModal = useLoginModal();
   const registerModal = useRegisterModal();
-  const resetPasswordModal = useResetPasswordModal(); // Bruker riktig hook
+  const resetPasswordModal = useResetPasswordModal();
 
-  // Callback for å bytte til RegisterModal
   const onToggleToRegister = useCallback(() => {
     loginModal.onClose();
     registerModal.onOpen();
   }, [loginModal, registerModal]);
 
-  // Callback for å bytte til ResetPasswordModal
   const onToggleToReset = useCallback(() => {
     loginModal.onClose();
-    resetPasswordModal.onOpen(); // Åpne reset modal
+    resetPasswordModal.onOpen();
   }, [loginModal, resetPasswordModal]);
 
-  // Hovedinnholdet er nå LoginForm-komponenten
   const bodyContent = (
     <LoginForm
       onRegister={onToggleToRegister}
       onForgotPassword={onToggleToReset}
-      onLoginSuccess={loginModal.onClose} // Lukk modalen ved suksess
+      onLoginSuccess={loginModal.onClose}
     />
   );
-
-  // Siden CardWrapper i LoginForm håndterer "back button" (bytt til register),
-  // trenger vi ikke en egen footer i Modal her.
-  // onSubmit og actionLabel på Modal er heller ikke nødvendig,
-  // da LoginForm har sin egen submit-knapp.
 
   return (
     <Modal
       isOpen={loginModal.isOpen}
       onClose={loginModal.onClose}
-      // onSubmit er ikke nødvendig her siden LoginForm håndterer sin egen submit
-      onSubmit={() => {}} // Tom funksjon
-      title="Logg inn" // Tittel for modal-headeren
-      // actionLabel er ikke nødvendig her
-      actionLabel="" // Tom streng
+      onSubmit={() => {}}
+      title="Logg inn"
+      actionLabel=""
       body={bodyContent}
-      // Footer er ikke nødvendig her, håndteres av CardWrapper/BackButton i LoginForm
       footer={undefined}
     />
   );

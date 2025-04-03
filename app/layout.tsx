@@ -1,20 +1,21 @@
 /**
  * Filnavn: RootLayout.tsx
- * Beskrivelse: Hovedlayoutkomponenten for applikasjonen. Håndterer globale komponenter som header, modaler, sesjonshåndtering og layoutstruktur.
+ * Beskrivelse: Hovedlayoutkomponenten for applikasjonen.
  * Utvikler: Martin Pettersen
  */
 
 import type { Metadata } from "next";
 import "./globals.css";
-import Header from "@/components/Header";
+// Sørg for at stien til Header er riktig
+
 import RegisterModal from "@/components/modals/RegisterModal";
 import ToasterProvider from "./providers/ToasterProvider";
 import LoginModal from "@/components/modals/LoginModal";
-import ResetPasswordModal from "@/components/modals/ResetPasswordModal"; // <-- 1. IMPORTER DEN NYE MODALEN
+import ResetPasswordModal from "@/components/modals/ResetPasswordModal";
 import { auth } from "@/auth";
 import SessionWrapper from "./providers/SessionWrapper";
 import Footer from "@/components/Footer";
-import { User } from "@/app/types";
+import Header from "@/components/Header";
 
 export const metadata: Metadata = {
   title: "DiskGolf App - Finn baner, spill og arranger turneringer",
@@ -36,26 +37,23 @@ export default async function RootLayout({
     console.error("Error fetching session in RootLayout:", error);
   }
 
-  const currentUser = session?.user as User | null ?? null;
-
   return (
     <html lang="no" suppressHydrationWarning>
-      <body className="min-h-screen flex flex-col bg-gray-100 dark:bg-gray-900">
-        {/* ThemeProvider kommentert ut
-        <ThemeProvider attribute="class" defaultTheme="system" enableSystem> */}
+      {/* SETTER MØRK BAKGRUNN OG LYS TEKST SOM STANDARD */}
+      <body className="min-h-screen flex flex-col bg-[#000311] text-gray-100"> {/* Endret bg og text */}
           <ToasterProvider />
           <SessionWrapper session={session}>
-            <Header currentUser={currentUser} />
-            {/* Render alle modalene her slik at hooks kan styre dem */}
+            <Header />
+            {/* Globale modaler */}
             <LoginModal />
             <RegisterModal />
-            <ResetPasswordModal /> {/* <-- 2. LEGG TIL RENDERINGEN HER */}
-            <main className="flex-grow bg-[#000311]">
+            <ResetPasswordModal />
+            {/* MAIN arver nå bakgrunn fra body, eller kan settes likt */}
+            <main className="flex-grow bg-[#000311]"> {/* Endret bg */}
               {children}
             </main>
             <Footer />
           </SessionWrapper>
-        {/* </ThemeProvider> */}
       </body>
     </html>
   );

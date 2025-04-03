@@ -14,18 +14,18 @@ interface Course {
   id: string;
   name: string;
   location: string;
-  description?: string; // Valgfri
-  par: number; // Antar denne er påkrevd basert på din kode
+  description?: string;
+  par: number;
   image?: string;
   difficulty?: string;
-  averageRating: number; // Antar påkrevd
-  totalReviews: number; // Antar påkrevd
-  baskets?: { latitude: number; longitude: number }[]; // Valgfri, men bør være array
-  totalDistance?: number; // Valgfri
-  numHoles?: number; // Lagt til for konsistens med CourseCard, settes i onSubmit
+  averageRating: number;
+  totalReviews: number;
+  baskets?: { latitude: number; longitude: number }[];
+  totalDistance?: number;
+  numHoles?: number;
 }
 
-// Valideringsskjema (uendret)
+// Valideringsskjema
 const formSchema = z.object({
   location: z.string().optional(),
   starRating: z.enum(["1", "2", "3", "4", "5", "Vis alle"]).optional(),
@@ -36,6 +36,9 @@ const SearchForm = () => {
   const [searchResults, setSearchResults] = useState<Course[]>([]);
   const [locations, setLocations] = useState<string[]>([]);
   const [loading, setLoading] = useState(false);
+  // State for å vite om et søk er utført minst én gang
+  const [isSubmitted, setIsSubmitted] = useState(false);
+
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -46,22 +49,20 @@ const SearchForm = () => {
     },
   });
 
-  // Henter unike locations fra API-et (uendret)
+  // Henter unike locations
   useEffect(() => {
     const fetchLocations = async () => {
       try {
         const response = await fetch("/api/courses");
         if (!response.ok) throw new Error("Kunne ikke hente data");
-
         const data: Course[] = await response.json();
-        // Fjerner ", Ukjent fylke" når locations settes
         const uniqueLocations = Array.from(
           new Set(
             data
-              .map((course) => course.location.replace(/,\s*Ukjent fylke\s*$/, "").trim()) // Mer robust fjerning
-              .filter(Boolean) // Fjerner tomme strenger hvis noen skulle oppstå
+              .map((course) => course.location.replace(/,\s*Ukjent fylke\s*$/, "").trim())
+              .filter(Boolean)
           )
-        ).sort(); // Sorterer stedene alfabetisk
+        ).sort();
         setLocations(uniqueLocations);
       } catch (error) {
         console.error("Feil ved henting av steder:", error);
@@ -70,32 +71,28 @@ const SearchForm = () => {
     fetchLocations();
   }, []);
 
-  // Søke-funksjon (uendret logikk, kun formattering for CourseCard)
+  // Søke-funksjon
   async function onSubmit(values: z.infer<typeof formSchema>) {
     setLoading(true);
-
+    setIsSubmitted(true); // Marker at et søk er utført
     try {
       const response = await fetch(`/api/courses`);
       if (!response.ok) throw new Error(`API-feil: ${response.statusText}`);
-
       const data: Course[] = await response.json();
 
-      // Filtrerer resultater
       const filteredData = data.filter((course) => {
         const formattedLocation = course.location.replace(/,\s*Ukjent fylke\s*$/, "").trim();
         const locationMatches = !values.location || values.location === "Vis alle" || formattedLocation === values.location;
         const difficultyMatches = !values.difficulty || values.difficulty === "Vis alle" || course.difficulty === values.difficulty;
         const starRatingMatches = !values.starRating || values.starRating === "Vis alle" || (course.averageRating >= parseInt(values.starRating));
-
         return locationMatches && difficultyMatches && starRatingMatches;
       });
 
-      // Formatterer dataen for CourseCard (inkluderer numHoles)
       const formattedResults = filteredData.map((course) => ({
         ...course,
-        location: course.location.replace(/,\s*Ukjent fylke\s*$/, "").trim(), // Fjerner "Ukjent fylke" for visning
-        description: course.description ?? "Ingen beskrivelse tilgjengelig.", // Sikrer at beskrivelse er en streng
-        numHoles: course.baskets?.length ?? 0, // Beregner antall hull
+        location: course.location.replace(/,\s*Ukjent fylke\s*$/, "").trim(),
+        description: course.description ?? "Ingen beskrivelse tilgjengelig.",
+        numHoles: course.baskets?.length ?? 0,
       }));
 
       setSearchResults(formattedResults);
@@ -108,8 +105,8 @@ const SearchForm = () => {
   }
 
   return (
-    <div className="p-6 bg-white rounded-lg shadow-lg">
-      {/* --- Skjema (uendret) --- */}
+    // SETTER STANDARD TEKSTFARGE FOR KOMPONENTEN HER
+    <div className="p-6 bg-white rounded-lg shadow-lg text-gray-800"> {/* <-- Endret tekstfarge */}
       <Form {...form}>
         <form onSubmit={form.handleSubmit(onSubmit)} className="grid grid-cols-1 lg:grid-cols-3 gap-4">
 
@@ -119,10 +116,12 @@ const SearchForm = () => {
             name="location"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Sted</FormLabel>
+                {/* Setter spesifikk farge for label */}
+                <FormLabel className="text-gray-700 font-medium">Sted</FormLabel> {/* <-- Endret farge */}
                 <FormControl>
                   <Select onValueChange={field.onChange} value={field.value || ""}>
-                    <SelectTrigger>
+                    {/* Sørger for at SelectTrigger også får mørk tekst (Shadcn håndterer ofte dette greit) */}
+                    <SelectTrigger className="text-gray-800">
                       <SelectValue placeholder="Velg sted">{field.value || "Velg sted"}</SelectValue>
                     </SelectTrigger>
                     <SelectContent>
@@ -146,10 +145,12 @@ const SearchForm = () => {
             name="starRating"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Minst antall stjerner</FormLabel>
+                 {/* Setter spesifikk farge for label */}
+                <FormLabel className="text-gray-700 font-medium">Minst antall stjerner</FormLabel> {/* <-- Endret farge */}
                 <FormControl>
                   <Select onValueChange={field.onChange} value={field.value || "Vis alle"}>
-                    <SelectTrigger>
+                     {/* Sørger for at SelectTrigger også får mørk tekst */}
+                    <SelectTrigger className="text-gray-800">
                       <SelectValue placeholder="Velg stjerner">{field.value || "Vis alle"}</SelectValue>
                     </SelectTrigger>
                     <SelectContent>
@@ -173,10 +174,12 @@ const SearchForm = () => {
             name="difficulty"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Vanskelighetsgrad</FormLabel>
+                 {/* Setter spesifikk farge for label */}
+                <FormLabel className="text-gray-700 font-medium">Vanskelighetsgrad</FormLabel> {/* <-- Endret farge */}
                 <FormControl>
                   <Select onValueChange={field.onChange} value={field.value || "Vis alle"}>
-                    <SelectTrigger>
+                     {/* Sørger for at SelectTrigger også får mørk tekst */}
+                    <SelectTrigger className="text-gray-800">
                       <SelectValue placeholder="Velg vanskelighetsgrad">{field.value || "Velg vanskelighetsgrad"}</SelectValue>
                     </SelectTrigger>
                     <SelectContent>
@@ -194,6 +197,7 @@ const SearchForm = () => {
 
           {/* Søk-knapp */}
           <div className="col-span-full flex justify-center mt-4">
+            {/* Knappen har allerede egne farger */}
             <Button type="submit" disabled={loading} className="w-full max-w-md bg-gray-900 text-white font-semibold py-3 rounded-lg hover:bg-gray-800 transition duration-300 disabled:opacity-50">
               {loading ? "Søker..." : "Søk"}
             </Button>
@@ -204,25 +208,22 @@ const SearchForm = () => {
       {/* --- Søkeresultater --- */}
       <div className="mt-6">
         {loading ? (
-             <p className="text-center text-gray-500">Laster søkeresultater...</p>
+             <p className="text-center text-gray-500">Laster søkeresultater...</p> // Denne får OK farge
         ) : searchResults.length > 0 ? (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"> {/* Økt gap litt */}
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {searchResults.map((course) => (
               <CourseCard
                 key={course.id}
-                course={course} // Sender hele det formaterte course-objektet
-                isFavorite={false} // SearchForm håndterer ikke favorittstatus her
-                onToggleFavorite={() => {
-                  console.warn("Favoritt-toggling ikke implementert i SearchForm.");
-                  // Kan evt. navigere til kurssiden eller vise en melding
-                }}
-                isToggling={false} // *** VIKTIG: Lagt til denne linjen ***
+                course={course}
+                isFavorite={false}
+                onToggleFavorite={() => { console.warn("Favoritt-toggling ikke implementert i SearchForm."); }}
+                isToggling={false}
               />
             ))}
           </div>
-        // Viser "Ingen baner funnet" kun etter et søk (isSubmitted) og hvis det ikke lastes
-        ) : !loading && form.formState.isSubmitted ? (
-          <p className="text-center text-gray-500 mt-4">Ingen baner matchet søkekriteriene.</p>
+        // Viser "Ingen baner funnet" kun etter et søk og hvis det ikke lastes
+        ) : !loading && isSubmitted ? ( // Bruker isSubmitted state
+          <p className="text-center text-gray-500 mt-4">Ingen baner matchet søkekriteriene.</p> // Denne får OK farge
         ) : null /* Ikke vis noe før et søk er utført */}
       </div>
     </div>

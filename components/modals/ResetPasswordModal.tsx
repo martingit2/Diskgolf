@@ -6,20 +6,19 @@
 "use client";
 
 import useLoginModal from "@/app/hooks/useLoginModal";
-import useResetPasswordModal from "@/app/hooks/useResetmodal";
 import { useState, useCallback, useTransition } from "react";
 import { useForm, FieldValues, SubmitHandler } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { ResetSchema } from "@/schemas";
 import { reset as resetPasswordAction } from "@/app/actions/reset";
-
 import Heading from "../Heading";
 import Input from "@/components/inputs/Input";
 import { FormError } from "../auth/form-error";
 import { FormSuccess } from "../form-success";
 import Modal from "./Modal";
-
-import { Button as ShadButton } from '@/components/ui/button'; // <-- Endre stien om nødvendig
+import { Button as ShadButton } from '@/components/ui/button';
+// IMPORTER MED KORREKT FILNAVN-CASING
+import useResetPasswordModal from "@/app/hooks/useResetModal"; // <-- Endret til stor M
 
 const ResetPasswordModal = () => {
   const resetPasswordModal = useResetPasswordModal();
@@ -77,11 +76,9 @@ const ResetPasswordModal = () => {
          />
          <FormError message={error} />
          <FormSuccess message={success} />
-
-         {/* BRUK SHADCN BUTTON HER */}
-          <ShadButton type="submit" disabled={isPending} className="w-full">
+         <ShadButton type="submit" disabled={isPending} className="w-full">
             {isPending ? "Sender..." : "Send e-post"}
-          </ShadButton>
+         </ShadButton>
       </form>
     </div>
   );
@@ -89,14 +86,13 @@ const ResetPasswordModal = () => {
   const footerContent = (
     <div className="text-neutral-500 text-center mt-4 font-light text-sm">
       <p>Husket passordet?
-        {/* Du kan bruke Shadcn Button her også hvis du vil */}
         <ShadButton
-           variant="link" // Stil som en lenke
-           size="sm" // Liten størrelse
+           variant="link"
+           size="sm"
            onClick={onToggleToLogin}
-           className="text-neutral-800 font-medium hover:underline ml-1 px-1 h-auto" // Juster padding/høyde
+           className="text-neutral-800 font-medium hover:underline ml-1 px-1 h-auto"
            disabled={isPending}
-           type="button" // Viktig for å ikke submitte form
+           type="button"
         >
            Gå tilbake til innlogging
         </ShadButton>
