@@ -80,7 +80,7 @@ const BaneCarousel = () => {
            <h2 className="text-sm font-semibold text-green-600 uppercase tracking-wider">
              DiskGolf Baner
            </h2>
-           <h1 className="text-3xl font-extrabold text-gray-800 leading-tight mt-1">
+           <h1 className="text-3xl font-extrabold text-white leading-tight mt-1">
              Topprangerte DiskGolf-baner
            </h1>
         </div>

@@ -557,7 +557,7 @@ const Turneringer = () => {
                                     Avbryt
                                 </Button>
                             </DialogClose>
-                            <Button type="button" onClick={handleRegister} disabled={isRegistering} className="w-full sm:w-auto bg-blue-600 hover:bg-blue-700 text-white min-w-[150px]">
+                            <Button type="button" onClick={handleRegister} disabled={isRegistering} className="w-full sm:w-auto bg-gray-900 hover:bg-emerald-700 text-white min-w-[150px]">
                                 {isRegistering ? (
                                     <>
                                         <Loader2 className="mr-2 h-4 w-4 animate-spin" />

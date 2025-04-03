@@ -1,222 +1,215 @@
-/** 
+/**
  * Filnavn: UserDropdown.tsx
- * Beskrivelse: Komponent for brukerens dropdown-meny. Inkluderer alternativer for innlogging, registrering, tilbakestilling av passord, og utlogging.
- * Tilbyr en responsiv og tilgjengelig meny for både desktop- og mobilvisning.
+ * Beskrivelse: Komponent for brukerens dropdown-meny i navbar. Viser avatar eller ikon.
  * Utvikler: Martin Pettersen
  */
-
 "use client";
 
-import {
-  Dialog,
-  DialogContent,
-  DialogTitle,
-} from "@/components/ui/dialog";
-import {
-  PlusCircleIcon,
-  ChevronDownIcon,
-  ArrowRightIcon,
-} from "@heroicons/react/20/solid";
-import { cn } from "@/app/lib/utils";
-import LoginForm from "@/components/auth/login-form";
-import RegisterForm from "@/components/auth/register-form";
-import { ResetForm } from "@/components/auth/reset-form";
-import { useState, useRef, useEffect } from "react";
+import { useState, useCallback, Fragment } from "react"; // Fjernet ubrukte: useRef, useEffect
 import { useRouter } from "next/navigation";
-import { User } from "@/app/types";
 import Image from "next/image";
 import { signOut } from "next-auth/react";
+import { Menu, Transition } from '@headlessui/react';
+import {
+    ArrowRightOnRectangleIcon,
+    Cog6ToothIcon,
+    UserCircleIcon, // Standard brukerikon som fallback
+    // Fjernet ubrukte: ArrowLeftOnRectangleIcon, PlusCircleIcon
+} from '@heroicons/react/20/solid'; // Eller bruk 'outline' hvis du foretrekker det
 
-function UserDropdown({
-  isMobile,
-  currentUser,
-}: {
-  isMobile: boolean;
-  currentUser: User | null;
-}) {
+import { User } from "@/app/types"; // Sørg for at denne typen er korrekt definert
+import { cn } from "@/app/lib/utils"; // For conditional class names
+import useLoginModal from "@/app/hooks/useLoginModal"; // Hook for login modal
+import useRegisterModal from "@/app/hooks/useRegisterModal"; // Hook for register modal
+
+interface UserDropdownProps {
+  isMobile: boolean; // Bestemmer om det er mobil- eller desktop-visning
+  currentUser: User | null; // Brukerobjektet (eller null hvis logget ut)
+  closeMobileMenu?: () => void; // Funksjon for å lukke mobilmenyen etter klikk
+}
+
+function UserDropdown({ isMobile, currentUser, closeMobileMenu }: UserDropdownProps) {
   const router = useRouter();
-  const dropdownRef = useRef<HTMLDivElement>(null);
+  const loginModal = useLoginModal();
+  const registerModal = useRegisterModal();
 
-  const [dialogState, setDialogState] = useState<{
-    open: boolean;
-    type: "login" | "register" | "reset-password";
-  }>({
-    open: false,
-    type: "login",
-  });
-
-  const [isDropdownOpen, setIsDropdownOpen] = useState(false);
-
-  const openDialog = (type: "login" | "register" | "reset-password") => {
-    setDialogState({ open: true, type });
-  };
-
-  const closeDialog = () => {
-    setDialogState({ open: false, type: "login" });
-  };
-
-  const toggleDropdown = () => {
-    setIsDropdownOpen((prev) => !prev);
-  };
-
-  const closeDropdown = () => {
-    setIsDropdownOpen(false);
-  };
-
-  useEffect(() => {
-    const handleOutsideClick = (event: MouseEvent) => {
-      if (
-        dropdownRef.current &&
-        !dropdownRef.current.contains(event.target as Node)
-      ) {
-        closeDropdown();
+  // Hjelpefunksjon for å lukke mobilmeny og utføre handling
+  const handleActionAndCloseMobile = useCallback((action?: () => void) => {
+      if (isMobile && closeMobileMenu) {
+          closeMobileMenu();
       }
-    };
+      if (action) {
+          action();
+      }
+  }, [isMobile, closeMobileMenu]);
 
-    document.addEventListener("mousedown", handleOutsideClick);
-    return () => {
-      document.removeEventListener("mousedown", handleOutsideClick);
-    };
-  }, []);
+  // Åpne login modal
+  const handleOpenLoginModal = useCallback(() => {
+    handleActionAndCloseMobile(() => loginModal.onOpen());
+  }, [loginModal, handleActionAndCloseMobile]);
 
-  return (
-    <div
-      ref={dropdownRef}
-      className={`relative ${isMobile ? "w-full" : "inline-block text-left"}`}
-    >
-      <button
-        onClick={toggleDropdown}
-        className={cn(
-          "inline-flex justify-center items-center gap-2 w-full rounded-md px-4 py-2 text-sm font-medium text-white focus:outline-none focus-visible:ring-2 focus-visible:ring-white focus-visible:ring-opacity-75",
-          isMobile
-            ? "bg-green-700 text-white hover:bg-green-600"
-            : "bg-green-700 hover:bg-green-600"
-        )}
-      >
-        {currentUser ? (
-          <>
-            {currentUser.image ? (
-              <Image
-                src={currentUser.image}
-                alt="Avatar"
-                className="h-8 w-8 rounded-full"
-                width={32}
-                height={32}
-              />
-            ) : (
-              <div className="h-8 w-8 rounded-full bg-gray-300 flex items-center justify-center">
-                <span className="text-sm font-bold text-gray-600">
-                  {currentUser.name.charAt(0)}
-                </span>
-              </div>
-            )}
-            {currentUser.name}
-          </>
-        ) : (
-          <>
-            Konto
-          </>
-        )}
-        <ChevronDownIcon
-          className="ml-2 -mr-1 h-5 w-5 text-white"
-          aria-hidden="true"
-        />
-      </button>
-      {isDropdownOpen && (
-        <div
-          className={cn(
-            "mt-2 origin-top-right divide-y divide-gray-100 rounded-md bg-white shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none z-50", // Legg til z-50 her
-            isMobile ? "absolute left-0 w-full" : "absolute right-0 w-56"
-          )}
-        >
-          <div className="px-4 py-3">
-            <p className="text-sm text-gray-700">
-              {currentUser ? `Hei, ${currentUser.name}` : "Velg handling"}
-            </p>
-          </div>
-          <div className="py-1">
-            {currentUser ? (
-              <>
-                <button
-                  onClick={() => {
-                    closeDropdown();
-                    router.push("/settings");
-                  }}
-                  className="group flex w-full items-center px-4 py-2 text-sm text-gray-900 hover:bg-gray-100"
-                >
-                  Innstillinger
-                </button>
-                <button
-                  onClick={async () => {
-                    closeDropdown();
-                    await signOut({ callbackUrl: '/' });
-                  }}
-                  className="group flex w-full items-center px-4 py-2 text-sm text-gray-900 hover:bg-gray-100"
-                >
-                  Logg ut
-                </button>
-              </>
-            ) : (
-              <>
-                <button
-                  onClick={() => openDialog("login")}
-                  className="group flex w-full items-center px-4 py-2 text-sm text-gray-900 hover:bg-blue-100 hover:text-blue-700"
-                >
-                  <ArrowRightIcon
-                    className="mr-3 h-5 w-5"
-                    aria-hidden="true"
-                  />
-                  Logg inn
-                </button>
-                <button
-                  onClick={() => openDialog("register")}
-                  className="group flex w-full items-center px-4 py-2 text-sm text-gray-900 hover:bg-green-100 hover:text-green-700"
-                >
-                  <PlusCircleIcon
-                    className="mr-3 h-5 w-5"
-                    aria-hidden="true"
-                  />
-                  Opprett bruker
-                </button>
-              </>
-            )}
-          </div>
-        </div>
-      )}
+   // Åpne register modal
+   const handleOpenRegisterModal = useCallback(() => {
+    handleActionAndCloseMobile(() => registerModal.onOpen());
+   }, [registerModal, handleActionAndCloseMobile]);
 
-      {/* Dialoger */}
-      <Dialog
-        open={dialogState.open}
-        onOpenChange={(open) => {
-          if (!open) closeDialog();
-        }}
-      >
-        <DialogContent className="p-0 w-auto bg-transparent border-none z-[60]"> {/* Legg til z-[60] her */}
-          <DialogTitle className="sr-only">
-            {dialogState.type === "login" && "Logg inn"}
-            {dialogState.type === "register" && "Opprett bruker"}
-            {dialogState.type === "reset-password" && "Tilbakestill passord"}
-          </DialogTitle>
-          {dialogState.type === "login" && (
-            <LoginForm
-              onForgotPassword={() => openDialog("reset-password")}
-              onRegister={() => openDialog("register")}
-              onLoginSuccess={() => {
-                closeDialog();
-                router.push("/settings");
-              }}
-            />
-          )}
-          {dialogState.type === "register" && (
-            <RegisterForm onAlreadyHaveAccount={() => openDialog("login")} />
-          )}
-          {dialogState.type === "reset-password" && (
-            <ResetForm onBackToLogin={() => openDialog("login")} />
-          )}
-        </DialogContent>
-      </Dialog>
-    </div>
-  );
+   // Logg ut bruker
+   const handleLogout = useCallback(() => {
+     handleActionAndCloseMobile(() => {
+       // Send bruker til forsiden etter utlogging
+       signOut({ callbackUrl: '/' });
+     });
+   }, [handleActionAndCloseMobile]);
+
+   // Naviger til en intern side
+   const handleNavigate = useCallback((path: string) => {
+     handleActionAndCloseMobile(() => {
+        router.push(path);
+     });
+   }, [router, handleActionAndCloseMobile]);
+
+   // ---- RENDER LOGIC ----
+
+   if (isMobile) {
+       // ----- MOBILVISNING -----
+      if (currentUser) {
+          // Mobil - Logget inn
+          return (
+             <div className="border-t border-gray-700 pt-4 pb-3">
+               <div className="flex items-center px-5">
+                 {/* Container for avatar/ikon */}
+                 <div className="flex-shrink-0 h-10 w-10 rounded-full bg-gray-600 flex items-center justify-center overflow-hidden"> {/* overflow-hidden for sikkerhets skyld */}
+                   {currentUser.image ? (
+                      // Vis brukerens bilde hvis det finnes
+                      <Image
+                          className="h-full w-full object-cover" // Bruk object-cover for å fylle pent
+                          src={currentUser.image}
+                          alt="Brukeravatar"
+                          width={40} // Match containerstørrelse
+                          height={40}
+                          onError={(e) => {
+                             // Skjul bildet ved feil, ikonet under vil da vises indirekte
+                             e.currentTarget.style.display = 'none';
+                             console.error("Mobile Avatar Load Error:", currentUser.image);
+                          }}
+                          // Unoptimized kan være nyttig for eksterne bilder som endres ofte
+                          // unoptimized
+                      />
+                   ) : (
+                      // Vis standard ikon hvis bildet mangler
+                      <UserCircleIcon className="h-8 w-8 text-gray-400" />
+                   )}
+                 </div>
+                 {/* Brukerinfo */}
+                 <div className="ml-3">
+                    <div className="text-base font-medium leading-none text-white">{currentUser.name || 'Bruker'}</div>
+                    <div className="text-sm font-medium leading-none text-gray-400">{currentUser.email || ''}</div>
+                 </div>
+               </div>
+               {/* Menyvalg */}
+               <div className="mt-3 space-y-1 px-2">
+                  <button onClick={() => handleNavigate('/profil')} className="block w-full text-left rounded-md px-3 py-2 text-base font-medium text-gray-400 hover:bg-gray-700 hover:text-white">Min Profil</button>
+                  <button onClick={() => handleNavigate('/innstillinger')} className="block w-full text-left rounded-md px-3 py-2 text-base font-medium text-gray-400 hover:bg-gray-700 hover:text-white">Innstillinger</button>
+                  <button onClick={handleLogout} className="block w-full text-left rounded-md px-3 py-2 text-base font-medium text-gray-400 hover:bg-gray-700 hover:text-white">Logg ut</button>
+               </div>
+             </div>
+          );
+      } else {
+          // Mobil - Logget ut
+          return (
+             <div className="space-y-1 px-2 py-6 border-t border-gray-700"> {/* La til border-top */}
+                 <button onClick={handleOpenLoginModal} className="flex w-full items-center justify-center rounded-md border border-transparent bg-green-600 px-4 py-2 text-base font-medium text-white shadow-sm hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-gray-800 focus:ring-green-500">Logg inn</button>
+                 <p className="mt-3 text-center text-sm text-gray-400">
+                    Ny her?{' '}
+                    <button onClick={handleOpenRegisterModal} className="font-medium text-green-400 hover:text-green-300 focus:outline-none focus:underline">
+                       Opprett konto
+                    </button>
+                 </p>
+            </div>
+          );
+      }
+
+   } else {
+     // ----- DESKTOPVISNING -----
+      if (currentUser) {
+         // Desktop - Logget inn -> VIS AVATAR/IKON DROPDOWN
+         // console.log("UserDropdown (Desktop): Rendering logged-in state for:", currentUser.email); // Fjernet for renere logg
+         return (
+           <Menu as="div" className="relative inline-block text-left">
+             <div>
+               {/* Trigger-knapp med avatar/ikon og ønsket styling */}
+               <Menu.Button className="flex items-center justify-center rounded-full bg-green-600 p-0.5 text-sm font-semibold text-white shadow-sm ring-1 ring-inset ring-green-700 hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-[#000311] focus:ring-white h-9 w-9 overflow-hidden"> {/* Litt mindre, justert ring-offset */}
+                 <span className="sr-only">Åpne brukermeny</span>
+                 {currentUser.image ? (
+                    // Vis brukerens bilde
+                    <Image
+                       className="h-full w-full rounded-full object-cover" // Fyll knappen
+                       src={currentUser.image}
+                       alt="Brukeravatar"
+                       width={32} // Intern størrelse, knappen styrer visuell størrelse
+                       height={32}
+                       onError={(e) => {
+                          // Skjul bildet ved feil, ikonet under vil da vises
+                          e.currentTarget.style.display = 'none';
+                          console.error("Desktop Avatar Load Error:", currentUser.image);
+                       }}
+                       // unoptimized
+                    />
+                 ) : (
+                   // Vis standard ikon hvis bildet mangler
+                   <UserCircleIcon className="h-7 w-7 text-white" aria-hidden="true" /> // Juster størrelse etter behov
+                 )}
+               </Menu.Button>
+             </div>
+
+             {/* Dropdown-panelet */}
+             <Transition
+               as={Fragment}
+               enter="transition ease-out duration-100"
+               enterFrom="transform opacity-0 scale-95"
+               enterTo="transform opacity-100 scale-100"
+               leave="transition ease-in duration-75"
+               leaveFrom="transform opacity-100 scale-100"
+               leaveTo="transform opacity-0 scale-95"
+             >
+               <Menu.Items className="absolute right-0 z-10 mt-2 w-56 origin-top-right divide-y divide-gray-100 rounded-md bg-white shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none">
+                 {/* Brukerinfo i toppen av dropdown */}
+                 <div className="px-4 py-3">
+                    <p className="text-sm font-medium text-gray-900 truncate">{currentUser.name || 'Bruker'}</p>
+                    <p className="text-sm text-gray-500 truncate">{currentUser.email || ''}</p>
+                 </div>
+                 {/* Menyvalg */}
+                 <div className="py-1">
+                    <Menu.Item>
+                      {({ active }) => (<button onClick={() => handleNavigate('/profil')} className={cn(active ? 'bg-gray-100 text-gray-900' : 'text-gray-700', 'group flex w-full items-center px-4 py-2 text-sm')}><UserCircleIcon className="mr-3 h-5 w-5 text-gray-400 group-hover:text-gray-500" aria-hidden="true" /> Min Profil</button>)}
+                    </Menu.Item>
+                    <Menu.Item>
+                      {({ active }) => (<button onClick={() => handleNavigate('/innstillinger')} className={cn(active ? 'bg-gray-100 text-gray-900' : 'text-gray-700', 'group flex w-full items-center px-4 py-2 text-sm')}><Cog6ToothIcon className="mr-3 h-5 w-5 text-gray-400 group-hover:text-gray-500" aria-hidden="true" /> Innstillinger</button>)}
+                    </Menu.Item>
+                 </div>
+                 {/* Logg ut */}
+                 <div className="py-1">
+                   <Menu.Item>
+                     {({ active }) => (<button onClick={handleLogout} className={cn(active ? 'bg-gray-100 text-gray-900' : 'text-gray-700', 'group flex w-full items-center px-4 py-2 text-sm')}><ArrowRightOnRectangleIcon className="mr-3 h-5 w-5 text-gray-400 group-hover:text-gray-500" aria-hidden="true" /> Logg ut</button>)}
+                   </Menu.Item>
+                 </div>
+               </Menu.Items>
+             </Transition>
+           </Menu>
+         );
+       } else {
+          // Desktop - Logget ut -> VIS "Logg inn" KNAPP
+          // console.log("UserDropdown (Desktop): Rendering logged-out state."); // Fjernet for renere logg
+          return (
+            <button
+              onClick={handleOpenLoginModal}
+              className="text-sm font-semibold leading-6 text-white hover:text-green-400 transition ease-in-out duration-150 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-[#000311] focus:ring-white rounded-md px-2 py-1" // Lagt til focus styles og litt padding
+            >
+              Logg inn <span aria-hidden="true" className="ml-1">→</span> {/* Litt luft før pil */}
+            </button>
+          );
+       }
+   }
 }
 
 export default UserDropdown;

@@ -44,7 +44,7 @@ export default function Footer() {
         {/* Sosiale medier-ikoner */}
         <div className="flex space-x-5 mb-4 md:mb-0"> {/* Increased spacing between icons */}
           <a
-            href="https://facebook.com" // DEV NOTE: Update with actual links
+            href="https://facebook.com" 
             target="_blank"
             rel="noopener noreferrer"
             aria-label="Besøk vår Facebook-side"
@@ -53,7 +53,7 @@ export default function Footer() {
             <FaFacebook size={22} /> {/* Slightly larger icons */}
           </a>
           <a
-            href="https://instagram.com" // DEV NOTE: Update with actual links
+            href="https://instagram.com" 
             target="_blank"
             rel="noopener noreferrer"
             aria-label="Besøk vår Instagram-profil"
@@ -62,7 +62,7 @@ export default function Footer() {
             <FaInstagram size={22} />
           </a>
           <a
-            href="https://x.com" // DEV NOTE: Update with actual links
+            href="https://x.com" 
             target="_blank"
             rel="noopener noreferrer"
             aria-label="Besøk vår profil på X (tidligere Twitter)"
@@ -74,7 +74,6 @@ export default function Footer() {
       </div>
 
       {/* Horisontal separator med den opprinnelige gradienten */}
-      {/* DEV NOTE: Tilbake til h-2 hvis det var den opprinnelige ønskede tykkelsen, ellers behold h-1 el.l. */}
       <Separator className="my-4 max-w-7xl mx-auto h-2 bg-gradient-to-r from-green-600 via-green-400 to-green-600" />
       {/* Eller bruk original tykkelse hvis ønskelig: */}
       {/* <Separator className="my-4 max-w-7xl mx-auto h-2 bg-gradient-to-r from-green-600 via-green-300 to-green-600" /> */}

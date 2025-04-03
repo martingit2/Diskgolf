@@ -65,7 +65,7 @@ const Klubber = () => {
 
   return (
     <div className="max-w-7xl mx-auto p-6">
-      <h1 className="text-4xl font-extrabold text-center text-gray-900 mb-8">
+      <h1 className="text-4xl font-extrabold text-center text-white mb-8">
         DiscGolf Klubber
       </h1>
 

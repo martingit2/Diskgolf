@@ -1,100 +1,72 @@
-/** 
+/**
  * Filnavn: Modal.tsx
- * Beskrivelse: Gjenbrukbar modal-komponent for visning av popup-bokser i applikasjonen.
- * Brukes for registrering, varsler eller andre interaktive handlinger.
- * Inneholder støtte for primær- og sekundærhandlinger samt lukkefunksjonalitet.
+ * Beskrivelse: Gjenbrukbar modal-komponent...
  * Utvikler: Martin Pettersen
  */
-
-
-"use client"; 
+"use client";
 
 import { useCallback, useEffect, useState } from "react";
-import { IoMdClose } from "react-icons/io"; // Importerer et ikon for lukkeknappen.
-import Button from "../Button"; // Importerer en gjenbrukbar knappkomponent.
+import { IoMdClose } from "react-icons/io";
+import Button from "../Button"; // Antar at denne finnes
 
 interface ModalProps {
-  isOpen?: boolean; // Angir om modalen er åpen.
-  onClose: () => void; // Callback for å lukke modalen.
-  onSubmit: () => void; // Callback for å utføre en handling når brukeren sender inn skjemaet.
-  title?: string; // Teksten som vises som overskrift i modalen.
-  body?: React.ReactElement; // Innholdet som vises i modalens hoveddel.
-  footer?: React.ReactElement; // Innholdet som vises i modalens bunn.
-  actionLabel: string; // Teksten som vises på "Hoved"-knappen.
-  disabled?: boolean; // Angir om knappene er deaktivert.
-  secondaryAction?: () => void; // Callback for en sekundær handling (valgfritt).
-  secondaryActionLabel?: string; // Teksten som vises på den sekundære knappen (valgfritt).
+  isOpen?: boolean;
+  onClose: () => void;
+  onSubmit: () => void; // Callback for hovedhandling (hvis brukt)
+  title?: string;
+  body?: React.ReactElement;
+  footer?: React.ReactElement; // For å sende inn egendefinert footer (som i ResetPasswordModal)
+  actionLabel?: string; // Endret til valgfri
+  disabled?: boolean;
+  secondaryAction?: () => void;
+  secondaryActionLabel?: string; // Også valgfri
 }
 
-/**
- * Modal-komponenten brukes til å vise en popup-boks for ulike interaksjoner
- * som registrering, varsler eller andre handlinger.
- * Den er designet for å være gjenbrukbar og responsiv.
- */
 const Modal: React.FC<ModalProps> = ({
   isOpen,
   onClose,
   onSubmit,
   title,
   body,
-  footer,
-  actionLabel,
+  footer, // Mottar footer prop
+  actionLabel, // Mottar actionLabel (kan være tom eller undefined)
   disabled,
   secondaryAction,
-  secondaryActionLabel,
+  secondaryActionLabel, // Mottar secondaryActionLabel
 }) => {
-  // Lokalt state for å kontrollere visningen av modalen med animasjon.
   const [showModal, setShowModal] = useState(isOpen);
 
-  // Oppdaterer `showModal` når `isOpen`-propen endres.
   useEffect(() => {
     setShowModal(isOpen);
   }, [isOpen]);
 
-  /**
-   * Lukkemekanisme for modalen.
-   * - Hindrer at modalen lukkes hvis knappene er deaktivert.
-   * - Animasjon for å skjule modalen før den fjernes fra DOM.
-   */
   const handleClose = useCallback(() => {
     if (disabled) return;
-
     setShowModal(false);
-    setTimeout(() => {
-      onClose();
-    }, 300); // Gir tid til en avsluttende animasjon før modalen fjernes.
+    setTimeout(() => onClose(), 300);
   }, [disabled, onClose]);
 
-  /**
-   * Callback for "Hoved"-knappen (f.eks. "Fortsett").
-   * Utfører handlingen spesifisert i `onSubmit`.
-   */
   const handleSubmit = useCallback(() => {
     if (disabled) return;
-
     onSubmit();
   }, [disabled, onSubmit]);
 
-  /**
-   * Callback for den sekundære knappen (valgfritt).
-   * Utfører handlingen spesifisert i `secondaryAction`.
-   */
   const handleSecondaryAction = useCallback(() => {
     if (disabled || !secondaryAction) return;
-
     secondaryAction();
   }, [disabled, secondaryAction]);
 
-  // Returnerer ingenting hvis modalen ikke er åpen.
   if (!isOpen) return null;
+
+  // Bestem om den innebygde knapperaden skal vises
+  // Skal kun vises hvis 'footer'-prop IKKE er gitt, OG minst én av action-labels har en verdi.
+  const showInternalActions = !footer && (!!actionLabel || !!secondaryActionLabel);
+
 
   return (
     <>
-      {/* Bakgrunn som dekker hele skjermen når modalen er aktiv */}
       <div className="justify-center items-center flex overflow-x-hidden overflow-y-auto fixed inset-0 z-50 outline-none focus:outline-none bg-neutral-800/70">
-        {/* Modalens wrapper for innhold */}
-        <div className="relative w-full md:w-4/6 lg:w-3/6 xl:w-2/5 my-6 mx-auto h-full lg:h-auto md:h-auto">
-          {/* Modalens innhold med animasjon */}
+        <div className="relative w-full md:w-4/6 lg:w-3/6 xl:w-2/5 my-6 mx-auto h-auto max-h-[90vh] overflow-y-auto">
           <div
             className={`translate duration-300 h-full ${
               showModal ? "translate-y-0 opacity-100" : "translate-y-full opacity-0"
@@ -102,40 +74,59 @@ const Modal: React.FC<ModalProps> = ({
           >
             <div className="translate h-full lg:h-auto md:h-auto border-0 rounded-lg shadow-lg relative flex flex-col w-full bg-white outline-none focus:outline-none">
               {/* HEADER */}
-              <div className="flex items-center p-6 rounded-t justify-center relative border-b-[1px]">
-                {/* Lukkeknapp */}
+              <div className="flex items-center p-4 md:p-5 rounded-t justify-center relative border-b-[1px]">
+                <div className="text-lg font-semibold">{title}</div>
                 <button
                   onClick={handleClose}
-                  className="p-1 border-0 hover:opacity-70 transition absolute right-9"
+                  className="p-1 border-0 hover:opacity-70 transition absolute right-4 top-3 text-gray-500 hover:text-gray-800"
                 >
-                  <IoMdClose size={18} />
+                  <IoMdClose size={24} />
                 </button>
-                {/* Tittel i headeren */}
-                <div className="text-lg font font-semibold">{title}</div>
               </div>
 
               {/* BODY */}
-              <div className="relative p-6 flex-auto">{body}</div>
-
-              {/* FOOTER */}
-              <div className="flex flex-col gap-2 p-6">
-                <div className="flex flex-row items-center gap-4 w-full">
-                  {/* Sekundær handling (valgfritt) */}
-                  {secondaryAction && secondaryActionLabel && (
-                    <Button
-                      outline
-                      disabled={disabled}
-                      label={secondaryActionLabel}
-                      onClick={handleSecondaryAction}
-                    />
-                  )}
-
-                  {/* Hoved handling */}
-                  <Button disabled={disabled} label={actionLabel} onClick={handleSubmit} />
-                </div>
-                {/* Footer-innhold */}
-                {footer}
+              <div className="relative flex-auto">
+                {body}
               </div>
+
+              {/* ------ START FOOTER LOGIC ------ */}
+
+              {/* 1. Render den innebygde knapperaden KUN hvis betingelsen er sann */}
+              {showInternalActions && (
+                 <div className="flex flex-col gap-2 p-4 md:p-5 border-t-[1px]">
+                   <div className="flex flex-row items-center gap-4 w-full">
+                     {/* Sekundær handling (vises kun hvis label finnes) */}
+                     {secondaryAction && secondaryActionLabel && (
+                       <Button
+                         outline
+                         disabled={disabled}
+                         label={secondaryActionLabel}
+                         onClick={handleSecondaryAction}
+                       />
+                     )}
+                     {/* Hoved handling (vises kun hvis label finnes) */}
+                     {actionLabel && (
+                        <Button
+                          disabled={disabled}
+                          label={actionLabel}
+                          onClick={handleSubmit}
+                          // Pass på at Button-komponenten din håndterer manglende 'type' eller sett default 'button'
+                          // type="button" // Eller 'submit' hvis den skal submitte noe internt i Modal
+                        />
+                     )}
+                   </div>
+                 </div>
+              )}
+
+              {/* 2. Render footer-propen HVIS den er gitt (ignorerer da interne knapper) */}
+               {footer && (
+                  <div className="p-4 md:p-5 border-t-[1px]"> {/* Legg til border-top hvis footer skal ha det */}
+                     {footer}
+                  </div>
+               )}
+
+              {/* ------ END FOOTER LOGIC ------ */}
+
             </div>
           </div>
         </div>

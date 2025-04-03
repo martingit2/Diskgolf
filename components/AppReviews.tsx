@@ -27,7 +27,7 @@ const AppReviews = () => {
 
   return (
     <section className="max-w-7xl mx-auto p-6 mt-20">
-      <h1 className="text-3xl font-extrabold text-gray-800 leading-tight text-center">
+      <h1 className="text-3xl font-extrabold text-white leading-tight text-center">
         Hva sier brukerne våre om oss?
       </h1>
 

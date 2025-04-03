@@ -96,7 +96,7 @@ export default function ArrangementerPage() {
 
   return (
     <div className="max-w-4xl mx-auto py-10 px-4">
-      <h1 className="text-3xl font-bold mb-6 text-center">Kommende Arrangementer</h1>
+      <h1 className="text-3xl font-bold mb-6 text-green-300 text-center">Kommende Arrangementer</h1>
       <div className="space-y-6">
         {events.map((event) => (
           <Card key={event.id} className="shadow-lg border border-gray-200">

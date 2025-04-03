@@ -116,7 +116,7 @@ const TournamentsCarousel = () => {
            {/* Tittel-blokk */}
            <div className="mb-4 md:mb-0">
              <h2 className="text-xs sm:text-sm font-semibold text-green-600 uppercase tracking-wider">DiskGolf Turneringer</h2>
-             <h1 className="text-2xl sm:text-3xl font-bold text-gray-900 mt-1">Kommende Arrangementer</h1>
+             <h1 className="text-2xl sm:text-3xl font-bold text-white mt-1">Kommende Arrangementer</h1>
            </div>
            {/* Knapp: Vises under på mobil, til høyre på større skjermer */}
            <Button
@@ -149,7 +149,7 @@ const TournamentsCarousel = () => {
         {/* Tittel-blokk */}
         <div className="mb-4 md:mb-0">
           <h2 className="text-xs sm:text-sm font-semibold text-green-600 uppercase tracking-wider">DiskGolf Turneringer</h2>
-          <h1 className="text-2xl sm:text-3xl font-bold text-gray-900 mt-1">Kommende Arrangementer</h1>
+          <h1 className="text-2xl sm:text-3xl font-bold text-white mt-1">Kommende Arrangementer</h1>
         </div>
         {/* Knapp: Vises under på mobil, til høyre på større skjermer */}
         <Button

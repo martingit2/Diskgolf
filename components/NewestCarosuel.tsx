@@ -77,7 +77,7 @@ const NyesteBanerCarousel = () => {
            <h2 className="text-sm font-semibold text-green-600 uppercase tracking-wider">
              DiskGolf Baner
            </h2>
-           <h1 className="text-3xl font-bold text-gray-900 mt-1">
+           <h1 className="text-3xl font-bold text-white mt-1">
              Nyeste DiskGolf-baner
            </h1>
         </div>
