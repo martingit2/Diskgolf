@@ -108,9 +108,9 @@ function UserDropdown({ isMobile, currentUser, closeMobileMenu }: UserDropdownPr
                </div>
                {/* Menyvalg */}
                <div className="mt-3 space-y-1 px-2">
-                  <button onClick={() => handleNavigate('/profil')} className="block w-full text-left rounded-md px-3 py-2 text-base font-medium text-gray-400 hover:bg-gray-700 hover:text-white">Min Profil</button>
-                  <button onClick={() => handleNavigate('/innstillinger')} className="block w-full text-left rounded-md px-3 py-2 text-base font-medium text-gray-400 hover:bg-gray-700 hover:text-white">Innstillinger</button>
-                  <button onClick={handleLogout} className="block w-full text-left rounded-md px-3 py-2 text-base font-medium text-gray-400 hover:bg-gray-700 hover:text-white">Logg ut</button>
+                  <button onClick={() => handleNavigate('/stats')} className="block w-full text-left rounded-md px-3 py-2 text-base font-medium text-gray-400 hover:bg-emerald-600 hover:text-white">Min Profil</button>
+                  <button onClick={() => handleNavigate('/settings')} className="block w-full text-left rounded-md px-3 py-2 text-base font-medium text-gray-400 hover:bg-emerald-600 hover:text-white">Innstillinger</button>
+                  <button onClick={handleLogout} className="block w-full text-left rounded-md px-3 py-2 text-base font-medium text-gray-400 hover:bg-emerald-600 hover:text-white">Logg ut</button>
                </div>
              </div>
           );
@@ -118,7 +118,7 @@ function UserDropdown({ isMobile, currentUser, closeMobileMenu }: UserDropdownPr
           // Mobil - Logget ut
           return (
              <div className="space-y-1 px-2 py-6 border-t border-gray-700"> {/* La til border-top */}
-                 <button onClick={handleOpenLoginModal} className="flex w-full items-center justify-center rounded-md border border-transparent bg-green-600 px-4 py-2 text-base font-medium text-white shadow-sm hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-gray-800 focus:ring-green-500">Logg inn</button>
+                 <button onClick={handleOpenLoginModal} className="flex w-full items-center justify-center rounded-md border border-transparent bg-green-600 px-4 py-2 text-base font-medium text-white shadow-sm hover:bg-emerald-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-gray-800 focus:ring-green-500">Logg inn</button>
                  <p className="mt-3 text-center text-sm text-gray-400">
                     Ny her?{' '}
                     <button onClick={handleOpenRegisterModal} className="font-medium text-green-400 hover:text-green-300 focus:outline-none focus:underline">
@@ -181,10 +181,10 @@ function UserDropdown({ isMobile, currentUser, closeMobileMenu }: UserDropdownPr
                  {/* Menyvalg */}
                  <div className="py-1">
                     <Menu.Item>
-                      {({ active }) => (<button onClick={() => handleNavigate('/profil')} className={cn(active ? 'bg-gray-100 text-gray-900' : 'text-gray-700', 'group flex w-full items-center px-4 py-2 text-sm')}><UserCircleIcon className="mr-3 h-5 w-5 text-gray-400 group-hover:text-gray-500" aria-hidden="true" /> Min Profil</button>)}
+                      {({ active }) => (<button onClick={() => handleNavigate('/stats')} className={cn(active ? 'bg-gray-100 text-gray-900' : 'text-gray-700', 'group flex w-full items-center px-4 py-2 text-sm')}><UserCircleIcon className="mr-3 h-5 w-5 text-gray-400 group-hover:text-gray-500" aria-hidden="true" /> Min Profil</button>)}
                     </Menu.Item>
                     <Menu.Item>
-                      {({ active }) => (<button onClick={() => handleNavigate('/innstillinger')} className={cn(active ? 'bg-gray-100 text-gray-900' : 'text-gray-700', 'group flex w-full items-center px-4 py-2 text-sm')}><Cog6ToothIcon className="mr-3 h-5 w-5 text-gray-400 group-hover:text-gray-500" aria-hidden="true" /> Innstillinger</button>)}
+                      {({ active }) => (<button onClick={() => handleNavigate('/settings')} className={cn(active ? 'bg-gray-100 text-gray-900' : 'text-gray-700', 'group flex w-full items-center px-4 py-2 text-sm')}><Cog6ToothIcon className="mr-3 h-5 w-5 text-gray-400 group-hover:text-gray-500" aria-hidden="true" /> Innstillinger</button>)}
                     </Menu.Item>
                  </div>
                  {/* Logg ut */}
