@@ -180,7 +180,7 @@ const AdminDashboard = () => {
 
   return (
     <div className="p-6 flex flex-col items-center">
-      <h1 className="text-4xl font-bold text-gray-900">Bane Dashboard</h1>
+      <h1 className="text-4xl font-bold text-white">Bane Dashboard</h1>
 
       {/* Legg til fanen for Opprett Bane og Legg til Baneeier */}
       <CourseTabNavigation selectedTab={selectedTab} setSelectedTab={setSelectedTab} />
@@ -324,7 +324,7 @@ const AdminDashboard = () => {
       ) : (
         <div className="flex flex-col items-center w-full max-w-7xl mt-6">
           <div className="w-full mb-6">
-            <label className="block font-medium mb-2">Velg bane:</label>
+            <label className="block font-medium text-white mb-2">Velg bane:</label>
             <Select onValueChange={(value) => setSelectedCourseId(value)}>
               <SelectTrigger className="w-full">
                 <SelectValue placeholder="Velg en bane" />
@@ -340,7 +340,7 @@ const AdminDashboard = () => {
           </div>
 
           <div className="w-full mb-6">
-            <label className="block font-medium mb-2">Velg klubb:</label>
+            <label className="block font-medium text-white mb-2">Velg klubb:</label>
             <Select onValueChange={(value) => setSelectedClubId(value)}>
               <SelectTrigger className="w-full">
                 <SelectValue placeholder="Velg en klubb" />

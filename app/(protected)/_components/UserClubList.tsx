@@ -126,13 +126,13 @@ const UserClubsList = ({ onEditClub }: { onEditClub: (club: Club) => void }) => 
 
   return (
     <div>
-      <h3 className="text-2xl font-semibold mb-4">Klubber du er medlem av:</h3>
+      <h3 className="text-2xl font text-white -semibold mb-4">Klubber du er medlem av:</h3>
       {userClubs.length === 0 ? (
         <p>Du er ikke medlem av noen klubb ennå.</p>
       ) : (
         <ul className="space-y-4">
           {userClubs.map((club) => (
-            <li key={club.id} className="border-b p-2 flex justify-between items-center">
+            <li key={club.id} className="border-b p-2 flex justify-between text-green-400 items-center">
               <div>
                 <strong>{club.name}</strong> - {club.location}
               </div>

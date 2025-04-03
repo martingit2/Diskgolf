@@ -32,11 +32,11 @@ const ClubSettingsForm: FC<ClubSettingsFormProps> = ({ clubSettings, onSaveChang
 
   return (
     <div>
-      <h2 className="text-2xl font-semibold mb-4">Rediger {clubSettings?.name}</h2>
+      <h2 className="text-2xl font-semibold text-white mb-4">Rediger {clubSettings?.name}</h2>
 
       <form onSubmit={handleSubmit}>
         <div>
-          <label htmlFor="name" className="block">Klubbens navn</label>
+          <label htmlFor="name" className="block text-white">Klubbens navn</label>
           <input
             type="text"
             id="name"
@@ -49,7 +49,7 @@ const ClubSettingsForm: FC<ClubSettingsFormProps> = ({ clubSettings, onSaveChang
         </div>
 
         <div className="mt-4">
-          <label htmlFor="address" className="block">Adresse</label>
+          <label htmlFor="address" className="block text-white ">Adresse</label>
           <input
             type="text"
             id="address"
@@ -57,12 +57,12 @@ const ClubSettingsForm: FC<ClubSettingsFormProps> = ({ clubSettings, onSaveChang
             value={updatedSettings?.address || ""}
             onChange={handleChange}
             placeholder="Klubbens adresse"
-            className="input w-full mt-2 p-2 rounded-lg border border-gray-300"
+            className="input w-full mt-2 p-2 rounded-lg border  border-gray-300"
           />
         </div>
 
         <div className="mt-4">
-          <label htmlFor="phone" className="block">Telefonnummer</label>
+          <label htmlFor="phone" className="block text-white">Telefonnummer</label>
           <input
             type="text"
             id="phone"
@@ -75,7 +75,7 @@ const ClubSettingsForm: FC<ClubSettingsFormProps> = ({ clubSettings, onSaveChang
         </div>
 
         <div className="mt-4">
-          <label htmlFor="postalCode" className="block">Postnummer</label>
+          <label htmlFor="postalCode" className="block text-white">Postnummer</label>
           <input
             type="text"
             id="postalCode"
@@ -88,7 +88,7 @@ const ClubSettingsForm: FC<ClubSettingsFormProps> = ({ clubSettings, onSaveChang
         </div>
 
         <div className="mt-4">
-          <label htmlFor="logoUrl" className="block">Logo (valgfritt)</label>
+          <label htmlFor="logoUrl" className="block text-white">Logo (valgfritt)</label>
           <input
             type="file"
             id="logoUrl"
@@ -98,14 +98,14 @@ const ClubSettingsForm: FC<ClubSettingsFormProps> = ({ clubSettings, onSaveChang
             className="mt-2 p-2 rounded-lg border border-gray-300"
           />
           {logoFile && (
-            <div className="mt-2">
+            <div className="mt-2 text-white">
               <strong>Lastet opp fil:</strong> {logoFile.name}
             </div>
           )}
         </div>
 
-        <div className="flex justify-end mt-4">
-          <Button type="submit">Lagre endringer</Button>
+        <div className="flex justify-end mt-4 ">
+          <Button className="bg-green-600" type="submit">Lagre endringer</Button>
         </div>
       </form>
     </div>

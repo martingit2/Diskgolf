@@ -4,7 +4,7 @@ import { FC } from "react";
 const ClubMembers: FC = () => {
   return (
     <div>
-      <h3>Klubbmedlemmer</h3>
+      <h3 className="text-white">Klubbmedlemmer</h3>
       {/* Logikk for å vise klubbens medlemmer */}
     </div>
   );

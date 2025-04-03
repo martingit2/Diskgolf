@@ -20,7 +20,7 @@ const TabNavigation: FC<TabNavigationProps> = ({ selectedTab, setSelectedTab, us
         {/* Min Klubb */}
         <button
           onClick={() => setSelectedTab("minKlubb")}
-          className={`py-2 px-4 text-sm font-semibold ${selectedTab === "minKlubb" ? "text-green-700" : "text-gray-600 hover:text-blue-950"}`}
+          className={`py-2 px-4 text-sm font-semibold ${selectedTab === "minKlubb" ? "text-green-700" : "text-white hover:text-blue-950"}`}
         >
           Min Klubb
         </button>
@@ -29,7 +29,7 @@ const TabNavigation: FC<TabNavigationProps> = ({ selectedTab, setSelectedTab, us
         {/* Klubbinnstillinger */}
         <button
           onClick={() => setSelectedTab("klubbInnstillinger")}
-          className={`py-2 px-4 text-sm font-semibold ${selectedTab === "klubbInnstillinger" ? "text-green-700" : "text-gray-600 hover:text-blue-950"}`}
+          className={`py-2 px-4 text-sm font-semibold ${selectedTab === "klubbInnstillinger" ? "text-green-700" : "text-white hover:text-blue-950"}`}
         >
           Klubbinnstillinger
         </button>
@@ -38,7 +38,7 @@ const TabNavigation: FC<TabNavigationProps> = ({ selectedTab, setSelectedTab, us
         {/* Klubbmedlemmer */}
         <button
           onClick={() => setSelectedTab("klubbMedlemmer")}
-          className={`py-2 px-4 text-sm font-semibold ${selectedTab === "klubbMedlemmer" ? "text-green-700" : "text-gray-600 hover:text-blue-950"}`}
+          className={`py-2 px-4 text-sm font-semibold ${selectedTab === "klubbMedlemmer" ? "text-green-700" : "text-white hover:text-blue-950"}`}
         >
           Klubbmedlemmer
         </button>
@@ -49,7 +49,7 @@ const TabNavigation: FC<TabNavigationProps> = ({ selectedTab, setSelectedTab, us
           <>
             <button
               onClick={() => setSelectedTab("redigerKlubb")}
-              className={`py-2 px-4 text-sm font-semibold ${selectedTab === "redigerKlubb" ? "text-green-700" : "text-gray-600 hover:text-blue-950"}`}
+              className={`py-2 px-4 text-sm font-semibold ${selectedTab === "redigerKlubb" ? "text-green-700" : "text-white hover:text-blue-950"}`}
             >
               Legg til klubbnyheter
             </button>
@@ -60,7 +60,7 @@ const TabNavigation: FC<TabNavigationProps> = ({ selectedTab, setSelectedTab, us
         {/* Opprett Klubb */}
         <button
           onClick={() => setSelectedTab("opprettKlubb")}
-          className={`py-2 px-4 text-sm font-semibold ${selectedTab === "opprettKlubb" ? "text-green-700" : "text-gray-600 hover:text-blue-950"}`}
+          className={`py-2 px-4 text-sm font-semibold ${selectedTab === "opprettKlubb" ? "text-green-700" : "text-white hover:text-blue-950"}`}
         >
           Opprett Klubb
         </button>
@@ -74,7 +74,7 @@ const TabNavigation: FC<TabNavigationProps> = ({ selectedTab, setSelectedTab, us
         clubId ? (
           <CreateClubNewsForm clubId={clubId} />  // Kun hvis clubId er tilgjengelig
         ) : (
-          <p>Vennligst velg en klubb før du kan legge til nyheter.</p>  // Hvis ingen klubb er valgt
+          <p className="text-white">Vennligst velg en klubb før du kan legge til nyheter.</p>  // Hvis ingen klubb er valgt
         )
       ) : null}
     </div>

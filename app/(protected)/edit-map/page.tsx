@@ -181,10 +181,10 @@ const EditMapDashboard = () => {
 
   return (
     <div className="p-6 flex flex-col items-center">
-      <h1 className="text-4xl font-bold text-gray-900">Rediger Banekart</h1>
+      <h1 className="text-4xl font-bold text-white">Rediger Banekart</h1>
 
       <div className="w-full max-w-7xl mt-6">
-        <label className="block font-medium mb-2">Velg bane å redigere:</label>
+        <label className="block font-medium mb-2 text-white">Velg bane å redigere:</label>
         <Select onValueChange={(value) => setSelectedCourseId(value)}>
           <SelectTrigger className="w-full">
             <SelectValue placeholder="Velg en bane" />

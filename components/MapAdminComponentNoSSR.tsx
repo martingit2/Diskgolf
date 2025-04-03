@@ -401,9 +401,9 @@ const MapAdminComponentNoSSR = ({
       )}
 
       {/* 📌 Info-tekst og reset-knapp */}
-      <h2 className="text-md font-semibold text-gray-900 mb-3">Hvordan sette opp banen</h2>
+      <h2 className="text-md font-semibold text-white mb-3">Hvordan sette opp banen</h2>
 
-      <div className="text-xs text-gray-700 space-y-1">
+      <div className="text-xs text-gray-300 space-y-1">
         <p>Plasser en <strong>bane-markør</strong> for å angi hvor banen ligger.</p>
         <p>Deretter setter du ut et <strong>tee-punkt</strong>, deretter en <strong>kurv</strong>. Gjenta til neste siste kurv.</p>
         <p>Når du har satt ut det siste tee-punktet, plasser <strong>mål-markøren</strong> for siste kurv.</p>
