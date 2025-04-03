@@ -240,11 +240,11 @@ export default function NewsDetailPage() {
 
                     {isAdmin && (
                         <div className="flex flex-wrap gap-2">
-                             <Button variant="outline" size="sm" onClick={handleTogglePublish} disabled={isLoadingAction} className="flex items-center">
+                             <Button variant="outline" size="sm" onClick={handleTogglePublish} disabled={isLoadingAction} className="flex text-gray-400 items-center">
                                 {isLoadingAction ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : (isPublished ? <EyeOff className="mr-2 h-4 w-4" /> : <Eye className="mr-2 h-4 w-4" />)}
                                 {isPublished ? 'Avpubliser' : 'Publiser'}
                             </Button>
-                            <Button variant="outline" size="sm" onClick={() => setIsModalOpen(true)} disabled={isLoadingAction} className="flex items-center">
+                            <Button variant="outline" size="sm" onClick={() => setIsModalOpen(true)} disabled={isLoadingAction} className="flex text-gray-400 items-center">
                                 <Edit className="mr-2 h-4 w-4" /> Rediger
                             </Button>
                             <Button variant="destructive" size="sm" onClick={handleDelete} disabled={isLoadingAction} className="flex items-center">

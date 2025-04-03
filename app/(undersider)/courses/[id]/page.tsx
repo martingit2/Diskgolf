@@ -111,8 +111,8 @@ export default async function CoursePage({
       <div className="max-w-6xl mx-auto px-4 py-8">
         {/* Overskrift og lokasjon */}
         <div className="mb-6">
-          <h1 className="text-3xl font-bold text-gray-900">{course.name}</h1>
-          <p className="text-gray-600">{course.location || "Ukjent sted"}</p> {/* La til fallback */}
+          <h1 className="text-3xl font-bold text-green-500">{course.name}</h1>
+          <p className="text-emerald-400">{course.location || "Ukjent sted"}</p> {/* La til fallback */}
         </div>
 
         {/* Beskrivelse */}
@@ -313,7 +313,7 @@ export default async function CoursePage({
 
         {/* Anmeldelser (din layout) */}
         <div className="mt-12"> {/* Økt margin */}
-          <h2 className="text-2xl font-bold mb-6 text-gray-900">Anmeldelser</h2>
+          <h2 className="text-2xl font-bold mb-6 text-white">Anmeldelser</h2>
           {reviews.length > 0 ? (
             <div className="space-y-6">
               {reviews.map(

@@ -248,7 +248,7 @@ const MapModal = ({ courseId }: { courseId: string }) => {
     <>
       <Button
         onClick={toggleModal}
-        className="bg-gray-900 hover:bg-gray-700 text-white font-semibold py-3 px-8 rounded-lg shadow-md flex items-center gap-2"
+        className="bg-yellow-700 hover:bg-gray-700 text-white font-semibold py-3 px-8 rounded-lg shadow-md flex items-center gap-2"
       >
         <MapPin className="w-5 h-5" />
         Bane Kart

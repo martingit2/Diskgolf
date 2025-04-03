@@ -215,7 +215,7 @@ export function NewsFormModal({ isOpen, onClose, onSuccess, initialData }: NewsF
   // --- Rendering (med korrekt MultiSelect import) ---
   return (
     <Dialog open={isOpen} onOpenChange={handleClose}>
-      <DialogContent className="sm:max-w-xl md:max-w-2xl lg:max-w-3xl">
+      <DialogContent className="sm:max-w-xl text-gray-900 md:max-w-2xl lg:max-w-3xl">
         <DialogHeader>
           <DialogTitle>{initialData ? 'Rediger nyhetsartikkel' : 'Opprett nyhetsartikkel'}</DialogTitle>
           <DialogDescription>
