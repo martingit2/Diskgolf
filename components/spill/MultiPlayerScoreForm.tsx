@@ -274,7 +274,7 @@ export default function MultiplayerScoreForm({
   return (
     <div className="min-h-screen bg-gray-900 text-white p-6">
       <div className="mb-8">
-        <h1 className="text-3xl font-bold">{course.name}</h1>
+        <h1 className="text-3xl text-green-400 font-bold">{course.name}</h1>
         <div className="flex justify-between items-center mt-2">
           <span className="text-gray-400">Spiller: {currentPlayerName}</span>
           <span className="bg-blue-600 px-3 py-1 rounded-full">

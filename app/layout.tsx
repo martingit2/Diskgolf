@@ -1,12 +1,11 @@
 /**
  * Filnavn: RootLayout.tsx
- * Beskrivelse: Hovedlayoutkomponenten for applikasjonen.
+ * Beskrivelse: Hovedlayoutkomponenten for applikasjonen. Setter opp global struktur med mørk bakgrunn.
  * Utvikler: Martin Pettersen
  */
 
 import type { Metadata } from "next";
 import "./globals.css";
-// Sørg for at stien til Header er riktig
 
 import RegisterModal from "@/components/modals/RegisterModal";
 import ToasterProvider from "./providers/ToasterProvider";
@@ -39,19 +38,23 @@ export default async function RootLayout({
 
   return (
     <html lang="no" suppressHydrationWarning>
-      {/* SETTER MØRK BAKGRUNN OG LYS TEKST SOM STANDARD */}
-      <body className="min-h-screen flex flex-col bg-[#000311] text-gray-100"> {/* Endret bg og text */}
+      {/* BODY: Mørk bakgrunn, standard lys tekst, flex-kolonne layout */}
+      <body className="min-h-screen flex flex-col bg-[#000311] text-gray-100">
           <ToasterProvider />
           <SessionWrapper session={session}>
             <Header />
+
             {/* Globale modaler */}
             <LoginModal />
             <RegisterModal />
             <ResetPasswordModal />
-            {/* MAIN arver nå bakgrunn fra body, eller kan settes likt */}
-            <main className="flex-grow bg-[#000311]"> {/* Endret bg */}
-              {children}
+
+            {/* MAIN: Tar opp resterende plass. Rendrer children direkte på mørk bakgrunn. */}
+            {/* Legg til padding her for å skape luft RUNDT innholdet (både hero og hvit boks) */}
+            <main className="flex-grow w-full py-8 sm:py-12">
+              {children} {/* Sidens innhold (inkludert HomePage) havner her */}
             </main>
+
             <Footer />
           </SessionWrapper>
       </body>

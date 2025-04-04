@@ -145,7 +145,7 @@ export default function BaneoversiktPage() {
 
   return (
     <div className="max-w-6xl mx-auto py-10 px-4">
-      <h1 className="text-3xl font-bold mb-6 text-center text-white">Baneoversikt</h1>
+      <h1 className="text-3xl font-bold mb-6 text-center text-gray-900">Baneoversikt</h1>
 
       {/* 📌 Søkefelt og filtre (uendret) */}
       <div className="flex flex-col md:flex-row gap-4 mb-6">

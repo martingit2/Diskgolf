@@ -1,14 +1,15 @@
 /**
  * Filnavn: HomePage.tsx (/app/page.tsx)
- * Beskrivelse: Hovedsiden for DiskGolf-applikasjonen. Viser kart, søk, karuseller og annen informasjon.
+ * Beskrivelse: Hovedsiden for DiskGolf-applikasjonen. Viser hero på mørk bakgrunn,
+ *              etterfulgt av resten av innholdet i en hvit container.
  * Utvikler: Martin Pettersen
  */
 
-"use client"; // Denne komponenten trenger state og effekter, derfor use client
+"use client"; // Denne komponenten trenger state og effekter
 
-import { useState, useEffect, Fragment } from "react"; // Importer Fragment hvis du trenger det
-import { motion, AnimatePresence } from "framer-motion"; // For animasjoner
-import Script from "next/script"; // For å legge inn tredjeparts script (som Cookiebot)
+import { useState, useEffect, Fragment } from "react";
+import { motion, AnimatePresence } from "framer-motion";
+import Script from "next/script"; // For eventuell fremtidig bruk (Cookiebot etc.)
 
 // Importerer diverse komponenter som brukes på siden
 import AppReviews from "@/components/AppReviews";
@@ -22,22 +23,18 @@ import SearchForm from "@/components/SearchForm";
 import RotatingText from "@/components/text-rotator";
 import TournamentsCarousel from "@/components/TournamentCarousel";
 
-// Importerer Zustand store for banedata
-import useCoursesStore from "./stores/UseCoursesStore";
-
-// Henter miljøvariabel for Cookiebot (kommentert ut siden den ikke er i bruk nå)
-// const domainGroupId = process.env.NEXT_PUBLIC_COOKIEBOT_DOMAIN_GROUP_ID;
+// Importerer Zustand store for banedata (hvis du bruker det)
+// import useCoursesStore from "./stores/UseCoursesStore";
 
 export default function HomePage() {
   // State for å veksle mellom JoinClub og QuickStartGame CTA
   const [showJoinClub, setShowJoinClub] = useState(true);
-  // Henter banedata og funksjon for å hente fra Zustand store
-  const { courses, fetchCourses } = useCoursesStore();
 
-  // Effekt for å hente banedata når komponenten lastes (hvis ikke allerede hentet)
-  useEffect(() => {
-    fetchCourses();
-  }, [fetchCourses]); // Kjør kun når fetchCourses endres (bør bare være én gang)
+  // Eksempel på henting fra Zustand store (fjern eller behold etter behov)
+  // const { courses, fetchCourses } = useCoursesStore();
+  // useEffect(() => {
+  //   fetchCourses();
+  // }, [fetchCourses]);
 
   // Effekt for å bytte CTA-komponent hvert 7. sekund
   useEffect(() => {
@@ -50,115 +47,102 @@ export default function HomePage() {
   }, []); // Kjør kun én gang ved montering
 
   return (
-    // Bruker en div som ytre container for innholdet på siden.
-    // Denne div-en får container-stiler (breddebegrensning, sentrering) og padding.
-    <div className="container mx-auto px-4 py-6">
-
-      {/* Cookiebot-script (kommentert ut) */}
-      {/*
-      {domainGroupId && (
-        <Script
-          id="cookiebot-script"
-          strategy="afterInteractive"
-          dangerouslySetInnerHTML={{
-            __html: `... cookiebot code ...`
-          }}
-        />
-      )}
-      */}
-
-      {/* Overskrift-seksjon */}
-      {/* max-w-7xl og mx-auto er kanskje ikke nødvendig her lenger pga ytre container */}
-      <section className="p-6 text-center md:text-left">
-        <h1 className="font-bold text-4xl sm:text-5xl lg:text-6xl bg-gradient-to-r from-green-600 via-green-300 to-green-600 text-transparent bg-clip-text">
+    // Bruker Fragment siden vi har to toppnivå-seksjoner med ulik layout/bakgrunn
+    <>
+      {/* === DEL 1: HERO-SEKSJON === */}
+      {/* 'container mx-auto px-4' sentrerer og gir luft på sidene */}
+      {/* 'pt-6' gir topp-luft, 'pb-0' fjerner bunn-luft */}
+      {/* 'text-center md:text-left' for justering */}
+      {/* FJERNET mr-60 herfra */}
+      <section className="container mx-auto px-4 pt-6 pb-0 text-center md:text-left">
+        {/* ØKT venstremarg på md+ skjermer, f.eks. md:ml-32 */}
+        {/* FJERNET mr-60 og overflødig md:text-left herfra */}
+        <h1 className="font-bold text-4xl sm:text-5xl lg:text-6xl bg-gradient-to-r from-green-600 via-green-300 to-green-600 text-transparent bg-clip-text md:ml-32"> {/* ENDRET: md:ml-32 (eller høyere) */}
           Ta spillet ditt til neste nivå
         </h1>
-        <h2 className="text-white py-5 text-lg sm:text-xl">
+        {/* 'pb-4 sm:pb-6' gir litt luft FØR den hvite boksen */}
+        {/* ØKT venstremarg på md+ skjermer for å matche h1 */}
+         {/* FJERNET mr-60 herfra */}
+        <h2 className="text-white py-5 pb-4 sm:pb-6 text-lg sm:text-xl md:ml-32"> {/* ENDRET: md:ml-32 (eller høyere) */}
           <span className="font-semibold text-green-300">
             <RotatingText /> {/* Komponent for roterende tekst */}
           </span>{" "}
           og mye mer!
         </h2>
       </section>
+      {/* === SLUTT PÅ DEL 1 === */}
 
-      {/* Seksjon for kart og søkefelt */}
-      {/* mx-auto er ikke nødvendig her pga ytre container */}
-      <section className="mt-10 p-4 sm:p-6 bg-gradient-to-r from-gray-100 via-white to-gray-100 shadow-lg rounded-lg">
-        <div className="text-center p-4 sm:p-8">
-          <h1 className="text-2xl sm:text-3xl font-extrabold text-gray-800 leading-tight">
-            Utforsk <span className="text-green-600">DiskGolf-baner</span> på kartet
-          </h1>
-          <p className="text-gray-600 text-base sm:text-lg mt-2">
-            Zoom inn på kartet for å finne baner i nærheten eller oppdag nye destinasjoner.
-          </p>
-        </div>
 
-        {/* Kartkomponent */}
-        <div className="relative w-full h-[400px] sm:h-[500px] rounded-md overflow-hidden"> {/* Lagt til avrunding og overflow hidden */}
-          <Map />
-        </div>
+      {/* === DEL 2: HVIT CONTAINER FOR RESTEN AV INNHOLDET === */}
+      <div className="container mx-auto max-w-screen-xl bg-white text-gray-900 rounded-lg shadow-xl">
 
-        {/* Søkeskjema */}
-        <div>
-          <SearchForm />
-        </div>
-      </section>
+        {/* KART-SEKSJON */}
+        <section className="p-4 sm:p-6 bg-gradient-to-r from-gray-100 via-white to-gray-100 shadow-lg rounded-lg">
+          <div className="text-center p-4 sm:p-8">
+            <h1 className="text-2xl sm:text-3xl font-extrabold text-gray-800 leading-tight">
+              Utforsk <span className="text-green-600">DiskGolf-baner</span> på kartet
+            </h1>
+            <p className="text-gray-600 text-base sm:text-lg mt-2">
+              Zoom inn på kartet for å finne baner i nærheten eller oppdag nye destinasjoner.
+            </p>
+          </div>
+          <div className="relative w-full h-[400px] sm:h-[500px] rounded-md overflow-hidden">
+            <Map />
+          </div>
+          <div>
+            <SearchForm />
+          </div>
+        </section>
 
-      {/* Karusell for Turneringer */}
-      <section className="mt-12 sm:mt-20"> {/* Økt margin */}
-        <TournamentsCarousel />
-      </section>
+        {/* KARUSELLER */}
+        <section className="mt-12 sm:mt-20">
+          <TournamentsCarousel />
+        </section>
+        <section className="mt-12 sm:mt-20">
+          <BaneCarousel />
+        </section>
+        <section className="mt-12 sm:mt-20">
+          <NyesteBanerCarousel />
+        </section>
+        <section className="mt-12 sm:mt-20">
+          <ReviewCarousel />
+        </section>
 
-       {/* Karusell for Populære baner */}
-      <section className="mt-12 sm:mt-20">
-        <BaneCarousel />
-      </section>
+        {/* CTA-SEKSJON */}
+        <section className="mt-12 sm:mt-20 relative w-full h-[350px] sm:h-[400px] flex items-center justify-center overflow-hidden">
+          <AnimatePresence mode="wait">
+            {showJoinClub ? (
+              <motion.div
+                key="joinClub"
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -20 }}
+                transition={{ duration: 0.5 }}
+                className="absolute w-full px-4"
+              >
+                <JoinClub />
+              </motion.div>
+            ) : (
+              <motion.div
+                key="quickStartGame"
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -20 }}
+                transition={{ duration: 0.5 }}
+                className="absolute w-full px-4"
+              >
+                <QuickStartGame />
+              </motion.div>
+            )}
+          </AnimatePresence>
+        </section>
 
-      {/* Karusell for Nyeste baner */}
-      <section className="mt-12 sm:mt-20">
-        <NyesteBanerCarousel />
-      </section>
+        {/* APP-ANMELDELSER */}
+        <section className="mt-12 sm:mt-20 pb-10">
+          <AppReviews />
+        </section>
 
-      {/* Karusell for Anmeldelser */}
-      <section className="mt-12 sm:mt-20">
-        <ReviewCarousel />
-      </section>
-
-      {/* CTA-seksjon med animasjon */}
-      {/* mx-auto er ikke nødvendig her pga ytre container */}
-      <section className="mt-12 sm:mt-20 relative w-full h-[350px] sm:h-[400px] flex items-center justify-center overflow-hidden"> {/* Justert høyde og lagt til overflow */}
-        <AnimatePresence mode="wait">
-          {showJoinClub ? (
-            <motion.div
-              key="joinClub"
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -20 }}
-              transition={{ duration: 0.5 }} // Justert varighet
-              className="absolute w-full px-4" // Lagt til litt padding
-            >
-              <JoinClub />
-            </motion.div>
-          ) : (
-            <motion.div
-              key="quickStartGame"
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -20 }}
-              transition={{ duration: 0.5 }} // Justert varighet
-              className="absolute w-full px-4" // Lagt til litt padding
-            >
-              <QuickStartGame />
-            </motion.div>
-          )}
-        </AnimatePresence>
-      </section>
-
-      {/* Seksjon for App-anmeldelser */}
-      <section className="mt-12 sm:mt-20 pb-10"> {/* Lagt til padding bottom */}
-        <AppReviews />
-      </section>
-
-    </div> // Avslutter den ytre div-en
+      </div> {/* Avslutter den hvite container-diven */}
+    </> // Avslutter Fragment
   );
 }

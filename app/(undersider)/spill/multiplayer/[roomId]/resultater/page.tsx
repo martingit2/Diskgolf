@@ -191,7 +191,7 @@ export default function MultiplayerResultsPage() {
             <ArrowLeftIcon className="h-5 w-5 mr-2" />
             Tilbake
           </button>
-          <h1 className="text-2xl font-bold">Multiplayer Resultater</h1>
+          <h1 className="text-2xl text-gray-300 font-bold">Multiplayer Resultater</h1>
           <button 
             onClick={shareResults}
             className="flex items-center text-gray-400 hover:text-white"
@@ -205,7 +205,7 @@ export default function MultiplayerResultsPage() {
 
       <main className="max-w-6xl mx-auto p-6">
         <div className="mb-8 text-center">
-          <h2 className="text-3xl font-bold mb-2">{results.courseName}</h2>
+          <h2 className="text-3xl text-green-400 font-bold mb-2">{results.courseName}</h2>
           <p className="text-gray-400">
             Spilt {new Date(results.date).toLocaleDateString("no-NO", {
               day: 'numeric',
@@ -216,7 +216,7 @@ export default function MultiplayerResultsPage() {
         </div>
 
         {winner && (
-          <div className="mb-8 bg-yellow-900/30 p-6 rounded-lg">
+          <div className="mb-8 bg-green-300/50 p-6 rounded-lg">
             <div className="flex items-center justify-between">
               <div className="flex items-center">
                 <TrophyIcon className="h-10 w-10 text-yellow-400 mr-4" />
@@ -298,7 +298,7 @@ export default function MultiplayerResultsPage() {
                     key={player.playerId}
                     className={`border-b border-gray-700 ${
                       player.rank === 1
-                        ? "bg-yellow-900/30"
+                        ? "bg-emerald-400/30"
                         : player.rank === 2
                         ? "bg-gray-700/30"
                         : player.rank === 3
