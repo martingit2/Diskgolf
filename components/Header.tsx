@@ -51,8 +51,10 @@ function Header() {
         <div className="flex lg:flex-1 items-center">
            <Link href="/" className="flex items-center gap-x-2 -m-1.5 p-1.5" onClick={() => mobileMenuOpen && setMobileMenuOpen(false)}>
              <span className="sr-only">DiskGolf</span>
-             <Image src="/lightgreen.png" alt="DiskGolf Logo" width={40} height={40} priority style={{height: 'auto'}}/>
+             {/* Teksten kommer FØRST */}
              <span className="font-sans text-2xl font-bold bg-gradient-to-r from-green-600 via-green-300 to-green-600 text-transparent bg-clip-text hidden sm:inline">DiskGolf</span>
+             {/* Bildet kommer ETTER */}
+             <Image src="/lightgreen.png" alt="DiskGolf Logo" width={35} height={35} priority style={{height: 'auto'}}/>
            </Link>
         </div>
 
@@ -75,9 +77,7 @@ function Header() {
                    <ChevronDownIcon className={cn("h-5 w-5 flex-none text-green-400 transition-transform duration-200", open ? 'rotate-180' : '')} aria-hidden="true" />
                  </Popover.Button>
                  <Transition as={Fragment} enter="transition ease-out duration-200" enterFrom="opacity-0 translate-y-1" enterTo="opacity-100 translate-y-0" leave="transition ease-in duration-150" leaveFrom="opacity-100 translate-y-0" leaveTo="opacity-0 translate-y-1">
-                    {/* FJERN 'relative' herfra */}
                     <Popover.Panel className="absolute -left-1/2 transform translate-x-1/4 lg:translate-x-0 lg:left-auto lg:right-0 top-full z-20 mt-3 w-screen max-w-md overflow-hidden rounded-xl bg-white shadow-lg ring-1 ring-gray-900/5">
-                       {/* Lukkeknapp (X) - trenger ikke endres */}
                        <button
                           type="button"
                           onClick={close}
@@ -87,8 +87,6 @@ function Header() {
                          <span className="sr-only">Lukk meny</span>
                          <XMarkIcon className="h-5 w-5" aria-hidden="true" />
                        </button>
-
-                       {/* Behold padding top for å unngå overlapp */}
                        <div className="p-4 pt-8">
                           {navLinks.map((item) => (
                              <div key={item.name} className="group relative flex items-center gap-x-4 rounded-lg p-3 text-sm leading-6 hover:bg-gray-50">
@@ -98,6 +96,7 @@ function Header() {
                                <div className="flex-auto">
                                  <Link href={item.href} className="block font-semibold text-emerald-800" onClick={close}>
                                     {item.name}
+                                    <span className="absolute inset-0" /> {/* Forbedrer klikkområde */}
                                  </Link>
                                  <p className="mt-1 text-emerald-800">{item.description}</p>
                                </div>
@@ -130,12 +129,12 @@ function Header() {
         </div>
       </nav>
 
-      {/* Mobilmeny Dialog (ingen endringer her) */}
+      {/* Mobilmeny Dialog */}
       <Dialog as="div" className="lg:hidden" open={mobileMenuOpen} onClose={setMobileMenuOpen}>
-         {/* ... resten av Dialog koden ... */}
          <div className="fixed inset-0 z-40 bg-black/40" aria-hidden="true" />
            <Dialog.Panel className="fixed inset-y-0 right-0 z-50 w-full overflow-y-auto bg-[#000311] px-6 py-6 sm:max-w-sm sm:ring-1 sm:ring-white/10">
              <div className="flex items-center justify-between">
+                {/* Mobil logo - holder rekkefølge (ofte bare ikon) */}
                 <Link href="/" className="-m-1.5 p-1.5" onClick={() => setMobileMenuOpen(false)}>
                   <span className="sr-only">DiscGolf</span>
                   <Image className="h-8 w-auto" src="/lightgreen.png" alt="DiskGolf Logo" width={32} height={32} style={{height: 'auto'}} />
