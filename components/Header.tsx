@@ -91,14 +91,14 @@ function Header() {
                           {navLinks.map((item) => (
                              <div key={item.name} className="group relative flex items-center gap-x-4 rounded-lg p-3 text-sm leading-6 hover:bg-gray-50">
                                <div className="flex h-10 w-10 flex-none items-center justify-center rounded-lg bg-gray-50 group-hover:bg-green-100">
-                                 <item.icon className="h-5 w-5 text-green-600 group-hover:text-green-700" aria-hidden="true"/>
+                                 <item.icon className="h-5 w-5 text-green-500 group-hover:text-green-700" aria-hidden="true"/>
                                </div>
                                <div className="flex-auto">
-                                 <Link href={item.href} className="block font-semibold text-emerald-800" onClick={close}>
+                                 <Link href={item.href} className="block font-semibold text-emerald-700" onClick={close}>
                                     {item.name}
                                     <span className="absolute inset-0" /> {/* Forbedrer klikkområde */}
                                  </Link>
-                                 <p className="mt-1 text-emerald-800">{item.description}</p>
+                                 <p className="mt-1 text-gray-900">{item.description}</p>
                                </div>
                              </div>
                            ))}
@@ -106,7 +106,7 @@ function Header() {
                        <div className="grid grid-cols-2 divide-x divide-gray-900/5 bg-gray-50">
                           {cta.map((item) => (
                             <Link key={item.name} href={item.href} className="flex items-center justify-center gap-x-2.5 p-3 text-sm font-semibold leading-6 text-gray-900 hover:bg-gray-100" onClick={close}>
-                              <item.icon className="h-5 w-5 flex-none text-green-600" aria-hidden="true" />
+                              <item.icon className="h-5 w-5 flex-none text-green-500" aria-hidden="true" />
                               {item.name}
                             </Link>
                           ))}
