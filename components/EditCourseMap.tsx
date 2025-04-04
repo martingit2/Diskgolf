@@ -362,8 +362,8 @@ const EditCourseMap = ({ courseId, onUpdate, selectedType, setDistanceMeasuremen
 
       {/* Informasjonstekst og knapper */}
       <div className="mt-4 w-full max-w-7xl">
-        <h2 className="text-md font-semibold text-white mb-3">Hvordan redigere banen</h2>
-        <div className="text-xs text-gray-300 space-y-1">
+        <h2 className="text-md font-semibold text-gray-900 mb-3">Hvordan redigere banen</h2>
+        <div className="text-xs text-gray-600 space-y-1">
           <p>Dobbelklikk markører for å <strong>slette</strong> dem.</p>
           <p>Plasser et <strong>tee-punkt</strong> for å angi starten på hullet.</p>
           <p>Deretter plasserer du en <strong>kurv</strong> for å angi målet.</p>

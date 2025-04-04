@@ -73,13 +73,13 @@ export default function CreateTournamentPage() {
 
   // Setter lys tekst på hovedcontaineren for siden (arves fra layout, men kan være eksplisitt)
   return (
-    <div className="max-w-2xl mx-auto p-4 md:p-6 space-y-6 text-white"> {/* Satt hvit tekst her */}
-      <h1 className="text-2xl font-bold text-white">Opprett ny turnering</h1> {/* Sikrer hvit overskrift */}
+    <div className="max-w-2xl mx-auto p-4 md:p-6 space-y-6 text-gray-900"> {/* Satt hvit tekst her */}
+      <h1 className="text-2xl font-bold text-gray-900">Opprett ny turnering</h1> {/* Sikrer hvit overskrift */}
 
       <form onSubmit={handleSubmit} className="space-y-4">
         {/* Turneringsnavn */}
-        <div className="space-y-2"> {/* Fjerner text-white herfra */}
-          <Label htmlFor="name" className="text-white">Turneringsnavn *</Label> {/* Label må være hvit */}
+        <div className="space-y-2"> {/* Fjerner text-gray-900 herfra */}
+          <Label htmlFor="name" className=" text-gray-900">Turneringsnavn *</Label> {/* Label må være hvit */}
           <Input
             id="name"
             name="name"
@@ -94,8 +94,8 @@ export default function CreateTournamentPage() {
         </div>
 
         {/* Beskrivelse */}
-        <div className="space-y-2"> {/* Fjerner text-white herfra */}
-          <Label htmlFor="description" className="text-white">Beskrivelse</Label> {/* Label må være hvit */}
+        <div className="space-y-2"> {/* Fjerner text-gray-900 herfra */}
+          <Label htmlFor="description" className="text-gray-900">Beskrivelse</Label> {/* Label må være hvit */}
           <Textarea
             id="description"
             name="description"
@@ -110,8 +110,8 @@ export default function CreateTournamentPage() {
 
         {/* Datoer */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <div className="space-y-2"> {/* Fjerner text-white herfra */}
-            <Label htmlFor="startDate" className="text-white">Startdato *</Label> {/* Label må være hvit */}
+          <div className="space-y-2"> {/* Fjerner text-gray-900 herfra */}
+            <Label htmlFor="startDate" className="text-gray-900">Startdato *</Label> {/* Label må være hvit */}
             <Input
               id="startDate"
               name="startDate"
@@ -124,8 +124,8 @@ export default function CreateTournamentPage() {
             />
           </div>
 
-          <div className="space-y-2"> {/* Fjerner text-white herfra */}
-            <Label htmlFor="endDate" className="text-white">Sluttdato (valgfri)</Label> {/* Label må være hvit */}
+          <div className="space-y-2"> {/* Fjerner text-gray-900 herfra */}
+            <Label htmlFor="endDate" className="text-gray-900">Sluttdato (valgfri)</Label> {/* Label må være hvit */}
             <Input
               id="endDate"
               name="endDate"
@@ -140,8 +140,8 @@ export default function CreateTournamentPage() {
 
         {/* Bane og Deltakere */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <div className="space-y-2"> {/* Fjerner text-white herfra */}
-            <Label htmlFor="courseId" className="text-white">Bane *</Label> {/* Label må være hvit */}
+          <div className="space-y-2"> {/* Fjerner text-gray-900 herfra */}
+            <Label htmlFor="courseId" className="text-gray-900">Bane *</Label> {/* Label må være hvit */}
             <select
               id="courseId"
               name="courseId"
@@ -161,8 +161,8 @@ export default function CreateTournamentPage() {
             </select>
           </div>
 
-          <div className="space-y-2"> {/* Fjerner text-white herfra */}
-            <Label htmlFor="maxParticipants" className="text-white">Maks deltakere (valgfri)</Label> {/* Label må være hvit */}
+          <div className="space-y-2"> {/* Fjerner text-gray-900 herfra */}
+            <Label htmlFor="maxParticipants" className="text-gray-900">Maks deltakere (valgfri)</Label> {/* Label må være hvit */}
             <Input
               id="maxParticipants"
               name="maxParticipants"

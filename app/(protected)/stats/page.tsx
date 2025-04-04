@@ -321,7 +321,7 @@ const UserStats = () => {
                  <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-10 gap-4">
                     <div>
                         <h1 className="text-3xl md:text-4xl font-bold tracking-tight text-gray-800">Mine Statistikker</h1>
-                        {user.name && <p className="text-gray-600 mt-1">Velkommen, {user.name}!</p>}
+                        {user.name && <p className="text-gray-900 mt-1">Velkommen, {user.name}!</p>}
                     </div>
                     <button
                         className="px-5 py-2 bg-primary text-primary-foreground font-medium rounded-md hover:bg-primary/90 transition-colors shadow-sm text-sm"

@@ -14,7 +14,7 @@ const CourseTabNavigation: FC<CourseTabNavigationProps> = ({ selectedTab, setSel
         {/* Opprett Bane */}
         <button
           onClick={() => setSelectedTab("opprettBane")}
-          className={`py-2 px-4 text-sm font-semibold ${selectedTab === "opprettBane" ? "text-green-700" : "text-gray-600 hover:text-blue-950"}`}
+          className={`py-2 px-4 text-sm font-semibold ${selectedTab === "opprettBane" ? "text-green-700" : "text-gray-900 hover:text-blue-950"}`}
         >
           Opprett Bane
         </button>
@@ -23,7 +23,7 @@ const CourseTabNavigation: FC<CourseTabNavigationProps> = ({ selectedTab, setSel
         {/* Legg til Baneeier */}
         <button
           onClick={() => setSelectedTab("leggTilBaneeier")}
-          className={`py-2 px-4 text-sm font-semibold ${selectedTab === "leggTilBaneeier" ? "text-green-700" : "text-white hover:text-blue-950"}`}
+          className={`py-2 px-4 text-sm font-semibold ${selectedTab === "leggTilBaneeier" ? "text-green-700" : "text-gray-900 hover:text-blue-950"}`}
         >
           Legg til Baneeier
         </button>

@@ -21,7 +21,7 @@ interface ProtectedLayoutProps {
  */
 const ProtectedLayout = ({ children }: ProtectedLayoutProps) => {
   return (
-    <div className="min-h-screen w-full flex flex-col bg-[#000311] text-gray-900">
+    <div className="min-h-screen w-full flex flex-col bg-gray-50 text-gray-900">
       <Navbar />
       <main className="w-full max-w-7xl mx-auto px-6 md:px-12 mt-4 lg:mt-2">
         {children}

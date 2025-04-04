@@ -32,11 +32,11 @@ const ClubSettingsForm: FC<ClubSettingsFormProps> = ({ clubSettings, onSaveChang
 
   return (
     <div>
-      <h2 className="text-2xl font-semibold text-white mb-4">Rediger {clubSettings?.name}</h2>
+      <h2 className="text-2xl font-semibold text-gray-900 mb-4">Rediger {clubSettings?.name}</h2>
 
       <form onSubmit={handleSubmit}>
         <div>
-          <label htmlFor="name" className="block text-white">Klubbens navn</label>
+          <label htmlFor="name" className="block text-gray-900">Klubbens navn</label>
           <input
             type="text"
             id="name"
@@ -49,7 +49,7 @@ const ClubSettingsForm: FC<ClubSettingsFormProps> = ({ clubSettings, onSaveChang
         </div>
 
         <div className="mt-4">
-          <label htmlFor="address" className="block text-white ">Adresse</label>
+          <label htmlFor="address" className="block text-gray-900 ">Adresse</label>
           <input
             type="text"
             id="address"
@@ -62,7 +62,7 @@ const ClubSettingsForm: FC<ClubSettingsFormProps> = ({ clubSettings, onSaveChang
         </div>
 
         <div className="mt-4">
-          <label htmlFor="phone" className="block text-white">Telefonnummer</label>
+          <label htmlFor="phone" className="block text-gray-900">Telefonnummer</label>
           <input
             type="text"
             id="phone"
@@ -75,7 +75,7 @@ const ClubSettingsForm: FC<ClubSettingsFormProps> = ({ clubSettings, onSaveChang
         </div>
 
         <div className="mt-4">
-          <label htmlFor="postalCode" className="block text-white">Postnummer</label>
+          <label htmlFor="postalCode" className="block text-gray-900">Postnummer</label>
           <input
             type="text"
             id="postalCode"
@@ -88,7 +88,7 @@ const ClubSettingsForm: FC<ClubSettingsFormProps> = ({ clubSettings, onSaveChang
         </div>
 
         <div className="mt-4">
-          <label htmlFor="logoUrl" className="block text-white">Logo (valgfritt)</label>
+          <label htmlFor="logoUrl" className="block text-gray-900">Logo (valgfritt)</label>
           <input
             type="file"
             id="logoUrl"
@@ -98,7 +98,7 @@ const ClubSettingsForm: FC<ClubSettingsFormProps> = ({ clubSettings, onSaveChang
             className="mt-2 p-2 rounded-lg border border-gray-300"
           />
           {logoFile && (
-            <div className="mt-2 text-white">
+            <div className="mt-2 text-gray-900">
               <strong>Lastet opp fil:</strong> {logoFile.name}
             </div>
           )}
