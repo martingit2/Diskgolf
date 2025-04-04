@@ -143,6 +143,7 @@ export default function HomePage() {
         </section>
 
       </div> {/* Avslutter den hvite container-diven */}
-    </> // Avslutter Fragment
+    </> // Avslutter Fragment /
+    
   );
 }
