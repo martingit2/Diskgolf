@@ -49,12 +49,12 @@ function Header() {
       <nav className="mx-auto flex max-w-7xl items-center justify-between p-4 lg:px-8" aria-label="Global">
         {/* Logo */}
         <div className="flex lg:flex-1 items-center">
-           <Link href="/" className="flex items-center gap-x-2 -m-1.5 p-1.5" onClick={() => mobileMenuOpen && setMobileMenuOpen(false)}>
+           <Link href="/" className="flex items-center gap-x-4 -m-1.5 p-1.5" onClick={() => mobileMenuOpen && setMobileMenuOpen(false)}>
              <span className="sr-only">DiskGolf</span>
              {/* Teksten kommer FØRST */}
              <span className="font-sans text-2xl font-bold bg-gradient-to-r from-green-600 via-green-300 to-green-600 text-transparent bg-clip-text hidden sm:inline">DiskGolf</span>
              {/* Bildet kommer ETTER */}
-             <Image src="/lightgreen.png" alt="DiskGolf Logo" width={35} height={35} priority style={{height: 'auto'}}/>
+             <Image src="/lightgreen.png" alt="DiskGolf Logo" width={32} height={32} priority style={{height: 'auto'}}/>
            </Link>
         </div>
 
