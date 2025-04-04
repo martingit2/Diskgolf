@@ -140,7 +140,7 @@ export default function UserDropdown({
               ) : (
                 <UserCircleIcon
                   className={cn(
-                      "h-7 w-7 text-green-400", // Standard farge
+                      "h-7 w-7 text-white", // Standard farge
                       // Legger til ring og avrunding kun på desktop
                        !isMobile && "ring-2 ring-offset-2 ring-green-400 ring-offset-[#000311] rounded-full"
                   )}
@@ -157,7 +157,7 @@ export default function UserDropdown({
         </span>
         <ChevronDownIcon
           className={cn(
-            "h-5 w-5 text-green-400 transition-transform duration-200",
+            "h-5 w-5 text-white transition-transform duration-200",
             isDropdownOpen ? "rotate-180" : ""
           )}
           aria-hidden="true"

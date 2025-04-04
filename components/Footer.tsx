@@ -100,7 +100,7 @@ export default function Footer() {
       </div>
 
       {/* Copyright-informasjon */}
-      <p className="mt-5 text-xs text-green-300"> {/* Increased margin top */}
+      <p className="mt-5 text-xs text-gray-300"> {/* Increased margin top */}
          © {new Date().getFullYear()} Diskgolf.app. Alle rettigheter forbeholdt.
       </p>
     </footer>
