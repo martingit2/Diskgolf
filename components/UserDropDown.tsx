@@ -2,7 +2,7 @@
  * Filnavn: UserDropdown.tsx
  * Beskrivelse: Komponent for brukerens dropdown-meny. Håndterer visning av brukerinfo/knapper
  *              og åpning av dialogvinduer for innlogging/registrering/passordreset.
- *              Lukker mobilnavigasjon ved handling. Inkluderer lukkeknapp og visuell indikator (ring) for innlogget bruker på desktop.
+ *              Lukker mobilnavigasjon ved handling (kun for navigering/utlogging). Inkluderer lukkeknapp og visuell indikator (ring) for innlogget bruker på desktop.
  * Utvikler: Martin Pettersen
  */
 
@@ -52,11 +52,13 @@ export default function UserDropdown({
 
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
 
+  // --- VIKTIG ENDRING HER ---
   const openDialog = (type: "login" | "register" | "reset-password") => {
-    setIsDropdownOpen(false); // Lukk dropdown når dialog åpnes
-    closeMobileMenu?.(); // Lukk også mobilmeny hvis den finnes
-    setDialogState({ open: true, type });
+    setIsDropdownOpen(false); // Lukk dropdown-panelet hvis det er åpent
+    // closeMobileMenu?.(); // FJERN DENNE LINJEN! Mobilmenyen skal forbli åpen bak dialogen.
+    setDialogState({ open: true, type }); // Åpne Shadcn-dialogen
   };
+  // -------------------------
 
   const closeDialog = () => {
     setDialogState({ open: false, type: "login" });
@@ -67,6 +69,7 @@ export default function UserDropdown({
   };
 
   // Hjelpefunksjon for å lukke ALT (dropdown + evt. mobilmeny)
+  // Denne brukes nå kun for handlinger som *skal* lukke mobilmeny (navigering, utlogging)
   const closeAllMenus = () => {
     setIsDropdownOpen(false);
     closeMobileMenu?.(); // Kall mobilmenylukking hvis funksjonen er gitt
@@ -89,13 +92,13 @@ export default function UserDropdown({
     };
   }, []);
 
-  // Handler for utlogging
+  // Handler for utlogging - SKAL lukke mobilmeny
   const handleSignOut = async () => {
     closeAllMenus(); // Lukk dropdown + mobilmeny
     await signOut({ callbackUrl: "/" });
   };
 
-  // Handler for navigering (f.eks. til innstillinger)
+  // Handler for navigering - SKAL lukke mobilmeny
   const handleNavigate = (path: string) => {
     closeAllMenus(); // Lukk dropdown + mobilmeny
     router.push(path);
@@ -113,8 +116,8 @@ export default function UserDropdown({
         className={cn(
           "inline-flex justify-between items-center gap-x-2 w-full rounded-md px-3 py-2 text-sm font-semibold leading-7 focus:outline-none focus-visible:ring-2 focus-visible:ring-green-500 focus-visible:ring-offset-2 focus-visible:ring-offset-[#000311]",
           isMobile
-            ? "text-white hover:bg-green-700/50"
-            : "text-white hover:text-green-400"
+            ? "text-white hover:bg-green-700/50" // Stil for mobilmeny
+            : "text-white hover:text-green-400" // Stil for desktop header
         )}
         aria-expanded={isDropdownOpen}
         aria-haspopup="true"
@@ -126,25 +129,24 @@ export default function UserDropdown({
                 <Image
                   src={currentUser.image}
                   alt="Profilbilde"
-                   // --- NYTT: Lagt til ring på desktop ---
                   className={cn(
-                      "h-7 w-7 rounded-full object-cover",
-                      !isMobile && "ring-2 ring-offset-2 ring-green-400 ring-offset-[#000311]" // Grønn ring på desktop
+                    "h-7 w-7 rounded-full object-cover",
+                    // Legger til ring kun på desktop
+                    !isMobile && "ring-2 ring-offset-2 ring-green-400 ring-offset-[#000311]"
                   )}
                   width={28}
                   height={28}
                 />
               ) : (
-                // --- NYTT: Lagt til ring på fallback-ikon også ---
                 <UserCircleIcon
-                    className={cn(
-                        "h-7 w-7 text-green-400", // Standard farge
-                         !isMobile && "ring-2 ring-offset-2 ring-green-400 ring-offset-[#000311] rounded-full" // Grønn ring på desktop
-                    )}
-                    aria-hidden="true"
-                 />
+                  className={cn(
+                      "h-7 w-7 text-green-400", // Standard farge
+                      // Legger til ring og avrunding kun på desktop
+                       !isMobile && "ring-2 ring-offset-2 ring-green-400 ring-offset-[#000311] rounded-full"
+                  )}
+                  aria-hidden="true"
+                />
               )}
-              {/* Viser navn kun på desktop for å spare plass på mobil? Eller alltid? */}
               <span className={cn(isMobile ? "text-base" : "text-sm")}>
                 {currentUser.name || currentUser.email}
               </span>
@@ -169,11 +171,13 @@ export default function UserDropdown({
           aria-orientation="vertical"
           aria-labelledby="user-menu-button" // Refererer til knappens ID
           className={cn(
-            "mt-2 origin-top-right divide-y divide-gray-100 rounded-md bg-white shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none z-50",
+            // Plassering og generelle stiler
+            "mt-2 origin-top-right divide-y divide-gray-100 rounded-md bg-white shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none z-50", // z-50 her er OK, dialogen skal ha høyere
+            // Posisjonering basert på om det er mobil eller desktop
             isMobile ? "absolute left-0 w-full" : "absolute right-0 w-56"
           )}
         >
-          {/* --- NYTT: Header i panelet med lukkeknapp --- */}
+          {/* Header i panelet med lukkeknapp */}
           <div className="relative px-4 py-3">
              <p className="truncate text-sm font-medium text-gray-900">
                {currentUser
@@ -185,22 +189,23 @@ export default function UserDropdown({
                      Logg inn eller opprett bruker.
                  </p>
              )}
-             {/* Lukkeknapp (X) */}
+             {/* Lukkeknapp (X) for Dropdown-panelet */}
              <button
                 type="button"
-                onClick={closeAllMenus} // Bruker samme funksjon som lukker alt
-                className="absolute top-1 right-1 rounded-full p-1 text-gray-400 hover:bg-gray-100 hover:text-gray-600 focus:outline-none focus:ring-2 focus:ring-indigo-500" // Juster fokusring etter ønske
+                onClick={() => setIsDropdownOpen(false)} // Lukker kun dropdown-panelet
+                className="absolute top-1 right-1 rounded-full p-1 text-gray-400 hover:bg-gray-100 hover:text-gray-600 focus:outline-none focus:ring-2 focus:ring-green-500" // Match fokusring
                 aria-label="Lukk meny"
              >
                <XMarkIcon className="h-5 w-5" aria-hidden="true" />
              </button>
           </div>
-          {/* --------------------------------------------- */}
+          {/* Menyvalg */}
           <div className="py-1" role="none">
             {currentUser ? (
               <>
+                {/* Navigering - bruker handleNavigate som lukker mobilmeny */}
                 <button
-                  onClick={() => handleNavigate("/settings")} // Bruk din sti
+                  onClick={() => handleNavigate("/settings")} // Bruk din faktiske sti
                   className="group flex w-full items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
                   role="menuitem"
                 >
@@ -210,6 +215,7 @@ export default function UserDropdown({
                   />
                   Innstillinger
                 </button>
+                {/* Utlogging - bruker handleSignOut som lukker mobilmeny */}
                 <button
                   onClick={handleSignOut}
                   className="group flex w-full items-center px-4 py-2 text-sm text-red-600 hover:bg-red-50"
@@ -224,6 +230,7 @@ export default function UserDropdown({
               </>
             ) : (
               <>
+                {/* Åpne dialog - bruker openDialog som IKKE lukker mobilmeny */}
                 <button
                   onClick={() => openDialog("login")}
                   className="group flex w-full items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
@@ -235,6 +242,7 @@ export default function UserDropdown({
                   />
                   Logg inn
                 </button>
+                {/* Åpne dialog - bruker openDialog som IKKE lukker mobilmeny */}
                 <button
                   onClick={() => openDialog("register")}
                   className="group flex w-full items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
@@ -252,14 +260,15 @@ export default function UserDropdown({
         </div>
       )}
 
-      {/* Dialoger (Ingen endringer nødvendig her) */}
+      {/* Dialoger (Auth Modals) */}
       <Dialog
         open={dialogState.open}
         onOpenChange={(open) => {
           if (!open) closeDialog();
         }}
       >
-        <DialogContent className="p-0 w-auto bg-transparent border-none z-[60]">
+        {/* Beholdt høy z-index for sikkerhets skyld */}
+        <DialogContent className="p-0 w-auto bg-transparent border-none z-[100]">
           <DialogTitle className="sr-only">
             {dialogState.type === "login" && "Logg inn"}
             {dialogState.type === "register" && "Opprett bruker"}
@@ -270,29 +279,27 @@ export default function UserDropdown({
               onForgotPassword={() => openDialog("reset-password")}
               onRegister={() => openDialog("register")}
               onLoginSuccess={() => {
-                closeDialog();
-                handleNavigate("/stats"); // Oppdatert for å lukke mobilmeny også
+                closeDialog(); // Lukk denne dialogen
+                // Ikke kall handleNavigate her, siden mobilmenyen kanskje fortsatt er åpen
+                // La brukeren lukke mobilmenyen manuelt eller naviger via den.
+                // router.refresh(); // Kan være lurt for å oppdatere brukerstatus i header
               }}
             />
           )}
           {dialogState.type === "register" && (
             <RegisterForm
                 onRegisterSuccess={() => {
-                    closeDialog();
-                    openDialog("login");
-                    // Eller: handleNavigate('/velkommen'); // Oppdater for å lukke mobilmeny
+                    closeDialog(); // Lukk denne dialogen
+                    openDialog("login"); // Åpne login dialogen (uten å lukke mobilmeny)
                 }}
-                onAlreadyHaveAccount={() => openDialog("login")}
+                onAlreadyHaveAccount={() => openDialog("login")} // Åpne login (uten å lukke mobilmeny)
             />
           )}
           {dialogState.type === "reset-password" && (
-            <ResetForm onBackToLogin={() => openDialog("login")} />
+            <ResetForm onBackToLogin={() => openDialog("login")} /> // Åpne login (uten å lukke mobilmeny)
           )}
         </DialogContent>
       </Dialog>
     </div>
   );
 }
-
-// Sørg for at denne eksporteres riktig hvis det er hovedversjonen
-// export default UserDropdown;
