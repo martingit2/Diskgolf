@@ -72,6 +72,10 @@ model Club {
   website     String?  // Klubbens nettside (valgfritt)
   postalCode  String?  // Postnummer (valgfritt)
 
+  membershipPrice Int?     @map("membership_price") // Pris i øre (Integer) for årlig kontingent. Valgfritt.
+  stripeProductId String?  @unique @map("stripe_product_id") // ID for Stripe Produktet (representerer medlemskapet)
+  stripePriceId   String?  @unique @map("stripe_price_id")   // ID for Stripe Prisen (representerer prisen for produktet)
+
   admins      User[]   @relation("ClubAdmins") // Relasjon til brukere som er admins for klubben
   courses     Course[] @relation("ClubToCourses") // Relasjon til klubbens baner
   memberships Membership[] // Relasjon til medlemskapene i klubben
@@ -232,8 +236,15 @@ model Membership {
   clubId  String
   user    User   @relation(fields: [userId], references: [id], onDelete: Cascade)
   club    Club   @relation(fields: [clubId], references: [id])
-  isPrimary Boolean @default(false) 
+  isPrimary Boolean @default(false)
+  stripeSubscriptionId String? @unique @map("stripe_subscription_id") // ID for brukerens Stripe-abonnement for denne klubben
+  stripeCustomerId     String? @map("stripe_customer_id") // Stripe kunde-ID (kan være nyttig)
+  status               String  @default("inactive") // F.eks. 'active', 'inactive', 'cancelled' 
+
+
   @@id([userId, clubId]) // Sett en sammensatt primærnøkkel
+  @@index([stripeSubscriptionId])
+  @@index([stripeCustomerId])
 }
 
 

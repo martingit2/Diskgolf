@@ -103,7 +103,7 @@ export default async function ClubPage({
                   </Button>
                 </Link>
                 <Link href={`/klubber/${id}/kontakt`} passHref>
-                  <Button className="bg-blue-500 hover:bg-blue-600 text-white font-semibold py-3 px-8 rounded-lg shadow-lg transition-transform transform hover:scale-105">
+                  <Button className="bg-gray-900 hover:bg-blue-600 text-white font-semibold py-3 px-8 rounded-lg shadow-lg transition-transform transform hover:scale-105">
                     Kontakt klubben
                   </Button>
                 </Link>
