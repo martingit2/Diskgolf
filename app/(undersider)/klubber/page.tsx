@@ -257,7 +257,7 @@ const Klubber = () => {
                     <div className="mt-6 flex flex-col sm:flex-row gap-3">
                       <Link href={`/klubber/${club.id}`} passHref legacyBehavior className="flex-1">
                         <a className="block w-full">
-                          <Button variant="outline" className="w-full py-2.5 border-gray-600 bg-gray-900 text-white font-medium rounded-lg hover:bg-gray-100 transition duration-300 text-sm">
+                          <Button variant="outline" className="w-full py-2.5 border-gray-600 bg-gray-900 text-white font-medium rounded-lg hover:bg-green-600 hover:-text-white transition duration-300 text-sm">
                             Se klubbdetaljer
                           </Button>
                         </a>

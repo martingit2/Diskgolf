@@ -1,310 +1,299 @@
 import { notFound } from "next/navigation";
 import Image from "next/image";
-import React from "react";
-import { Button } from "@/components/ui/button";
 import Link from "next/link";
-import { FiUserPlus } from "react-icons/fi";
+import { Button } from "@/components/ui/button";
 import { Calendar, Users, Mail, Phone, Globe } from "lucide-react";
+import { auth } from "@/auth"; // Importer din autentiseringsmetode
+import { PrismaClient, Club as PrismaClub, Course as PrismaCourse, ClubNews as PrismaNews, User as PrismaUser } from "@prisma/client"; // Importer Prisma typer
+import { JoinClubButtonClient } from "@/components/klubber/JoinClubButton";
 
-export const dynamic = "force-dynamic";
 
-interface Course {
-  id: string;
-  name: string;
-  location?: string;
-  numHoles?: number;
+// Initialiser Prisma Client
+const prisma = new PrismaClient();
+
+// Definer en mer spesifikk type for klubbdata hentet med relasjoner og _count
+interface ClubWithDetails extends Omit<PrismaClub, 'memberships' | 'membershipPrice'> { // Fjern memberships, membershipPrice håndteres separat
+  courses: PrismaCourse[];
+  clubNews: PrismaNews[];
+  admins: Pick<PrismaUser, 'id' | 'name'>[];
+  _count?: {
+      memberships?: number;
+  };
+  membershipPrice?: number | null; // Sørg for at denne er inkludert
 }
 
-interface News {
-  id: string;
-  title: string;
-  content: string;
-  imageUrl?: string;
-  createdAt: string;
+// Definer type for sideprops (params er IKKE et Promise her)
+interface ClubPageProps {
+    params: {
+        id: string; // ID fra URL
+    };
 }
 
-interface Admin {
-  id: string;
-  name?: string;
+// Gjenbrukbar funksjon for å hente klubbdata (valgfritt, men kan være ryddig)
+async function getClubData(clubId: string): Promise<ClubWithDetails | null> {
+    return await prisma.club.findUnique({
+        where: { id: clubId },
+        include: {
+            courses: true,
+            clubNews: {
+                orderBy: { createdAt: 'desc' },
+                take: 5 // Begrens antall nyheter
+            },
+            admins: {
+                select: { id: true, name: true }
+            },
+            _count: {
+                select: { memberships: true }
+            }
+            // Viktig: Inkluder membershipPrice hvis den ikke er i PrismaClub typen
+             // Hvis membershipPrice ER i PrismaClub, trenger du ikke select her
+            // select: { ..., membershipPrice: true } // Nødvendig hvis ikke i basistypen
+        }
+        // Sørg for at membershipPrice faktisk hentes. Hvis det er i PrismaClub typen,
+        // trenger du ikke legge det til i `select` med mindre du *kun* vil ha visse felter.
+        // Siden vi bruker `include` uten `select` på toppnivå, bør alle Club-felter inkluderes.
+    });
 }
 
-interface Club {
-  id: string;
-  name: string;
-  location?: string;
-  description?: string;
-  imageUrl?: string;
-  established: string;
-  courses: Course[];
-  memberships: unknown[];
-  clubNews: News[];
-  admins: Admin[];
-  email?: string;
-  phone?: string;
-  website?: string;
+// Gjenbrukbar funksjon for å sjekke aktivt medlemskap
+async function checkActiveMembership(userId: string, clubId: string): Promise<boolean> {
+    const membership = await prisma.membership.findUnique({
+        where: {
+            userId_clubId: { userId: userId, clubId: clubId },
+            status: 'active'
+        },
+        select: { userId: true } // Effektiv sjekk
+    });
+    return !!membership; // Returner true hvis medlemskap finnes, ellers false
 }
 
-export default async function ClubPage({
-  params,
-}: {
-  params: Promise<{ id: string }>; // Oppdatert til Promise<{ id: string }>
-}) {
-  // Vent på at params-resolusjonen kommer fram
-  const { id } = await params; // Hent `id` fra Promise
+
+// Server Component for klubbsiden
+export default async function ClubPage({ params }: ClubPageProps) {
+  const { id } = params;
+
+  // Hent brukerens sesjon
+  const session = await auth();
+  const userId = session?.user?.id;
+
+  let club: ClubWithDetails | null = null;
+  let isMember = false;
 
   try {
-    const baseUrl = process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000";
-    const clubResponse = await fetch(`${baseUrl}/api/clubs/${id}`);
-    if (!clubResponse.ok) {
-      return notFound();
+    // Hent klubbdata
+    club = await getClubData(id);
+
+    // Hvis klubben ikke finnes, vis 404
+    if (!club) {
+      notFound();
     }
-    const club: Club = await clubResponse.json();
 
-    // Sjekk om brukeren er medlem
-    const isMember = await checkIfUserIsMember(id); // Alltid true for testing
+    // Hvis bruker er logget inn, sjekk medlemskap
+    if (userId) {
+      isMember = await checkActiveMembership(userId, club.id);
+    }
 
-    return (
-      <div className="min-h-screen bg-gradient-to-r from-gray-50 to-gray-100 py-12">
-        <div className="max-w-6xl mx-auto px-4">
-          {/* Header */}
-          <div className="mb-8">
-            <h1 className="text-4xl font-bold text-gray-900">{club.name}</h1>
-            {club.location && (
-              <p className="text-lg text-gray-600 mt-1">{club.location}</p>
+  } catch (error) {
+     console.error(`❌ Error fetching data for club page (ID: ${id}):`, error);
+     notFound(); // Vis 404 ved feil
+  } finally {
+      await prisma.$disconnect(); // Koble fra databasen
+  }
+
+  // Formater data for enklere visning i JSX
+  const displayClub = {
+    ...club,
+    establishedFormatted: new Date(club.established).toLocaleDateString('nb-NO'),
+    memberCount: club._count?.memberships ?? 0,
+  };
+
+  return (
+      // Ytterste container
+      <div className="min-h-screen bg-gradient-to-b from-gray-50 to-gray-100 py-12">
+        {/* Sentrert innhold */}
+        <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+
+          {/* Sidetopp (Header) */}
+          <div className="mb-8 text-center md:text-left">
+            <h1 className="text-3xl sm:text-4xl lg:text-5xl font-extrabold text-gray-900 tracking-tight">{displayClub.name}</h1>
+            {displayClub.location && (
+              <p className="mt-2 text-lg sm:text-xl text-gray-600">{displayClub.location}</p>
             )}
           </div>
 
-          {/* Horisontal linje øverst */}
+          {/* Skillelinje */}
           <hr className="my-8 border-gray-200" />
 
-          {/* Main innhold */}
-          <div className="flex flex-col md:flex-row gap-8">
-            {/* Venstre kolonne */}
-            <div className="md:w-2/3 space-y-8">
-              {/* Klubbbilde med fallback */}
-              <div className="relative w-full h-[400px] md:h-[500px] overflow-hidden rounded-lg shadow-2xl group">
+          {/* Hovedlayout (Grid) */}
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8 lg:gap-12">
+
+            {/* Venstre kolonne (hovedinnhold) */}
+            <div className="md:col-span-2 space-y-10">
+
+              {/* Bilde */}
+              <div className="relative w-full aspect-[16/9] md:aspect-auto md:h-[450px] rounded-xl overflow-hidden shadow-lg group">
                 <Image
-                  src={
-                    club.imageUrl ||
-                    "https://res.cloudinary.com/dmuhg7btj/image/upload/v1741665222/discgolf/courses/file_d2gyo0.webp"
-                  }
-                  alt={club.name}
+                  src={ displayClub.imageUrl || "https://res.cloudinary.com/dmuhg7btj/image/upload/v1741665222/discgolf/courses/file_d2gyo0.webp" }
+                  alt={displayClub.name}
                   fill
+                  sizes="(max-width: 768px) 100vw, (max-width: 1200px) 66vw, 800px"
                   className="object-cover transition-transform duration-500 group-hover:scale-105"
+                  priority
                 />
-                <div className="absolute inset-0 bg-black bg-opacity-30 opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+                <div className="absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-transparent opacity-70 group-hover:opacity-50 transition-opacity duration-300"></div>
               </div>
 
               {/* Handlingsknapper */}
-              <div className="flex flex-col sm:flex-row items-center gap-6">
-                <Link href={`/klubber/${id}/medlem`} passHref>
-                  <Button className="bg-green-500 hover:bg-green-600 text-white font-semibold py-3 px-8 rounded-lg shadow-lg transition-transform transform hover:scale-105 flex items-center gap-2">
-                    <FiUserPlus className="animate-bounce" /> Bli medlem
-                  </Button>
-                </Link>
-                <Link href={`/klubber/${id}/kontakt`} passHref>
-                  <Button className="bg-gray-900 hover:bg-blue-600 text-white font-semibold py-3 px-8 rounded-lg shadow-lg transition-transform transform hover:scale-105">
-                    Kontakt klubben
-                  </Button>
+              <div className="flex flex-col sm:flex-row items-center gap-4">
+                {/* Klientkomponent for "Bli Medlem"-knappen */}
+                <JoinClubButtonClient
+                    clubId={displayClub.id}
+                    clubName={displayClub.name}
+                    membershipPrice={displayClub.membershipPrice} // Send prisen med
+                    isAlreadyMember={isMember}                  // Send medlemsstatus
+                    isLoggedIn={!!userId}                       // Send innloggingsstatus
+                />
+                {/* Link til kontaktside */}
+                <Link href={`/klubber/${id}/kontakt`} passHref legacyBehavior>
+                  <a className="w-full sm:w-auto">
+                     <Button variant="outline" className="w-full bg-gray-800 text-white hover:bg-gray-700 font-semibold py-3 px-6 rounded-lg shadow-md transition-colors">
+                        Kontakt klubben
+                     </Button>
+                  </a>
                 </Link>
               </div>
 
-              {/* Horisontal linje under handlingsknapper */}
-              <hr className="my-8 border-gray-200" />
-
-              {/* Klubbens beskrivelse */}
-              {club.description && (
-                <div className="p-6 bg-white rounded-lg shadow-md border-l-4 border-green-500">
-                  <p className="text-base text-gray-700 leading-relaxed whitespace-pre-line">
-                    {club.description}
+              {/* Beskrivelse */}
+              {displayClub.description && (
+                <div className="p-6 bg-white rounded-lg shadow border-l-4 border-green-500">
+                  <h2 className="text-2xl font-semibold text-gray-800 mb-3">Om Klubben</h2>
+                  <p className="text-gray-700 leading-relaxed whitespace-pre-wrap">
+                    {displayClub.description}
                   </p>
                 </div>
               )}
 
-              {/* Baner eid av klubben */}
+              {/* Baner */}
               <div>
-                <h2 className="text-2xl font-bold mb-4 text-gray-900">
-                  Baner eid av klubben
-                </h2>
-                {club.courses.length > 0 ? (
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    {club.courses.map((course: Course) => (
-                      <Link key={course.id} href={`/courses/${course.id}`} passHref>
-                        <div className="border border-gray-200 rounded-lg p-4 hover:shadow-xl transition-shadow cursor-pointer bg-white">
-                          <h3 className="text-xl font-semibold text-gray-800">
-                            {course.name}
-                          </h3>
-                          {course.location && (
-                            <p className="text-gray-600">{course.location}</p>
-                          )}
-                          <p className="text-sm text-gray-500 mt-2">
-                            Antall kurver: {course.numHoles || "Ukjent"}
-                          </p>
-                        </div>
+                <h2 className="text-2xl font-semibold text-gray-800 mb-4">Tilknyttede Baner</h2>
+                {displayClub.courses.length > 0 ? (
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    {displayClub.courses.map((course) => (
+                      <Link key={course.id} href={`/courses/${course.id}`} passHref legacyBehavior>
+                        <a className="block border border-gray-200 rounded-lg p-4 hover:shadow-md transition-shadow cursor-pointer bg-white hover:border-green-300">
+                          <h3 className="text-lg font-medium text-gray-900">{course.name}</h3>
+                          {course.location && <p className="text-sm text-gray-600 mt-1">{course.location}</p>}
+                          {course.numHoles && <p className="text-xs text-gray-500 mt-1">{course.numHoles} hull</p>}
+                        </a>
                       </Link>
                     ))}
                   </div>
                 ) : (
-                  <p className="text-gray-500">
-                    Klubben eier ingen baner enda.
-                  </p>
+                  <p className="text-gray-500 italic">Klubben har ikke registrert noen baner enda.</p>
                 )}
               </div>
 
-              {/* Klubbnyheter */}
+              {/* Nyheter */}
               <div>
-                <h2 className="text-2xl font-bold mb-4 text-gray-900">
-                  Klubbnyheter
-                </h2>
-                {club.clubNews.length > 0 ? (
+                <h2 className="text-2xl font-semibold text-gray-800 mb-4">Siste Nytt</h2>
+                {displayClub.clubNews.length > 0 ? (
                   <div className="space-y-6">
-                    {club.clubNews.map((news: News) => (
-                      <div
-                        key={news.id}
-                        className="border border-gray-200 rounded-lg p-6 hover:shadow-xl transition-shadow bg-white"
-                      >
-                        <h3 className="text-xl font-semibold text-gray-800">
-                          {news.title}
-                        </h3>
-                        <p className="text-gray-600 mt-2">{news.content}</p>
+                    {displayClub.clubNews.map((news) => (
+                      <div key={news.id} className="p-5 bg-white rounded-lg shadow border border-gray-100">
+                        <h3 className="text-lg font-medium text-gray-900">{news.title}</h3>
+                        <p className="text-xs text-gray-500 mb-2">
+                          {new Date(news.createdAt).toLocaleDateString('nb-NO', { day: 'numeric', month: 'long', year: 'numeric' })}
+                        </p>
                         {news.imageUrl && (
-                          <div className="relative w-full h-48 mt-4 overflow-hidden rounded-lg">
-                            <Image
-                              src={news.imageUrl}
-                              alt={news.title}
-                              fill
-                              className="object-cover"
-                            />
+                          <div className="relative w-full aspect-video my-3 rounded overflow-hidden">
+                            <Image src={news.imageUrl} alt={news.title} fill className="object-cover" />
                           </div>
                         )}
-                        <p className="text-xs text-gray-500 mt-2">
-                          Publisert:{" "}
-                          {new Date(news.createdAt).toLocaleDateString()}
-                        </p>
+                        <p className="text-gray-700 leading-relaxed text-sm">{news.content}</p>
                       </div>
                     ))}
                   </div>
                 ) : (
-                  <p className="text-gray-500">Ingen nyheter enda.</p>
+                  <p className="text-gray-500 italic">Ingen nyheter registrert enda.</p>
                 )}
               </div>
-            </div>
+            </div> {/* Slutt venstre kolonne */}
 
-            {/* Høyre kolonne */}
-            <div className="md:w-1/3 space-y-8">
-              {/* Klubbinformasjon */}
-              <div className="p-6 bg-white rounded-lg shadow-md border border-gray-200">
-                <h3 className="text-2xl font-bold text-gray-900 mb-4">
-                  Klubbinformasjon
-                </h3>
-                <div className="space-y-4 text-gray-800 text-sm">
-                  <div className="flex items-center gap-3">
-                    <Calendar className="w-6 h-6 text-gray-500" />
-                    <div>
-                      <span className="font-medium">Etablert:</span>
-                      <span className="ml-2">
-                        {new Date(club.established).toLocaleDateString()}
-                      </span>
-                    </div>
+            {/* Høyre kolonne (sidebar) */}
+            <div className="md:col-span-1 space-y-8">
+              {/* Info-boks */}
+              <div className="p-6 bg-white rounded-lg shadow border border-gray-200">
+                <h3 className="text-xl font-semibold text-gray-800 mb-4">Klubbinformasjon</h3>
+                <div className="space-y-3 text-sm">
+                  <div className="flex items-start gap-3">
+                    <Calendar className="w-5 h-5 text-gray-500 mt-0.5 shrink-0" />
+                    <span>Etablert: {displayClub.establishedFormatted}</span>
                   </div>
-                  <div className="flex items-center gap-3">
-                    <Users className="w-6 h-6 text-gray-500" />
-                    <div>
-                      <span className="font-medium">Medlemmer:</span>
-                      <span className="ml-2">
-                        {club.memberships?.length || "0"}
-                      </span>
-                    </div>
+                  <div className="flex items-start gap-3">
+                    <Users className="w-5 h-5 text-gray-500 mt-0.5 shrink-0" />
+                    <span>{displayClub.memberCount} Medlemmer</span> {/* Bruker _count */}
                   </div>
-                  <div className="flex items-center gap-3">
-                    <Mail className="w-6 h-6 text-gray-500" />
-                    <div>
-                      <span className="font-medium">E-post:</span>
-                      <a
-                        href={`mailto:${club.email}`}
-                        className="ml-2 text-blue-500 hover:underline"
-                      >
-                        {club.email || "Ingen e-post"}
-                      </a>
+                   {displayClub.email && (
+                    <div className="flex items-start gap-3">
+                       <Mail className="w-5 h-5 text-gray-500 mt-0.5 shrink-0" />
+                       <a href={`mailto:${displayClub.email}`} className="text-blue-600 hover:underline break-words">
+                         {displayClub.email}
+                       </a>
                     </div>
-                  </div>
-                  <div className="flex items-center gap-3">
-                    <Phone className="w-6 h-6 text-gray-500" />
-                    <div>
-                      <span className="font-medium">Telefon:</span>
-                      <a
-                        href={`tel:${club.phone}`}
-                        className="ml-2 text-blue-500 hover:underline"
-                      >
-                        {club.phone || "Ingen telefon"}
-                      </a>
+                  )}
+                  {displayClub.phone && (
+                    <div className="flex items-start gap-3">
+                       <Phone className="w-5 h-5 text-gray-500 mt-0.5 shrink-0" />
+                       <a href={`tel:${displayClub.phone}`} className="text-blue-600 hover:underline">
+                         {displayClub.phone}
+                       </a>
                     </div>
-                  </div>
-                  <div className="flex items-center gap-3">
-                    <Globe className="w-6 h-6 text-gray-500" />
-                    <div>
-                      <span className="font-medium">Nettside:</span>
-                      <a
-                        href={club.website || "#"}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="ml-2 text-blue-500 hover:underline"
-                      >
-                        {club.website || "Ingen nettside"}
-                      </a>
+                  )}
+                  {displayClub.website && (
+                    <div className="flex items-start gap-3">
+                       <Globe className="w-5 h-5 text-gray-500 mt-0.5 shrink-0" />
+                       <a href={displayClub.website} target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:underline break-all">
+                         {displayClub.website}
+                       </a>
                     </div>
-                  </div>
-                </div>
-              </div>
-
-              {/* Klubbens administratorer */}
-              <div className="p-6 bg-white rounded-lg shadow-md border border-gray-200">
-                <h3 className="text-2xl font-bold text-gray-900 mb-4">
-                  Klubbens administratorer
-                </h3>
-                <div className="space-y-4 text-gray-800 text-sm">
-                  {club.admins.length > 0 ? (
-                    club.admins.map((admin: Admin) => (
-                      <div key={admin.id} className="flex items-center gap-3">
-                        <Users className="w-6 h-6 text-gray-500" />
-                        <span>{admin.name || "Ukjent admin"}</span>
-                      </div>
-                    ))
-                  ) : (
-                    <p className="text-gray-500">
-                      Ingen administratorer registrert.
-                    </p>
                   )}
                 </div>
               </div>
 
-              {/* Medlemsområde (kun for medlemmer) */}
+              {/* Admin-boks */}
+              <div className="p-6 bg-white rounded-lg shadow border border-gray-200">
+                <h3 className="text-xl font-semibold text-gray-800 mb-4">Administratorer</h3>
+                {displayClub.admins.length > 0 ? (
+                  <ul className="space-y-2 text-sm">
+                    {displayClub.admins.map((admin) => (
+                      <li key={admin.id} className="flex items-center gap-2 text-gray-700">
+                        <Users className="w-4 h-4 text-gray-400 shrink-0" />
+                        <span>{admin.name || `Admin (${admin.id.substring(0,6)}...)`}</span>
+                      </li>
+                    ))}
+                  </ul>
+                ) : (
+                  <p className="text-gray-500 italic text-sm">Ingen administratorer registrert.</p>
+                )}
+              </div>
+
+              {/* Medlemsområde-knapp (vises kun hvis bruker ER medlem) */}
               {isMember && (
-                <div className="p-6 bg-white rounded-lg shadow-md border border-gray-200">
-                  <h3 className="text-2xl font-bold text-gray-900 mb-4">
-                    Medlemsområde
-                  </h3>
-                  <div className="space-y-4">
-                    <Link href={`/klubber/${id}/medlem`} passHref>
-                      <Button className="w-full bg-green-500 hover:bg-green-600 text-white font-semibold py-3 rounded-lg shadow-lg transition-transform transform hover:scale-105">
-                        Gå til medlemsområde
-                      </Button>
-                    </Link>
-                  </div>
+                <div className="p-6 bg-blue-50 rounded-lg shadow border border-blue-200">
+                  <h3 className="text-xl font-semibold text-blue-800 mb-4">Ditt Medlemskap</h3>
+                  <p className="text-sm text-blue-700 mb-4">Du er et aktivt medlem av denne klubben.</p>
+                  <Link href={`/klubber/${id}/medlem`} passHref legacyBehavior>
+                    <a className="block w-full">
+                       <Button variant="default" className="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2.5 rounded-lg shadow transition-colors">
+                         Gå til medlemsområde
+                       </Button>
+                    </a>
+                  </Link>
                 </div>
               )}
-            </div>
-          </div>
-        </div>
-      </div>
+            </div> {/* Slutt høyre kolonne */}
+          </div> {/* Slutt hovedgrid */}
+        </div> {/* Slutt container */}
+      </div> // Slutt ytterste div
     );
-  } catch (error) {
-    console.error("❌ Error fetching club:", error);
-    return notFound();
-  }
-}
-
-// Midlertidig funksjon for testing: alltid returner true
-async function checkIfUserIsMember(clubId: string): Promise<boolean> {
-  return true; // Alltid true for testing
 }
