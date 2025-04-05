@@ -12,7 +12,7 @@ const prisma = new PrismaClient();
  * POST /api/clubs/[clubId]/checkout
  * Oppretter en Stripe Checkout Session for å betale medlemskap i en spesifikk klubb.
  * Krever at brukeren er autentisert.
- * MERK: Bruker Promise<...> for params for å matche Next.js type-sjekk.
+ * MERK: Bruker Promise<...> for params for å matche Next.js type-sjekk...
  */
 export async function POST(
   req: Request, // Innkommende HTTP forespørsel
