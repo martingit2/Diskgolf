@@ -31,13 +31,13 @@ import { getCurrentUserFavorites } from "@/app/actions/get-user-favorites";
 
 export const dynamic = "force-dynamic";
 
-// --- Korrekt Props Type (som du hadde) ---
+// --- Korrekt Props Type  ---
 export default async function CoursePage({
   params,
 }: {
   params: Promise<{ id: string }>;
 }) {
-  // --- Await params (som du hadde) ---
+  // --- Await params  ---
   const { id } = await params;
   if (!id) {
     return notFound();
@@ -111,8 +111,8 @@ export default async function CoursePage({
       <div className="max-w-6xl mx-auto px-4 py-8">
         {/* Overskrift og lokasjon */}
         <div className="mb-6">
-          <h1 className="text-3xl font-bold text-green-500">{course.name}</h1>
-          <p className="text-emerald-400">{course.location || "Ukjent sted"}</p> {/* La til fallback */}
+          <h1 className="text-3xl font-bold text-gray-900">{course.name}</h1>
+          <p className="text-green-600">{course.location || "Ukjent sted"}</p> {/* La til fallback */}
         </div>
 
         {/* Beskrivelse */}
