@@ -1,165 +1,79 @@
+// src/app/(protected)/_components/UserClubsList.tsx
 "use client";
 
-import { useEffect, useState } from "react";
-import { useSession } from "next-auth/react";
-import toast from "react-hot-toast";
+import React from "react";
 import { Button } from "@/components/ui/button";
-import { leaveClub } from "@/app/actions/leave-club";
+import LoadingSpinner from "@/components/ui/loading-spinner"; // Importer spinner
 
-// Server Action import
-  // Sørg for at du har importert riktig
-
-interface Club {
+// Definer type for data som mottas (matcher ManagedClubData)
+interface ClubInList {
   id: string;
   name: string;
-  location: string;
-  isPrimary: boolean;
+  location?: string | null;
+  isPrimary?: boolean;
+  // Inkluder andre felter hvis de skal vises i listen
 }
 
-const UserClubsList = ({ onEditClub }: { onEditClub: (club: Club) => void }) => {
-  const { data: session, status } = useSession();  // Destructure session and status
-  const [userClubs, setUserClubs] = useState<Club[]>([]);
-  const [loading, setLoading] = useState(true);
+// Definer props for komponenten
+interface UserClubsListProps {
+  clubs: ClubInList[]; // Mottar listen som prop
+  isLoading: boolean; // Mottar loading state
+  onEditClub: (club: ClubInList) => void; // Funksjon for når "Rediger" klikkes
+  // onSelectClub?: (club: ClubInList) => void; // Valgfri funksjon for klikk på selve raden
+  // onSetPrimary?: (clubId: string) => void; // Funksjoner for primærklubb
+  // onRemovePrimary?: (clubId: string) => void;
+  // onLeaveClub?: (clubId: string) => void;
+}
 
-  useEffect(() => {
-    if (status === "authenticated" && session?.user?.id) {
-      // Fetch the clubs the user is a member of
-      fetch(`/api/user-clubs?userId=${session.user.id}`)
-        .then((response) => response.json())
-        .then((data) => {
-          if (data.error) {
-            toast.error(data.error);
-          } else {
-            setUserClubs(data.clubs);
-          }
-        })
-        .catch((error) => {
-          toast.error("Noe gikk galt med å hente klubber.");
-          console.error("Feil:", error);
-        })
-        .finally(() => setLoading(false));
-    } else if (status === "unauthenticated") {
-      toast.error("Du er ikke autentisert!");
-      setLoading(false);  // Stop loading if unauthenticated
-    }
-  }, [session?.user?.id, status]);  // Run the effect when session data changes
+const UserClubsList: React.FC<UserClubsListProps> = ({
+  clubs,
+  isLoading,
+  onEditClub,
+  // onSelectClub,
+  // onSetPrimary,
+  // onRemovePrimary,
+  // onLeaveClub,
+}) => {
 
-  const handleSetPrimaryClub = async (clubId: string) => {
-    if (!session?.user?.id) {
-      toast.error("Du er ikke autentisert!");
-      return;
-    }
-    try {
-      const response = await fetch(`/api/user-clubs?userId=${session.user.id}&clubId=${clubId}&action=setPrimary`, {
-        method: "POST",
-      });
-      const data = await response.json();
-      if (data.success) {
-        toast.success(data.success);
-        setUserClubs((prevClubs) =>
-          prevClubs.map((club) =>
-            club.id === clubId ? { ...club, isPrimary: true } : { ...club, isPrimary: false }
-          )
-        );
-      } else {
-        toast.error(data.error);
-      }
-    } catch (error) {
-      toast.error("Noe gikk galt, prøv igjen senere.");
-      console.error("Feil:", error);
-    }
-  };
-
-  const handleRemovePrimaryClub = async (clubId: string) => {
-    if (!session?.user?.id) {
-      toast.error("Du er ikke autentisert!");
-      return;
-    }
-    try {
-      const response = await fetch(`/api/user-clubs?userId=${session.user.id}&clubId=${clubId}&action=removePrimary`, {
-        method: "POST",
-      });
-      const data = await response.json();
-      if (data.success) {
-        toast.success(data.success);
-        setUserClubs((prevClubs) =>
-          prevClubs.map((club) => (club.id === clubId ? { ...club, isPrimary: false } : club))
-        );
-      } else {
-        toast.error(data.error);
-      }
-    } catch (error) {
-      toast.error("Noe gikk galt, prøv igjen senere.");
-      console.error("Feil:", error);
-    }
-  };
-
-  const handleLeaveClub = async (clubId: string) => {
-    if (!session?.user?.id) {
-      toast.error("Du er ikke autentisert!");
-      return;
-    }
-    try {
-      const data = await leaveClub({
-        userId: session.user.id,
-        clubId: clubId,
-      });
-      if (data.success) {
-        toast.success(data.success);
-        setUserClubs((prevClubs) => prevClubs.filter((club) => club.id !== clubId));
-      } else {
-        toast.error(data.error);
-      }
-    } catch (error) {
-      toast.error("Noe gikk galt, prøv igjen senere.");
-      console.error("Feil:", error);
-    }
-  };
-
-  const handleEditClub = (club: Club) => {
-    onEditClub(club); // Send selected club to ClubSettingsPage for editing
-  };
-
-  if (loading) {
-    return <p>Loading...</p>;
+  // Loading state
+  if (isLoading) {
+    return <div className="flex justify-center py-10"><LoadingSpinner text="Laster dine klubber..." /></div>;
   }
 
+  // Tom state
+  if (clubs.length === 0) {
+    return <p className="text-center text-gray-500 py-10">Du administrerer ingen klubber enda. Gå til "Opprett Klubb"-fanen for å lage en.</p>;
+  }
+
+  // Render listen
   return (
     <div>
-      <h3 className="text-2xl font text-gray-900 semibold mb-4">Klubber du er medlem av:</h3>
-      {userClubs.length === 0 ? (
-        <p>Du er ikke medlem av noen klubb ennå.</p>
-      ) : (
-        <ul className="space-y-4">
-          {userClubs.map((club) => (
-            <li key={club.id} className="border-b p-2 flex justify-between font-bold text-blue-950 items-center">
-              <div>
-                <strong>{club.name}</strong> - {club.location}
-              </div>
-              <div className="space-x-4">
-                {club.isPrimary ? (
-                  <>
-                    <span className="text-green-500">Primærklubb</span>
-                    <Button size="sm" onClick={() => handleRemovePrimaryClub(club.id)}>
-                      Fjern som primærklubb
-                    </Button>
-                  </>
-                ) : (
-                  <Button size="sm" onClick={() => handleSetPrimaryClub(club.id)}>
-                    Velg som primærklubb
-                  </Button>
-                )}
-                <Button size="sm" onClick={() => handleEditClub(club)}>
-                  Rediger
-                </Button>
-                <Button size="sm" onClick={() => handleLeaveClub(club.id)} className="bg-red-500 hover:bg-red-900">
-                  Forlat klubb
-                </Button>
-              </div>
-            </li>
-          ))}
-        </ul>
-      )}
+      <h3 className="text-2xl font-semibold text-gray-900 mb-4">Mine Administrerte Klubber</h3>
+      <p className="text-sm text-gray-600 mb-6">Velg en klubb for å se detaljer, redigere innstillinger, administrere medlemmer eller legge til nyheter.</p>
+      <ul className="space-y-3">
+        {clubs.map((club) => (
+          <li key={club.id} className="border rounded-lg p-4 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 bg-white shadow-sm hover:shadow-md transition-shadow">
+            {/* Info om klubben */}
+            <div
+              className="flex-grow cursor-pointer"
+              // onClick={() => onSelectClub?.(club)} // Aktiver hvis du vil ha klikk på raden
+            >
+              <strong className="text-lg font-medium text-blue-950 block">{club.name}</strong>
+              {club.location && <span className="text-sm text-gray-600">{club.location}</span>}
+            </div>
+             {/* Knapper for handlinger */}
+            <div className="flex flex-wrap gap-2 mt-2 sm:mt-0 flex-shrink-0">
+               {/* TODO: Implementer logikk for primærklubb hvis nødvendig */}
+               {/* {club.isPrimary ? ( <Button size="sm" variant="outline" disabled>Primær</Button> ) : ( <Button size="sm" onClick={() => onSetPrimary?.(club.id)}>Velg som primær</Button> )} */}
+               <Button size="sm" variant="outline" onClick={() => onEditClub(club)}>
+                 Innstillinger
+               </Button>
+               {/* TODO: Legg til knapp for å forlate/slette hvis brukeren kan det */}
+               {/* <Button size="sm" variant="destructive" onClick={() => onLeaveClub?.(club.id)}>Forlat/Slett</Button> */}
+            </div>
+          </li>
+        ))}
+      </ul>
     </div>
   );
 };

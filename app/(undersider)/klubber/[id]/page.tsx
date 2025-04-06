@@ -165,7 +165,7 @@ export default async function ClubPage({ params }: ClubPageProps) {
                 {displayClub.admins.length > 0 ? (<ul className="space-y-2 text-sm">{displayClub.admins.map((admin) => (<li key={admin.id} className="flex items-center gap-2 text-gray-700"><Users className="w-4 h-4 text-gray-400 shrink-0" /><span>{admin.name || `Admin (${admin.id.substring(0,6)}...)`}</span></li>))}</ul>) : (<p className="text-gray-500 italic text-sm">Ingen administratorer registrert.</p>)}
               </div>
               {/* Medlemsområde-knapp */}
-              {isMember && (<div className="p-6 bg-blue-50 rounded-lg shadow border border-blue-200"><h3 className="text-xl font-semibold text-blue-800 mb-4">Ditt Medlemskap</h3><p className="text-sm text-blue-700 mb-4">Du er et aktivt medlem av denne klubben.</p><Link href={`/klubber/${id}/medlem`} passHref legacyBehavior><a className="block w-full"><Button variant="default" className="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2.5 rounded-lg shadow transition-colors">Gå til medlemsområde</Button></a></Link></div>)}
+              {isMember && (<div className="p-6 bg-blue-50 rounded-lg shadow border border-blue-200"><h3 className="text-xl font-semibold text-blue-800 mb-4">Ditt Medlemskap</h3><p className="text-sm text-blue-700 mb-4">Du er et aktivt medlem av denne klubben.</p><Link href={`/klubber/${id}/medlem`} passHref legacyBehavior><a className="block w-full"><Button variant="default" className="w-full bg-green-600 hover:bg-blue-700 text-white font-semibold py-2.5 rounded-lg shadow transition-colors">Gå til medlemsområde</Button></a></Link></div>)}
             </div>
           </div>
         </div>
