@@ -1,136 +1,164 @@
-"use client"; // Marker denne som en Client Component
+// src/components/klubber/JoinClubButtonClient.tsx
+"use client"; // Viktig for hooks og event handlers
 
 import React, { useState } from 'react';
-import axios from "axios";
-import { loadStripe, Stripe } from '@stripe/stripe-js';
-import toast from "react-hot-toast";
-import { useSession } from "next-auth/react";
-import { Button } from "@/components/ui/button";
-import { FiUserPlus } from "react-icons/fi"; // Ikon for knappen
+import axios from "axios"; // For API-kall
+import { loadStripe, Stripe } from '@stripe/stripe-js'; // Stripe frontend bibliotek
+import toast from "react-hot-toast";                  // For varsler
+import { useSession } from "next-auth/react";         // For å sjekke session status
+import { Button } from "@/components/ui/button";      // Din Button komponent
+import { FiUserPlus } from "react-icons/fi";         // Ikon for knappen
 
 // --- Stripe Initialisering ---
+// Initialiserer Stripe.js på klienten med publishable key
 let stripePromise: Promise<Stripe | null>;
 if (typeof window !== 'undefined') {
     if (!process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY) {
-        console.error("FEIL: NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY er ikke satt.");
+        console.error("FEIL: NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY er ikke satt i .env.");
     } else {
         stripePromise = loadStripe(process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY);
     }
 }
 // -----------------------------
 
-// Definer props
+// Definerer props som komponenten mottar fra sin parent (ClubPage)
 interface JoinButtonProps {
-    clubId: string;
-    clubName: string;
-    membershipPrice?: number | null;
-    isAlreadyMember: boolean;
-    isLoggedIn: boolean;
+    clubId: string;                  // ID til klubben
+    clubName: string;                // Navn på klubben (for meldinger)
+    membershipPrice?: number | null; // Pris i øre (kan være null)
+    isAlreadyMember: boolean;        // Status fra server om brukeren er aktivt medlem
+    isLoggedIn: boolean;             // Status fra server om brukeren er logget inn
 }
 
+// Klientkomponenten for "Bli medlem"-knappen
 export const JoinClubButtonClient: React.FC<JoinButtonProps> = ({
     clubId,
     clubName,
     membershipPrice,
     isAlreadyMember,
-    isLoggedIn
+    isLoggedIn // Bruker props sendt fra Server Component
 }) => {
-    // State for loading - endret til boolean
-    const [loadingPayment, setLoadingPayment] = useState<boolean>(false);
+    // State for å vise lasteindikator på denne knappen
+    const [loadingPayment, setLoadingPayment] = useState(false);
+    // Bruker useSession for å sjekke om session fortsatt lastes
     const { status: sessionStatus } = useSession();
 
-    // Funksjon for å starte betaling
+    // Asynkron funksjon for å håndtere klikk og starte betalingsflyt
     const handleJoinClub = async () => {
-        // Sjekk innlogging, medlemskap, pris og Stripe (som før)
-        if (!isLoggedIn || sessionStatus === 'unauthenticated') {
-            toast.error("Du må være logget inn for å bli medlem."); return;
-        }
-        if (sessionStatus === 'loading') {
-            toast("Laster brukerinfo..."); return;
-        }
-        if (isAlreadyMember) {
-             toast("Du er allerede medlem av denne klubben."); return; // Bruker vanlig toast
-        }
-        if (!membershipPrice || membershipPrice <= 0) {
-            toast.error(`Beklager, ${clubName} tilbyr ikke betalt medlemskap via appen nå.`); return;
-        }
-        if (!stripePromise) {
-            toast.error("Betalingsløsningen kunne ikke lastes."); console.error("stripePromise is not initialized."); return;
-        }
+        const logPrefix = "[JoinClubButtonClient]"; // For logging
 
-        // Start prosess
-        setLoadingPayment(true);
+        // Validering basert på props og session status
+        if (!isLoggedIn || sessionStatus === 'unauthenticated') { toast.error("Du må logge inn."); return; }
+        if (sessionStatus === 'loading') { toast("Laster brukerinfo..."); return; }
+        if (isAlreadyMember) { toast("Du er allerede medlem."); return; } // Bruker vanlig toast
+        if (!membershipPrice || membershipPrice <= 0) { toast.error(`${clubName} tilbyr ikke betalt medl.`); return; }
+        if (!stripePromise) { toast.error("Betaling ikke klar."); console.error(`${logPrefix} stripePromise ikke init.`); return; }
+        if (!clubId) { toast.error("Intern feil: Klubb-ID mangler."); console.error(`${logPrefix} clubId mangler!`); return; }
+
+        setLoadingPayment(true); // Start lasteindikator
         const toastId = toast.loading(`Starter betaling for ${clubName}...`);
 
         try {
+            console.log(`${logPrefix} Kaller POST /api/clubs/${clubId}/checkout`);
+            // Kall backend API for å opprette Checkout Session
             const response = await axios.post(`/api/clubs/${clubId}/checkout`);
-            if (response.data.url) {
+            console.log(`${logPrefix} Mottok respons fra API:`, response);
+
+            // Håndter vellykket respons (200 OK og en URL)
+            if (response.status === 200 && response.data?.url) {
+                const checkoutUrl = response.data.url;
+                let sessionId: string | null = null;
+
+                // Forsøk å hente sessionId fra URL på en robust måte
+                try {
+                    const urlObject = new URL(checkoutUrl);
+                    const pathParts = urlObject.pathname.split('/');
+                    const potentialId = pathParts[pathParts.length - 1];
+                    if (potentialId?.startsWith('cs_test_') || potentialId?.startsWith('cs_live_')) {
+                        sessionId = potentialId;
+                        console.log(`${logPrefix} Hentet Session ID (URL parse): ${sessionId}`);
+                    }
+                } catch (e) { /* Ignorer URL parse feil, prøv fallback */ }
+
+                // Fallback med substring hvis URL-parsing feilet
+                if (!sessionId) {
+                    try {
+                        const potentialId = checkoutUrl.substring(checkoutUrl.lastIndexOf('/') + 1).split('#')[0];
+                        if (potentialId?.startsWith('cs_test_') || potentialId?.startsWith('cs_live_')) {
+                            sessionId = potentialId;
+                            console.log(`${logPrefix} Hentet Session ID (substring): ${sessionId}`);
+                        }
+                    } catch (fallbackError) { /* Ignorer */ }
+                }
+
+                // Hvis sessionId fortsatt ikke ble funnet, kast feil
+                if (!sessionId) {
+                    console.error(`${logPrefix} Klarte ikke hente gyldig Session ID fra URL: ${checkoutUrl}`);
+                    throw new Error("Kunne ikke hente gyldig betalingsøkt-ID.");
+                }
+
+                // Hent Stripe.js instans og omdiriger
                 const stripe = await stripePromise;
-                if (!stripe) throw new Error("Stripe.js kunne ikke initialiseres.");
-                toast.dismiss(toastId);
-                const { error } = await stripe.redirectToCheckout({
-                   sessionId: response.data.url.substring(response.data.url.lastIndexOf('/') + 1)
-                });
-                if (error) throw new Error(error.message || "Kunne ikke omdirigere til Stripe.");
+                if (!stripe) throw new Error("Stripe.js feilet initialisering.");
+                console.log(`${logPrefix} Kaller redirectToCheckout med ID: ${sessionId}`);
+                toast.dismiss(toastId); // Fjern loading toast
+                const { error } = await stripe.redirectToCheckout({ sessionId }); // Send til Stripe
+
+                // Håndter feil FØR redirect skjer
+                if (error) throw new Error(error.message || "Omdirigering til betaling feilet.");
+
             } else {
-                 throw new Error(response.data.error || "Ukjent feil fra server.");
+                // Håndter ugyldig respons fra API
+                console.error(`${logPrefix} Ugyldig API respons: Status ${response.status}, Data:`, response.data);
+                throw new Error(response.data?.error || `Uventet svar fra server.`);
             }
         } catch (error: any) {
-             console.error("Feil under handleJoinClub (Client Button):", error);
-             toast.error(`Feil: ${error.response?.data?.error || error.message || 'Kunne ikke starte betaling.'}`, { id: toastId });
-             // Nullstill loading ved feil - endret til false
-             setLoadingPayment(false);
+             // Fanger feil fra API-kall, sessionId-henting, eller redirectToCheckout
+             console.error(`${logPrefix} Feil:`, error);
+             toast.error(`Feil: ${error.response?.data?.error || error.message || 'Ukjent feil.'}`, { id: toastId });
+             setLoadingPayment(false); // Nullstill loading KUN ved feil
         }
-        // Ikke nullstill ved suksess (redirect)
+         // Ikke nullstill loading ved vellykket redirect
     };
 
-    // Bestem knappens tekst og disabled status
+    // Logikk for å bestemme knappens utseende og oppførsel
     const isDisabled = loadingPayment || sessionStatus === 'loading';
+    const canJoin = isLoggedIn && !isAlreadyMember && membershipPrice && membershipPrice > 0;
     let buttonText: string;
-    let canJoin = isLoggedIn && !isAlreadyMember && membershipPrice && membershipPrice > 0;
 
-    if (loadingPayment) {
-        buttonText = "Behandler...";
-    } else if (sessionStatus === 'loading') {
-        buttonText = "Laster...";
-    } else if (!isLoggedIn) {
-        buttonText = "Logg inn for å bli medlem";
-    } else if (isAlreadyMember) {
-        buttonText = "Du er Medlem";
-        // disabled blir true pga !canJoin nedenfor
-    } else if (!membershipPrice || membershipPrice <= 0) {
-        buttonText = "Medlemskap utilgjengelig";
-        // disabled blir true pga !canJoin nedenfor
-    } else {
-        // Hvis alt ok, vis pris
-        buttonText = `Bli medlem (${(membershipPrice / 100).toLocaleString('nb-NO', { style: 'currency', currency: 'NOK' })}/år)`;
-    }
+    if (loadingPayment) buttonText = "Behandler...";
+    else if (sessionStatus === 'loading') buttonText = "Laster...";
+    else if (!isLoggedIn) buttonText = "Logg inn for å bli medlem";
+    else if (isAlreadyMember) buttonText = "Du er Medlem";
+    else if (!membershipPrice || membershipPrice <= 0) buttonText = "Medlemskap utilgjengelig";
+    else buttonText = `Bli medlem (${(membershipPrice / 100).toLocaleString('nb-NO', { style: 'currency', currency: 'NOK' })}/år)`;
 
-    // Bestem onClick handling basert på status
+    // Bestem hva som skjer ved klikk
     const handleClick = () => {
-        if (canJoin) {
-            handleJoinClub(); // Start betaling hvis brukeren kan bli medlem
-        } else if (!isLoggedIn) {
-            toast.error("Logg inn først.");
-        } else if (isAlreadyMember) {
-            toast("Du er allerede medlem."); // Bruker vanlig toast
-        } else {
-            toast.error("Medlemskap er ikke tilgjengelig for denne klubben via appen.");
-        }
+        if (canJoin) handleJoinClub(); // Start betaling
+        else if (!isLoggedIn) toast.error("Logg inn først.");
+        else if (isAlreadyMember) toast("Du er allerede medlem.");
+        else toast.error("Medlemskap ikke tilgjengelig.");
     };
 
-    // Bestem om ikonet skal vises
+    // Skal ikonet vises?
     const showIcon = !loadingPayment && canJoin;
 
+    // Render knappen
     return (
         <Button
-            onClick={handleClick} // Bruk den bestemte klikk-handleren
-            disabled={isDisabled || !canJoin && !isAlreadyMember} // Deaktiver ved lasting, eller hvis bruker ikke kan bli medlem (unntatt hvis de allerede er medlem, da er knappen uansett annerledes)
+            onClick={handleClick}
+            disabled={isDisabled || (!canJoin && !isAlreadyMember)}
+            // Bruker stilen fra den opprinnelige ClubPage-knappen
             className="bg-green-500 hover:bg-green-600 text-white font-semibold py-3 px-8 rounded-lg shadow-lg transition-transform transform hover:scale-105 flex items-center gap-2 disabled:opacity-60 disabled:cursor-not-allowed"
             aria-label={buttonText}
         >
-           {showIcon && <FiUserPlus className="animate-bounce" />} {/* Vis ikon kun hvis man kan bli medlem */}
+           {showIcon && <FiUserPlus className="animate-bounce" />} {/* Animerer ikon hvis showIcon er true */}
             {buttonText}
         </Button>
     );
-}
+};
+
+// Eksporter komponenten (viktig for import i ClubPage)
+// export { JoinClubButtonClient }; // Named export
+export default JoinClubButtonClient; // Eller default export

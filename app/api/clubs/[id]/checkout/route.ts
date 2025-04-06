@@ -1,242 +1,192 @@
-import { NextResponse } from 'next/server';
-import { headers } from "next/headers";         // Brukes for å hente 'origin' header for fallback URL
-import { PrismaClient } from "@prisma/client"; // Prisma ORM klient
-import { auth } from "@/auth";                 // Autentiseringsfunksjon (f.eks. NextAuth)
+// src/app/api/clubs/[id]/checkout/route.ts
+
+import { NextRequest, NextResponse } from 'next/server';
+import { headers } from "next/headers";
+import { PrismaClient } from "@prisma/client";
+import { auth } from "@/auth";
 import { stripe } from '@/app/lib/stripe';
 
 
-// Initialiser Prisma Client for denne API-ruten
 const prisma = new PrismaClient();
 
-/**
- * POST /api/clubs/[clubId]/checkout
- * Oppretter en Stripe Checkout Session for å betale medlemskap i en spesifikk klubb.
- * Krever at brukeren er autentisert.
- * MERK: Bruker Promise<...> for params for å matche Next.js type-sjekk...
- */
 export async function POST(
-  req: Request, // Innkommende HTTP forespørsel
-  // --- OPPDATERT TYPESIGNATUR FOR PARAMS (matcher dine eksempler) ---
-  { params }: { params: Promise<{ clubId: string }> }
-  // -------------------------------------------------------------------
+  req: NextRequest,
+  { params }: { params: Promise<{ id: string }> } // Korrekt type for params
 ) {
-  // --- HENT UT clubId ETTER await ---
-  const awaitedParams = await params;
-  const clubId = awaitedParams.clubId;
-  // ------------------------------------
-
-  const endpoint = `/api/clubs/${clubId}/checkout`; // For logging
-  console.log(`[${endpoint}] Received POST request for clubId: ${clubId}`);
+  let clubId: string | undefined; // Definer utenfor try/catch for logging
 
   try {
+    // --- Hent og valider ID fra params ---
+    const awaitedParams = await params;
+    clubId = awaitedParams?.id;
+
+    if (!clubId || typeof clubId !== 'string') {
+      console.error("API Checkout: Invalid or missing club ID from route parameter '[id]'.");
+      return NextResponse.json({ error: "Ugyldig klubb-ID i URL." }, { status: 400 });
+    }
+    const endpoint = `/api/clubs/${clubId}/checkout`; // Definer endpoint etter at clubId er validert
+    console.log(`[${endpoint}] Received POST request`);
+    // -----------------------------------
+
     // === Autentisering ===
     const session = await auth();
     const userId = session?.user?.id;
     const userEmail = session?.user?.email;
+    const userName = session?.user?.name; // Hent navn her
 
     if (!userId || !userEmail) {
-      console.warn(`[${endpoint}] Unauthorized access attempt.`);
       return NextResponse.json({ error: "Autentisering kreves." }, { status: 401 });
     }
     console.log(`[${endpoint}] User authenticated: ${userId}`);
+    // =====================
 
     // === Hent og Valider Klubb ===
-    // clubId er nå hentet via awaitedParams
-    if (!clubId) {
-      // Denne sjekken er mindre sannsynlig nå, men beholdes for sikkerhets skyld
-      console.error(`[${endpoint}] Missing clubId after awaiting params.`);
-      return NextResponse.json({ error: "Mangler klubb-ID." }, { status: 400 });
-    }
-
     const club = await prisma.club.findUnique({
       where: { id: clubId },
-      select: {
-        id: true,
-        name: true,
-        membershipPrice: true,
-        stripeProductId: true,
-        stripePriceId: true,
-      }
+      select: { id: true, name: true, membershipPrice: true, stripeProductId: true, stripePriceId: true }
     });
 
+    // --- Sjekk om klubb finnes ---
     if (!club) {
       console.error(`[${endpoint}] Club not found for ID: ${clubId}`);
       return NextResponse.json({ error: "Klubb ikke funnet." }, { status: 404 });
     }
+    // --- Nå vet TypeScript at 'club' ikke er null ---
+    console.log(`[${endpoint}] Found club: ${club.name}`);
 
-    if (!club.membershipPrice || club.membershipPrice <= 0) {
-      console.warn(`[${endpoint}] Club ${clubId} (${club.name}) has no valid membership price.`);
-      return NextResponse.json({ error: "Denne klubben tilbyr ikke betalt medlemskap via appen for øyeblikket." }, { status: 400 });
+    // --- Sjekk pris NØYE ---
+    if (club.membershipPrice === null || club.membershipPrice <= 0) {
+      console.warn(`[${endpoint}] Club ${clubId} (${club.name}) has invalid price: ${club.membershipPrice}`);
+      return NextResponse.json({ error: "Klubben tilbyr ikke betalt medlemskap." }, { status: 400 });
     }
-    console.log(`[${endpoint}] Club found: ${club.name}, Price: ${club.membershipPrice}`);
+     // Nå vet vi at club.membershipPrice er et tall > 0
+    const validMembershipPrice = club.membershipPrice;
+    console.log(`[${endpoint}] Valid price found: ${validMembershipPrice}`);
+     // =========================
 
-    // === Sjekk Eksisterende Aktivt Medlemskap ===
-    const existingMembership = await prisma.membership.findUnique({
-        where: {
-            userId_clubId: { userId, clubId },
-            status: 'active'
-        },
-        select: { userId: true }
-    });
-
+    // === Sjekk Medlemskap ===
+    const existingMembership = await prisma.membership.findUnique({ where: { userId_clubId: { userId, clubId }, status: 'active' }, select: { userId: true } });
     if (existingMembership) {
-        console.warn(`[${endpoint}] User ${userId} is already an active member of club ${clubId}.`);
-        return NextResponse.json({ error: "Du er allerede et aktivt medlem i denne klubben." }, { status: 400 });
+        return NextResponse.json({ error: "Du er allerede aktivt medlem." }, { status: 400 });
     }
-    console.log(`[${endpoint}] User ${userId} is not an active member yet.`);
+    console.log(`[${endpoint}] User not an active member yet.`);
+    // ========================
 
-    // === Stripe Produkt & Pris (Lazy Creation) ===
+    // === Stripe Produkt & Pris ===
     let stripePriceId = club.stripePriceId;
     let stripeProductId = club.stripeProductId;
 
     if (!stripePriceId) {
-      console.log(`[${endpoint}] Stripe Price ID not found. Initiating creation...`);
-      if (!stripeProductId) {
-        try {
-          console.log(`[${endpoint}] Creating Stripe Product...`);
-          const product = await stripe.products.create({
-            name: `${club.name} Medlemskap`,
-            description: `Årlig medlemskontingent for ${club.name}`,
-            metadata: { clubId: club.id }
-          });
-          stripeProductId = product.id;
-          console.log(`[${endpoint}] Stripe Product created: ${stripeProductId}`);
-        } catch (prodError: any) {
-           console.error(`[${endpoint}] Stripe Product creation error:`, prodError);
-           return NextResponse.json({ error: `Kunne ikke opprette Stripe produkt: ${prodError.message}` }, { status: 500 });
+        console.log(`[${endpoint}] Creating Stripe Product/Price...`);
+        if (!stripeProductId) {
+            try {
+                const product = await stripe.products.create({
+                    name: `${club.name} Medlemskap`,
+                    metadata: { clubId: club.id } // Bruk club.id som er garantert string
+                });
+                stripeProductId = product.id;
+            } catch (e: any) { console.error("Stripe Prod Err:", e); return NextResponse.json({ error: `Stripe Prod feil: ${e.message}` }, { status: 500 }); }
         }
-      } else {
-          console.log(`[${endpoint}] Found existing Stripe Product ID: ${stripeProductId}`);
-      }
-
-      try {
-         console.log(`[${endpoint}] Creating Stripe Price for product ${stripeProductId}...`);
-         const price = await stripe.prices.create({
-           product: stripeProductId!,
-           unit_amount: club.membershipPrice,
-           currency: 'nok',
-           recurring: { interval: 'year' },
-           metadata: { clubId: club.id }
-         });
-         stripePriceId = price.id;
-         console.log(`[${endpoint}] Stripe Price created: ${stripePriceId}`);
-      } catch(priceError: any){
-           console.error(`[${endpoint}] Stripe Price creation error:`, priceError);
-           return NextResponse.json({ error: `Kunne ikke opprette Stripe pris: ${priceError.message}` }, { status: 500 });
-      }
-
-      try {
-          console.log(`[${endpoint}] Updating club ${clubId} in DB with Stripe IDs...`);
-          await prisma.club.update({
-              where: { id: clubId },
-              data: { stripeProductId, stripePriceId },
-          });
-          console.log(`[${endpoint}] Club ${clubId} DB update successful.`);
-      } catch(dbUpdateError: any) {
-           console.error(`[${endpoint}] Database update error after creating Stripe IDs:`, dbUpdateError);
-           return NextResponse.json({ error: "Databasefeil etter Stripe-opprettelse. Kontakt support." }, { status: 500 });
-      }
+        try {
+            const price = await stripe.prices.create({
+                product: stripeProductId!,
+                unit_amount: validMembershipPrice, // Bruk validert pris
+                currency: 'nok',
+                recurring: { interval: 'year' },
+                metadata: { clubId: club.id } // Bruk club.id
+            });
+            stripePriceId = price.id;
+        } catch (e: any) { console.error("Stripe Price Err:", e); return NextResponse.json({ error: `Stripe Price feil: ${e.message}` }, { status: 500 }); }
+        try {
+            await prisma.club.update({ where: { id: clubId }, data: { stripeProductId, stripePriceId } });
+        } catch (e: any) { console.error("DB Update Err:", e); return NextResponse.json({ error: "DB feil etter Stripe." }, { status: 500 }); }
+        console.log(`[${endpoint}] Stripe IDs created/updated.`);
     } else {
-        console.log(`[${endpoint}] Found existing Stripe Price ID: ${stripePriceId}`);
+        console.log(`[${endpoint}] Using existing Stripe Price ID: ${stripePriceId}`);
     }
+    // ==========================
 
-    // === Stripe Kunde (Finn eller Opprett) ===
+    // === Stripe Kunde ===
     let stripeCustomerId: string | undefined;
-    console.log(`[${endpoint}] Finding or creating Stripe Customer for user ${userId}`);
-
-    const userMemberships = await prisma.membership.findMany({
-        where: { userId: userId, stripeCustomerId: { not: null } },
-        select: { stripeCustomerId: true },
-        distinct: ['stripeCustomerId']
-    });
-    const validCustomerIds = userMemberships.map(m => m.stripeCustomerId).filter(Boolean) as string[];
-
-    if (validCustomerIds.length > 0) {
-        stripeCustomerId = validCustomerIds[0];
-        console.log(`[${endpoint}] Found potential existing Stripe Customer ID: ${stripeCustomerId}`);
-        try {
-            await stripe.customers.retrieve(stripeCustomerId);
-            console.log(`[${endpoint}] Verified Stripe Customer ID ${stripeCustomerId} exists.`);
-        } catch (retrieveError: any) {
-            if (retrieveError.type === 'StripeInvalidRequestError') {
-                console.warn(`[${endpoint}] Stripe Customer ID ${stripeCustomerId} from DB not found in Stripe. Will create a new one.`);
-                stripeCustomerId = undefined;
-            } else {
-                console.error(`[${endpoint}] Error retrieving Stripe Customer ${stripeCustomerId}:`, retrieveError);
-                 return NextResponse.json({ error: "Feil ved verifisering av Stripe-kunde." }, { status: 500 });
-            }
-        }
-    }
-
+    // ... (logikk for å finne/opprette kunde som før) ...
+     const userMemberships = await prisma.membership.findMany({ where: { userId, stripeCustomerId: { not: null } }, select: { stripeCustomerId: true }, distinct: ['stripeCustomerId'] });
+     const validCustomerIds = userMemberships.map(m => m.stripeCustomerId).filter(Boolean) as string[];
+     if (validCustomerIds.length > 0) {
+         stripeCustomerId = validCustomerIds[0];
+         try { await stripe.customers.retrieve(stripeCustomerId); console.log(`[${endpoint}] Existing Stripe Customer found: ${stripeCustomerId}`); }
+         catch (e: any) { if (e.type === 'StripeInvalidRequestError') { stripeCustomerId = undefined; console.warn("Stripe Customer ID from DB invalid."); } else { throw e; } }
+     }
      if (!stripeCustomerId) {
          try {
-             console.log(`[${endpoint}] Creating new Stripe Customer for user ${userId} (${userEmail})`);
+             // --- Korrekt objekt for customers.create ---
              const customer = await stripe.customers.create({
-                 email: userEmail,
-                 name: session.user.name ?? undefined,
-                 metadata: { userId: userId },
+                 email: userEmail, // 'email' er et gyldig felt
+                 name: userName ?? undefined, // 'name' er et gyldig felt
+                 metadata: { userId: userId } // 'metadata' er gyldig
              });
+             // ------------------------------------------
              stripeCustomerId = customer.id;
              console.log(`[${endpoint}] New Stripe Customer created: ${stripeCustomerId}`);
-         } catch (customerError: any) {
-             console.error(`[${endpoint}] Stripe Customer creation error:`, customerError);
-             return NextResponse.json({ error: `Kunne ikke opprette Stripe-kunde: ${customerError.message}` }, { status: 500 });
-         }
+         } catch (e: any) { console.error("Stripe Cust Err:", e); return NextResponse.json({ error: `Stripe Kunde feil: ${e.message}` }, { status: 500 }); }
      }
+    // =================
 
-    // === Opprett Stripe Checkout Session ===
-    console.log(`[${endpoint}] Preparing to create Stripe Checkout Session...`);
-
-    // *** Bruk await for headers() ***
-    const requestHeaders = await headers();
+    // === Checkout Session ===
+    console.log(`[${endpoint}] Creating Checkout Session...`);
+    const requestHeaders = await headers(); // *** Legg til await her igjen ***
     const origin = requestHeaders.get('origin');
-
     const appUrl = process.env.NEXT_PUBLIC_APP_URL || origin || 'http://localhost:3000';
     const successUrl = `${appUrl}/medlemskap/suksess?session_id={CHECKOUT_SESSION_ID}&clubId=${clubId}`;
     const cancelUrl = `${appUrl}/klubber/${clubId}?status=kansellert`;
-    console.log(`[${endpoint}] Using Success URL: ${successUrl}`);
-    console.log(`[${endpoint}] Using Cancel URL: ${cancelUrl}`);
+
+    // --- Valider data før Stripe kall ---
+    if (!stripeCustomerId) {
+         console.error(`[${endpoint}] Stripe Customer ID is missing before creating checkout session.`);
+         return NextResponse.json({ error: "Intern feil: Stripe kunde-ID mangler." }, { status: 500 });
+    }
+     if (!stripePriceId) {
+         console.error(`[${endpoint}] Stripe Price ID is missing before creating checkout session.`);
+         return NextResponse.json({ error: "Intern feil: Stripe pris-ID mangler." }, { status: 500 });
+    }
+    // ----------------------------------
 
     try {
-      console.log(`[${endpoint}] Creating Stripe Checkout Session for customer ${stripeCustomerId}, price ${stripePriceId}`);
+        // --- Korrekt objekt for checkout.sessions.create ---
       const checkoutSession = await stripe.checkout.sessions.create({
-        customer: stripeCustomerId,
-        payment_method_types: ['card'],
-        line_items: [ { price: stripePriceId, quantity: 1 } ],
-        mode: 'subscription',
-        success_url: successUrl,
-        cancel_url: cancelUrl,
-        metadata: {
-          clubId: club.id,
+        customer: stripeCustomerId,         // Gyldig felt
+        payment_method_types: ['card'],   // Gyldig felt
+        line_items: [                     // Gyldig felt
+            { price: stripePriceId, quantity: 1 }
+        ],
+        mode: 'subscription',             // Gyldig felt
+        success_url: successUrl,          // Gyldig felt
+        cancel_url: cancelUrl,            // Gyldig felt
+        metadata: {                       // Gyldig felt
+          clubId: clubId, // Sikrer at clubId er string
           userId: userId,
           stripeCustomerId: stripeCustomerId
         },
-        subscription_data: {
-           metadata: {
-               clubId: club.id,
-               userId: userId,
-           }
+        subscription_data: {              // Gyldig felt
+           metadata: { clubId: clubId, userId: userId } // Sikrer at clubId er string
         },
       });
-
-      console.log(`[${endpoint}] Stripe Checkout Session created: ${checkoutSession.id}`);
+      // -------------------------------------------------
+      console.log(`[${endpoint}] Checkout Session created: ${checkoutSession.id}`);
       return NextResponse.json({ url: checkoutSession.url });
 
     } catch (error: any) {
-      console.error(`[${endpoint}] Stripe Checkout Session creation error:`, error);
-      return NextResponse.json({ error: `Kunne ikke starte betalingsprosess: ${error.message}` }, { status: 500 });
+        console.error(`[${endpoint}] Stripe Checkout Session creation error:`, error);
+        return NextResponse.json({ error: `Kunne ikke starte betalingsprosess: ${error.message}` }, { status: 500 });
     }
+    // ======================
+
   } catch (error: any) {
-    // Prøv å få clubId for bedre logging, selv ved tidlig feil
-    let errorClubId = 'unknown';
-    try { errorClubId = (await params)?.clubId || 'unknown'; } catch { /* Ignorer feil her */ }
-    console.error(`[API /api/clubs/${errorClubId}/checkout] Unhandled Internal Server Error:`, error);
-    return NextResponse.json({ error: "En uventet intern feil oppstod." }, { status: 500 });
+    const errorClubId = clubId ?? 'unknown';
+    console.error(`[API /api/clubs/${errorClubId}/checkout] Unhandled Error:`, error);
+    return NextResponse.json({ error: "En uventet intern feil." }, { status: 500 });
   } finally {
      await prisma.$disconnect();
-     // Prøv å få clubId for logging
-     let finalClubId = 'unknown';
-     try { finalClubId = (await params)?.clubId || 'unknown'; } catch { /* Ignorer feil her */ }
-     console.log(`[API /api/clubs/${finalClubId}/checkout] Database connection disconnected.`);
+     const finalClubId = clubId ?? 'unknown';
+     console.log(`[API /api/clubs/${finalClubId}/checkout] DB disconnected.`);
   }
 }
