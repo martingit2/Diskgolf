@@ -288,8 +288,9 @@ model Meeting {
   description String   // Beskrivelse av møtet
   pdfUrl      String?  // URL til PDF-fil for referatet
   createdAt   DateTime @default(now()) // Når møtet ble opprettet
+  cloudinaryPublicId String?
 
-  club        Club     @relation(fields: [clubId], references: [id]) // Relasjon til Club-modellen
+  club Club @relation(fields: [clubId], references: [id], onDelete: Cascade)
 
   @@index([clubId]) // Lager en indeks for klubben for raskere spørringer
 }
