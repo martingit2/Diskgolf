@@ -148,9 +148,9 @@ const ClubMembers: React.FC<ClubMembersProps> = ({ managedClubs = [], initialClu
                                                     <AlertDialogTrigger asChild><Button variant="ghost" size="sm" className="text-red-600 hover:bg-red-50 hover:text-red-700" onClick={() => setMemberToRemove(member)} disabled={isRemoving && memberToRemove?.userId === member.userId} aria-label={`Fjern ${member.name}`}>{isRemoving && memberToRemove?.userId === member.userId ? <Loader2 className="h-4 w-4 animate-spin"/> : <UserX className="h-4 w-4" />}</Button></AlertDialogTrigger>
                                                      {memberToRemove && memberToRemove.userId === member.userId && ( // Vis kun for den valgte
                                                          <AlertDialogContent>
-                                                             <AlertDialogHeader><AlertDialogTitle>Fjerne {memberToRemove.name}?</AlertDialogTitle><AlertDialogDescription>Er du sikker på at du vil fjerne {memberToRemove.name} ({memberToRemove.email})?</AlertDialogDescription></AlertDialogHeader>
+                                                             <AlertDialogHeader><AlertDialogTitle className='text-black'>Fjerne {memberToRemove.name}?</AlertDialogTitle><AlertDialogDescription className='text-black'>Er du sikker på at du vil fjerne {memberToRemove.name} ({memberToRemove.email})?</AlertDialogDescription></AlertDialogHeader>
                                                              <AlertDialogFooter>
-                                                                 <AlertDialogCancel onClick={() => setMemberToRemove(null)} disabled={isRemoving}>Avbryt</AlertDialogCancel>
+                                                                 <AlertDialogCancel className='text-black bg-gray-50' onClick={() => setMemberToRemove(null)} disabled={isRemoving}>Avbryt</AlertDialogCancel>
                                                                  {/* Korrigert: Bruker handleRemoveMember direkte */}
                                                                  <AlertDialogAction onClick={handleRemoveMember} disabled={isRemoving} className="bg-red-600 hover:bg-red-700">{isRemoving ? "Fjerner..." : "Ja, fjern medlem"}</AlertDialogAction>
                                                              </AlertDialogFooter>
