@@ -21,6 +21,16 @@ enum UserRole {
   CLUB_LEADER
 }
 
+
+enum ErrorReportStatus {
+  OPEN        // Rapporten er ny og ikke behandlet
+  IN_PROGRESS // Noen ser på saken
+  RESOLVED    // Problemet er løst
+  IGNORED     // Rapporten er avvist/ignorert
+}
+
+
+
 model User {
   id              String    @id @default(uuid()) // Unik identifikator
   name            String?  // Brukerens fulle navn
@@ -53,6 +63,7 @@ model User {
   tournamentGameParticipations TournamentGameParticipation[] @relation("UserTournamentGameParticipations")
   tournamentGameScores         TournamentGameScore[]         @relation("UserTournamentGameScores")
   authoredNews NewsArticle[] @relation("AuthoredNews")
+  submittedErrorReports ErrorReport[] @relation("SubmittedReports")
 }
 
 model Club {
@@ -139,6 +150,7 @@ model Course {
   clubId String?
   club   Club?   @relation("ClubToCourses", fields: [clubId], references: [id])
   tournaments Tournament[]
+  errorReports ErrorReport[] @relation("CourseReports")
 }
 
 model Hole {
@@ -519,4 +531,22 @@ model NewsArticle {
   @@index([authorId])
   @@index([isPublished, createdAt(sort: Desc)]) // Eksisterende: For publiserte nyheter
   @@index([title]) 
+}
+
+
+
+model ErrorReport {
+  id          String   @id @default(uuid())
+  courseId    String
+  course      Course   @relation("CourseReports", fields: [courseId], references: [id], onDelete: Cascade) // Kobling til banen
+  userId      String
+  user        User     @relation("SubmittedReports", fields: [userId], references: [id], onDelete: Cascade) // Kobling til bruker som rapporterte
+  description String   @db.Text // Beskrivelse av feilen
+  status      ErrorReportStatus @default(OPEN) // Status på rapporten
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@index([courseId]) // For rask filtrering på bane
+  @@index([userId])   // For å finne rapporter fra en bruker
+  @@index([status])   // For å filtrere på status
 }

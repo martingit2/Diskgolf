@@ -1,6 +1,10 @@
+
+// api/courses/[id]/route.ts
 /*
 * Utvikler: Martin Pettersen, Said Hussain Khawajazada
  */
+
+
 
 
 
