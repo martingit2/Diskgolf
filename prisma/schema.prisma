@@ -550,3 +550,15 @@ model ErrorReport {
   @@index([userId])   // For å finne rapporter fra en bruker
   @@index([status])   // For å filtrere på status
 }
+
+
+
+model EditablePageContent {
+  id        String   @id @default(cuid()) // Unik ID for innholdsoppføringen
+  pageKey   String   @unique // Nøkkel for å identifisere siden (f.eks. "guide", "om-oss")
+  content   Json     // Selve innholdet lagret som JSON
+  useCustom Boolean  @default(false) // Flagg for å bestemme om egendefinert innhold skal brukes
+  updatedAt DateTime @updatedAt // Når innholdet sist ble oppdatert
+
+  @@index([pageKey])
+}

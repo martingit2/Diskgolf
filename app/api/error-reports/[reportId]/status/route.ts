@@ -12,7 +12,6 @@ const updateStatusSchema = z.object({
 
 export async function PATCH(
   request: Request,
-  // ----- PRØV DENNE ENDRINGEN -----
   { params }: { params: Promise<{ reportId: string }> }
   // -----------------------------
 ) {
@@ -21,7 +20,6 @@ export async function PATCH(
   const { reportId } = await params;
   // --------------------------------
 
-  // Resten av koden forblir uendret...
 
   // 1. Autentisering
   if (!session?.user?.id || !session?.user?.role) {
