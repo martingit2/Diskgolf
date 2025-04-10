@@ -1,7 +1,7 @@
 // Fil: src/components/TournamentsCarousel.tsx
 // Formål: Viser en karusell med fremhevede turneringer. Henter data fra API og håndterer lasting, feil og tomme tilstander.
 // Utvikler: Martin Pettersen
-// AI-støtte: Benyttet under utvikling for kodekvalitet, feilsøking og i18n-implementering.
+// AI-støtte: Benyttet under utvikling for kodekvalitet, feilsøking og oppdateringer.
 
 "use client"; // Nødvendig for hooks (useState, useEffect) og klientinteraksjon.
 

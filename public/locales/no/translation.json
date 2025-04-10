@@ -149,7 +149,8 @@
       "close": "Lukk",
       "invalid_date": "Ugyldig dato",
       "unknown_course": "Ukjent bane",
-      "no_description": "Ingen beskrivelse tilgjengelig."
+      "no_description": "Ingen beskrivelse tilgjengelig.",
+      "anonymous_user": "Anonym" 
     },
     "search_form": {
       "location_label": "Sted",
@@ -186,7 +187,7 @@
       "header": {
         "subtitle": "DiskGolf Anmeldelser",
         "title": "Nyeste baneanmeldelser",
-        "view_all_button": "Se alle baner" 
+        "view_all_button": "Se alle baner"
       },
       "error": {
         "title": "Feil!",
@@ -200,7 +201,7 @@
         "anonymous_user": "Anonym",
         "user_profile_alt_named": "Profil av {{name}}",
         "user_profile_alt_anonymous": "Brukerprofil",
-        "reviewed": "anmeldte" 
+        "reviewed": "anmeldte"
       }
     },
     "languageSwitcher": {
@@ -208,6 +209,43 @@
         "norwegian": "Norsk flagg",
         "english": "Bytt til Engelsk"
       }
+    },
+    "join_club": {
+      "title_part1": "Bli med i en",
+      "title_highlight": "DiskGolf-klubb",
+      "title_part2": "!",
+      "description": "Knytt deg til et fellesskap, delta i turneringer, og få eksklusive fordeler. Finn en klubb nær deg og bli en del av det voksende DiskGolf-miljøet!",
+      "cta_button": "Finn en klubb"
+    },
+    "quick_start_game": {
+      "title_part1": "Ny i DiskGolf-appen? Prøv et",
+      "title_highlight": "testspill",
+      "title_part2": "!",
+      "description": "Opplev hvordan spillet fungerer før du går ut på en ekte runde. Lær reglene, kasteteknikkene og scoring – på en enkel og morsom måte!",
+      "cta_button": "Spill nå"
+    },
+    "write_review": {
+      "title": "Skriv en anmeldelse",
+      "rating_label": "Din vurdering:",
+      "comment_label": "Din kommentar (valgfritt):",
+      "comment_placeholder": "Fortell hva du likte eller ikke likte...",
+      "submit_button": "Send inn anmeldelse",
+      "submitting_button": "Sender...",
+      "error_no_rating": "Vennligst velg en vurdering (1–5 stjerner).",
+      "error_submit_failed": "Kunne ikke lagre anmeldelsen.",
+      "error_generic": "Noe gikk galt.",
+      "success_message": "Anmeldelsen ble sendt inn!",
+      "star_rating": {
+        "aria_label": "Velg {{count}} stjerner som vurdering"
+      }
+    },
+    "app_reviews": {
+      "title": "Hva sier brukerne våre om oss?",
+      "loading": "Laster anmeldelser...",
+      "error_generic": "Kunne ikke laste anmeldelser.",
+      "empty": "Ingen anmeldelser funnet.",
+      "avatar_alt_prefix": "Avatar for",
+      "avatar_alt_fallback": "Brukeravatar"
     }
   }
 }

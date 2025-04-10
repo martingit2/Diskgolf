@@ -7,7 +7,7 @@
       "closeMenu": "Close menu",
       "courses": "Courses",
       "news": "News",
-      "coursePlay": "Course Play",
+      "coursePlay": "Play Course",
       "tournaments": "Tournaments",
       "clubs": "Clubs",
       "nav": {
@@ -167,7 +167,8 @@
       "close": "Close",
       "invalid_date": "Invalid date",
       "unknown_course": "Unknown course",
-      "no_description": "No description available."
+      "no_description": "No description available.",
+      "anonymous_user": "Anonymous"
     },
     "newest_courses_carousel": {
       "header": {
@@ -186,7 +187,7 @@
       "header": {
         "subtitle": "Disc Golf Reviews",
         "title": "Latest Course Reviews",
-        "view_all_button": "View all courses" 
+        "view_all_button": "View all courses"
       },
       "error": {
         "title": "Error!",
@@ -200,7 +201,7 @@
         "anonymous_user": "Anonymous",
         "user_profile_alt_named": "Profile of {{name}}",
         "user_profile_alt_anonymous": "User profile",
-        "reviewed": "reviewed" 
+        "reviewed": "reviewed"
       }
     },
     "languageSwitcher": {
@@ -208,6 +209,43 @@
         "norwegian": "Switch to Norwegian",
         "english": "British flag"
       }
+    },
+    "join_club": {
+      "title_part1": "Join a",
+      "title_highlight": "Disc Golf Club",
+      "title_part2": "!",
+      "description": "Connect with a community, participate in tournaments, and get exclusive benefits. Find a club near you and become part of the growing Disc Golf environment!",
+      "cta_button": "Find a club"
+    },
+    "quick_start_game": {
+      "title_part1": "New to the Disc Golf app? Try a",
+      "title_highlight": "test game",
+      "title_part2": "!",
+      "description": "Experience how the game works before heading out for a real round. Learn the rules, throwing techniques, and scoring – in a simple and fun way!",
+      "cta_button": "Play Now"
+    },
+    "write_review": {
+      "title": "Write a review",
+      "rating_label": "Your rating:",
+      "comment_label": "Your comment (optional):",
+      "comment_placeholder": "Tell us what you liked or disliked...",
+      "submit_button": "Submit review",
+      "submitting_button": "Submitting...",
+      "error_no_rating": "Please select a rating (1-5 stars).",
+      "error_submit_failed": "Could not save the review.",
+      "error_generic": "Something went wrong.",
+      "success_message": "Review submitted!",
+      "star_rating": {
+        "aria_label": "Select {{count}} star rating"
+      }
+    },
+    "app_reviews": {
+      "title": "What do our users say about us?",
+      "loading": "Loading reviews...",
+      "error_generic": "Could not load reviews.",
+      "empty": "No reviews found.",
+      "avatar_alt_prefix": "Avatar for",
+      "avatar_alt_fallback": "User avatar"
     }
   }
 }
