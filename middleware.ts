@@ -3,122 +3,130 @@ import { NextRequest, NextResponse } from 'next/server';
 import { getToken } from 'next-auth/jwt';
 import acceptLanguage from 'accept-language';
 
-// Prosjektinterne imports
+// Prosjektinterne imports for ruter og i18n-innstillinger
 import { apiAuthPrefix, authRoutes, DEFAULT_LOGIN_REDIRECT, publicRoutes } from './routes';
-import { cookieName, fallbackLng, languages } from './app/lib/i18n/settings'; 
+import { cookieName, fallbackLng, languages } from './app/lib/i18n/settings';
 
-// Registrer støttede språk for accept-language biblioteket
+// Registrerer støttede språk for 'accept-language'-biblioteket
 acceptLanguage.languages([...languages]);
 
-// =============================================
-// ===== DENNE config-BLOKKEN ER OPPDATERT =====
-// =============================================
+// Konfigurasjon for hvilke stier middlewaren skal kjøre på
 export const config = {
-    // KJØR KUN på stier som IKKE starter med:
-    // - api/
-    // - _next/static/
-    // - _next/image/
-    // - assets/
-    // - favicon.ico
-    // - sw.js
-    // - trpc/ (hvis du bruker det og vil ekskludere)
-    // OG som IKKE er filer med kjente utvidelser (bilder, css, js etc.)
-    matcher: '/((?!api|_next/static|_next/image|assets|favicon.ico|sw.js|trpc|.*\\.\\w+).*)',
+  // Ignorerer API-kall, statiske filer, bilder, assets, etc.
+  matcher: '/((?!api|_next/static|_next/image|assets|favicon.ico|sw.js|trpc|.*\\.\\w+).*)',
 };
-// =============================================
-// =============================================
 
-
+/**
+ * Middleware for å håndtere språkdeteksjon (i18n), URL-prefiks og autentisering.
+ */
 export default async function middleware(req: NextRequest) {
     const pathname = req.nextUrl.pathname;
 
-    // --- i18n Språkdeteksjon og URL-prefiks ---
+    // --- Steg 1: Bestem ønsket språk (i18n) ---
     let lng: string | null | undefined;
+    // Prioriterer språk lagret i cookie
     if (req.cookies.has(cookieName)) {
         lng = acceptLanguage.get(req.cookies.get(cookieName)?.value);
     }
+    // Ellers, sjekk 'Accept-Language'-header fra nettleser
     if (!lng) {
         lng = acceptLanguage.get(req.headers.get('Accept-Language'));
     }
+    // Til slutt, bruk definert fallback-språk
     if (!lng) {
         lng = fallbackLng;
     }
+    // Sikrer at lng har en verdi (pga fallbackLng)
+    const determinedLng = lng!;
 
-    const determinedLng = lng!; // Bruker non-null assertion
-
+    // --- Steg 2: Omdiriger hvis URL mangler språkprefiks ---
+    // Sjekker om stien *ikke* starter med et av de støttede språkene
     const pathnameIsMissingLocale = languages.every(
         (loc) => !pathname.startsWith(`/${loc}/`) && pathname !== `/${loc}`
     );
 
-    // Denne if-blokken vil ikke lenger trenge å sjekke for !pathname.startsWith('/api/')
-    // fordi middlewaren uansett ikke kjører for /api/
-    if (pathnameIsMissingLocale && !pathname.startsWith(apiAuthPrefix)) { // Fjernet /trpc/ sjekk også hvis matcheren ekskluderer den
+    // Omdirigerer til URL med korrekt språkprefiks hvis det mangler
+    if (pathnameIsMissingLocale) {
+        // Bygger ny URL med det bestemte språket
         const newUrl = new URL(`/${determinedLng}${pathname.startsWith('/') ? '' : '/'}${pathname}${req.nextUrl.search}`, req.url);
         const response = NextResponse.redirect(newUrl);
-        response.cookies.set(cookieName, determinedLng, { path: '/', maxAge: 365 * 24 * 60 * 60 });
+        // Setter en cookie med det valgte språket for fremtidige besøk
+        response.cookies.set(cookieName, determinedLng, { path: '/', maxAge: 365 * 24 * 60 * 60 }); // Utløper om 1 år
         return response;
     }
 
-    // --- Hent språk fra URL og normaliser sti ---
+    // --- Steg 3: Hent aktivt språk fra URL og lag response-objekt ---
+    // Finner ut hvilket språk som faktisk er i URLen
     let currentLng = fallbackLng;
-    let pathnameWithoutLocale = pathname;
+    let pathnameWithoutLocale = pathname; // Stien uten språkprefiks
 
     for (const loc of languages) {
         if (pathname.startsWith(`/${loc}/`)) {
             currentLng = loc;
-            pathnameWithoutLocale = pathname.substring(`/${loc}`.length);
-            if (!pathnameWithoutLocale.startsWith('/')) {
-                 pathnameWithoutLocale = '/' + pathnameWithoutLocale;
-            }
+            pathnameWithoutLocale = pathname.substring(`/${loc}`.length) || '/'; // Håndterer '/en' -> '/'
             break;
         } else if (pathname === `/${loc}`) {
             currentLng = loc;
-            pathnameWithoutLocale = '/';
+            pathnameWithoutLocale = '/'; // Dekker rot-URL for språket, f.eks. /en
             break;
         }
     }
 
+    // Oppretter et standard 'next'-response som kan modifiseres
     let response = NextResponse.next();
 
+    // Oppdaterer språk-cookie hvis den mangler eller er feil
     if (!req.cookies.has(cookieName) || req.cookies.get(cookieName)?.value !== currentLng) {
        response.cookies.set(cookieName, currentLng, { path: '/', maxAge: 365 * 24 * 60 * 60 });
     }
 
-    // --- Autentiseringslogikk ---
+    // --- Steg 4: Håndter autentisering basert på rute og innloggingsstatus ---
 
+    // Henter brukerens sesjonstoken
     const token = await getToken({ req, secret: process.env.NEXTAUTH_SECRET });
-    const isLoggedIn = !!token;
+    const isLoggedIn = !!token; // Sjekker om bruker er innlogget
 
-    const isApiAuthRoute = pathnameWithoutLocale.startsWith(apiAuthPrefix); 
-    const isPublicRoute = publicRoutes.includes(pathnameWithoutLocale);
-    const isAuthRoute = authRoutes.includes(pathnameWithoutLocale);
+    // Klassifiserer ruten (bruker stien *uten* språkprefiks)
+    const isApiAuthRoute = pathnameWithoutLocale.startsWith(apiAuthPrefix); // f.eks. /api/auth/...
+    const isPublicRoute = publicRoutes.includes(pathnameWithoutLocale);   // Ruter som er tilgjengelige for alle
+    const isAuthRoute = authRoutes.includes(pathnameWithoutLocale);     // Ruter for innlogging/registrering etc.
 
-    if (isApiAuthRoute) { // Denne gjelder kun /api/auth/...
+    // Tillater alltid kall til NextAuth API-endepunkter
+    if (isApiAuthRoute) {
         return response;
     }
 
+    // Tillat tilgang til 'new-password'-siden (spesialtilfelle)
     if (pathnameWithoutLocale === "/auth/new-password") {
         return response;
     }
 
+    // Håndterer forsøk på å besøke autentiseringsruter (login, register)
     if (isAuthRoute) {
+        // Hvis bruker er innlogget, omdiriger til standard landingsside
         if (isLoggedIn) {
             return NextResponse.redirect(new URL(`/${currentLng}${DEFAULT_LOGIN_REDIRECT}`, req.url));
         }
+        // Hvis ikke innlogget, tillat tilgang til autentiseringsruten
         return response;
     }
 
+    // Håndterer forsøk på å besøke beskyttede ruter uten å være innlogget
     if (!isLoggedIn && !isPublicRoute) {
-        let callbackUrl = pathname;
+        // Lagrer opprinnelig URL som callbackUrl for omdirigering etter innlogging
+        let callbackUrl = pathname; // Bruker hele stien inkl. språk
         if (req.nextUrl.search) {
             callbackUrl += req.nextUrl.search;
         }
+        // Bygger URL til innloggingssiden med korrekt språk
         const loginUrl = new URL(`/${currentLng}/auth/login`, req.url);
         loginUrl.searchParams.set("callbackUrl", callbackUrl);
 
+        // Omdirigerer til innloggingssiden
         return NextResponse.redirect(loginUrl);
     }
 
-    // --- Tillat tilgang ---
+    // --- Steg 5: Tillat tilgang hvis ingen av reglene over slo til ---
+    // Gjelder for offentlige ruter, eller beskyttede ruter for innloggede brukere
     return response;
 }
