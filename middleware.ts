@@ -17,6 +17,37 @@ export const config = {
 };
 
 /**
+ * Hjelpefunksjon for å sjekke om en gitt sti matcher et offentlig rute-mønster.
+ * Håndterer både eksakte treff og dynamiske mønstre definert i publicRoutes.
+ * @param path Stien uten språkprefiks (f.eks. '/nyheter', '/turneringer/123').
+ * @param publicPatterns Array med offentlige rute-strenger/mønstre fra routes.ts.
+ * @returns boolean True hvis stien er offentlig, ellers false.
+ */
+function isPathPublic(path: string, publicPatterns: string[]): boolean {
+    // Sjekk for eksakt match (for statiske ruter som '/', '/nyheter', etc.)
+    if (publicPatterns.includes(path)) {
+        return true;
+    }
+
+    // Sjekk for dynamiske mønstre
+    // Tilpass disse 'startsWith'-sjekkene basert på *dine* dynamiske ruter i publicRoutes
+    if (path.startsWith('/turneringer/') && publicPatterns.includes('/turneringer/[id]')) {
+       return true;
+    }
+    if (path.startsWith('/klubb/') && publicPatterns.includes('/klubb/[id]')) {
+       return true;
+    }
+    if (path.startsWith('/courses/') && publicPatterns.includes('/courses/[id]')) {
+        return true;
+    }
+    // Legg til flere sjekker for andre dynamiske offentlige ruter her...
+    // f.eks. if (path.startsWith('/profil/') && publicPatterns.includes('/profil/[username]')) return true;
+
+    return false; // Ikke offentlig hvis ingen av sjekkene over matchet
+}
+
+
+/**
  * Middleware for å håndtere språkdeteksjon (i18n), URL-prefiks og autentisering.
  */
 export default async function middleware(req: NextRequest) {
@@ -24,109 +55,88 @@ export default async function middleware(req: NextRequest) {
 
     // --- Steg 1: Bestem ønsket språk (i18n) ---
     let lng: string | null | undefined;
-    // Prioriterer språk lagret i cookie
     if (req.cookies.has(cookieName)) {
         lng = acceptLanguage.get(req.cookies.get(cookieName)?.value);
     }
-    // Ellers, sjekk 'Accept-Language'-header fra nettleser
     if (!lng) {
         lng = acceptLanguage.get(req.headers.get('Accept-Language'));
     }
-    // Til slutt, bruk definert fallback-språk
     if (!lng) {
         lng = fallbackLng;
     }
-    // Sikrer at lng har en verdi (pga fallbackLng)
     const determinedLng = lng!;
 
     // --- Steg 2: Omdiriger hvis URL mangler språkprefiks ---
-    // Sjekker om stien *ikke* starter med et av de støttede språkene
     const pathnameIsMissingLocale = languages.every(
         (loc) => !pathname.startsWith(`/${loc}/`) && pathname !== `/${loc}`
     );
 
-    // Omdirigerer til URL med korrekt språkprefiks hvis det mangler
     if (pathnameIsMissingLocale) {
-        // Bygger ny URL med det bestemte språket
         const newUrl = new URL(`/${determinedLng}${pathname.startsWith('/') ? '' : '/'}${pathname}${req.nextUrl.search}`, req.url);
         const response = NextResponse.redirect(newUrl);
-        // Setter en cookie med det valgte språket for fremtidige besøk
-        response.cookies.set(cookieName, determinedLng, { path: '/', maxAge: 365 * 24 * 60 * 60 }); // Utløper om 1 år
+        response.cookies.set(cookieName, determinedLng, { path: '/', maxAge: 365 * 24 * 60 * 60 });
         return response;
     }
 
     // --- Steg 3: Hent aktivt språk fra URL og lag response-objekt ---
-    // Finner ut hvilket språk som faktisk er i URLen
     let currentLng = fallbackLng;
-    let pathnameWithoutLocale = pathname; // Stien uten språkprefiks
+    let pathnameWithoutLocale = pathname;
 
     for (const loc of languages) {
         if (pathname.startsWith(`/${loc}/`)) {
             currentLng = loc;
-            pathnameWithoutLocale = pathname.substring(`/${loc}`.length) || '/'; // Håndterer '/en' -> '/'
+            pathnameWithoutLocale = pathname.substring(`/${loc}`.length) || '/';
             break;
         } else if (pathname === `/${loc}`) {
             currentLng = loc;
-            pathnameWithoutLocale = '/'; // Dekker rot-URL for språket, f.eks. /en
+            pathnameWithoutLocale = '/';
             break;
         }
     }
 
-    // Oppretter et standard 'next'-response som kan modifiseres
     let response = NextResponse.next();
 
-    // Oppdaterer språk-cookie hvis den mangler eller er feil
     if (!req.cookies.has(cookieName) || req.cookies.get(cookieName)?.value !== currentLng) {
        response.cookies.set(cookieName, currentLng, { path: '/', maxAge: 365 * 24 * 60 * 60 });
     }
 
     // --- Steg 4: Håndter autentisering basert på rute og innloggingsstatus ---
-
-    // Henter brukerens sesjonstoken
     const token = await getToken({ req, secret: process.env.NEXTAUTH_SECRET });
-    const isLoggedIn = !!token; // Sjekker om bruker er innlogget
+    const isLoggedIn = !!token;
 
-    // Klassifiserer ruten (bruker stien *uten* språkprefiks)
-    const isApiAuthRoute = pathnameWithoutLocale.startsWith(apiAuthPrefix); // f.eks. /api/auth/...
-    const isPublicRoute = publicRoutes.includes(pathnameWithoutLocale);   // Ruter som er tilgjengelige for alle
-    const isAuthRoute = authRoutes.includes(pathnameWithoutLocale);     // Ruter for innlogging/registrering etc.
+    const isApiAuthRoute = pathnameWithoutLocale.startsWith(apiAuthPrefix);
 
-    // Tillater alltid kall til NextAuth API-endepunkter
+    // Bruker den nye hjelpefunksjonen for å sjekke offentlig rute
+    const isPublicRoute = isPathPublic(pathnameWithoutLocale, publicRoutes);
+
+    const isAuthRoute = authRoutes.includes(pathnameWithoutLocale);
+
     if (isApiAuthRoute) {
         return response;
     }
 
-    // Tillat tilgang til 'new-password'-siden (spesialtilfelle)
     if (pathnameWithoutLocale === "/auth/new-password") {
         return response;
     }
 
-    // Håndterer forsøk på å besøke autentiseringsruter (login, register)
     if (isAuthRoute) {
-        // Hvis bruker er innlogget, omdiriger til standard landingsside
         if (isLoggedIn) {
             return NextResponse.redirect(new URL(`/${currentLng}${DEFAULT_LOGIN_REDIRECT}`, req.url));
         }
-        // Hvis ikke innlogget, tillat tilgang til autentiseringsruten
         return response;
     }
 
-    // Håndterer forsøk på å besøke beskyttede ruter uten å være innlogget
+    // Bruker nå den korrekte isPublicRoute-verdien
     if (!isLoggedIn && !isPublicRoute) {
-        // Lagrer opprinnelig URL som callbackUrl for omdirigering etter innlogging
-        let callbackUrl = pathname; // Bruker hele stien inkl. språk
+        let callbackUrl = pathname;
         if (req.nextUrl.search) {
             callbackUrl += req.nextUrl.search;
         }
-        // Bygger URL til innloggingssiden med korrekt språk
         const loginUrl = new URL(`/${currentLng}/auth/login`, req.url);
         loginUrl.searchParams.set("callbackUrl", callbackUrl);
-
-        // Omdirigerer til innloggingssiden
         return NextResponse.redirect(loginUrl);
     }
 
-    // --- Steg 5: Tillat tilgang hvis ingen av reglene over slo til ---
-    // Gjelder for offentlige ruter, eller beskyttede ruter for innloggede brukere
+    // --- Steg 5: Tillat tilgang ---
     return response;
 }
