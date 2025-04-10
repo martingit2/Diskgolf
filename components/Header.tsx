@@ -2,7 +2,8 @@
  * Filnavn: Header.tsx (Hoved-navbar)
  * Beskrivelse: Navigasjonskomponent for DiskGolf-applikasjonen. Viser logo, navigasjonslenker,
  *              språkvelger og bruker-dropdown. Støtter både desktop og mobil visning.
- * Utvikler: Martin Pettersen (Oppdatert for i18n)
+ * Utvikler: Martin Pettersen
+ * AI-støtte: Benyttet under utvikling for kodekvalitet, feilsøking og oppdateringer.
  */
 'use client';
 
@@ -18,7 +19,7 @@ import { cn } from '@/app/lib/utils';
 import UserDropdown from './UserDropDown';
 import { useSession } from "next-auth/react";
 import { User } from '@/app/types';
-import { useTranslation } from 'react-i18next';
+import { useTranslation } from 'react-i18next'; // <<< Importer hook
 
 // Importer språkvelger-komponent
 import { LanguageSwitcher } from './LanguageSwitcher';
@@ -27,27 +28,35 @@ import { LanguageSwitcher } from './LanguageSwitcher';
 type HeroIcon = ForwardRefExoticComponent<Omit<SVGProps<SVGSVGElement>, "ref"> & { title?: string | undefined; titleId?: string | undefined; } & RefAttributes<SVGSVGElement>>;
 
 // Definisjoner for navigasjonslenker og CTA i popover
-// Nøkler for oversettelse genereres fra 'key'
-// Bruker felles interface for å sikre type-konsistens
-interface NavItem {
+// Merk: href er nå baseHref (uten språk)
+interface NavItemBase {
   key: string;
-  name: string;
+  name: string; // Fallback-navn
   description?: string; // Gjør description valgfri
-  href: string;
+  baseHref: string; // Sti uten språkprefiks
   icon: HeroIcon;
 }
 
-const navLinks: NavItem[] = [
-    { key: 'finn_bane', name: 'Finn bane', description: 'Søk etter tilgjengelige baner.', href: '/baner', icon: MagnifyingGlassCircleIcon },
-    { key: 'mest_populære', name: 'Mest populære', description: 'De mest populære banene.', href: '/baner?sortBy=popular', icon: StarIcon },
-    { key: 'rapporter_feil', name: 'Rapporter feil', description: 'Gi beskjed om feil.', href: '/rapporter-feil', icon: ExclamationTriangleIcon },
+// Definer base-hrefs her
+const navLinksBase: NavItemBase[] = [
+    { key: 'finn_bane', name: 'Finn bane', description: 'Søk etter tilgjengelige baner.', baseHref: '/baner', icon: MagnifyingGlassCircleIcon },
+    { key: 'mest_populære', name: 'Mest populære', description: 'De mest populære banene.', baseHref: '/baner?sortBy=popular', icon: StarIcon },
+    { key: 'rapporter_feil', name: 'Rapporter feil', description: 'Gi beskjed om feil.', baseHref: '/rapporter-feil', icon: ExclamationTriangleIcon },
 ];
 
 // CTA har ikke 'description'
-const cta: NavItem[] = [
-    { key: 'vis_vær', name: 'Vis vær', href: '/weather', icon: SunIcon },
-    { key: 'kontakt_oss', name: 'Kontakt oss', href: '/kontakt', icon: EnvelopeIcon },
+const ctaBase: NavItemBase[] = [
+    { key: 'vis_vær', name: 'Vis vær', baseHref: '/weather', icon: SunIcon },
+    { key: 'kontakt_oss', name: 'Kontakt oss', baseHref: '/kontakt', icon: EnvelopeIcon },
 ];
+
+// Andre hovedlenker (base-stier)
+const mainLinksBase = [
+    { baseHref: '/nyheter', labelKey: 'header.news', fallbackName: 'Nyheter' },
+    { baseHref: '/spill', labelKey: 'header.coursePlay', fallbackName: 'Banespill' },
+    { baseHref: '/turneringer', labelKey: 'header.tournaments', fallbackName: 'Turneringer' },
+    { baseHref: '/klubber', labelKey: 'header.clubs', fallbackName: 'Klubber' },
+]
 
 
 // Hovedkomponent for Header/Navbar
@@ -57,13 +66,25 @@ function Header() {
   // Henter sesjonsdata og status
   const { data: session, status } = useSession();
   const currentUser = session?.user as User | null ?? null;
-  // Henter oversettelsesfunksjonen 't'
-  const { t } = useTranslation();
+  // Henter oversettelsesfunksjonen 't' OG i18n-instansen
+  const { t, i18n } = useTranslation('translation');
+  // Henter det aktive språket ('en', 'no', etc.)
+  const currentLang = i18n.language;
 
   // Viser en enkel loading-state for headeren
   if (status === 'loading') {
      return <header className="bg-[#000311] shadow-md sticky top-0 z-40 h-[72px] animate-pulse"></header>;
   }
+
+  // Funksjon for å bygge full href med språk
+  const buildHref = (baseHref: string) => `/${currentLang}${baseHref}`;
+
+  // Lukk både popover og mobilmeny
+  const closeAllMenus = (popoverClose?: () => void) => {
+      popoverClose?.(); // Lukk popover hvis funksjon finnes
+      setMobileMenuOpen(false); // Lukk alltid mobilmeny
+  };
+
 
   // Rendrer header-elementet
   return (
@@ -71,7 +92,8 @@ function Header() {
       <nav className="mx-auto flex max-w-7xl items-center justify-between p-4 lg:px-8" aria-label="Global">
         {/* Logo-seksjon */}
         <div className="flex lg:flex-1 items-center">
-           <Link href="/" className="flex items-center gap-x-4 -m-1.5 p-1.5" onClick={() => mobileMenuOpen && setMobileMenuOpen(false)}>
+           {/* <<< HJEM-LENKE MED SPRÅK */}
+           <Link href={buildHref('/')} className="flex items-center gap-x-4 -m-1.5 p-1.5" onClick={() => closeAllMenus()}>
              <span className="sr-only">{t('header.appName', 'DiskGolf')}</span>
              <span className="font-sans text-2xl font-bold bg-gradient-to-r from-green-600 via-green-300 to-green-600 text-transparent bg-clip-text hidden sm:inline">
                 {t('header.appName', 'DiskGolf')}
@@ -92,7 +114,7 @@ function Header() {
         <Popover.Group className="hidden lg:flex lg:gap-x-8">
           {/* Popover for "Baner"-menyen */}
           <Popover className="relative">
-             {({ open, close }) => (
+             {({ open, close: popoverClose }) => ( // Får tak i popoverClose
                 <>
                  {/* Knappen som åpner popover */}
                  <Popover.Button className="flex items-center gap-x-1 text-sm font-semibold leading-6 text-white hover:text-green-400 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2 focus:ring-offset-[#000311] rounded">
@@ -105,7 +127,7 @@ function Header() {
                        {/* Lukkeknapp inne i popover */}
                        <button
                           type="button"
-                          onClick={close}
+                          onClick={popoverClose} // Bruker popoverClose
                           className="absolute top-2 right-2 z-10 rounded-full p-1 text-gray-400 hover:bg-gray-100 hover:text-gray-600 focus:outline-none focus:ring-2 focus:ring-green-500"
                           aria-label={t('header.closeMenu', 'Lukk meny')}
                        >
@@ -114,14 +136,15 @@ function Header() {
                        </button>
                        {/* Innhold i "Baner"-popover */}
                        <div className="p-4 pt-8">
-                          {/* Mapper KUN navLinks her, siden de har description */}
-                          {navLinks.map((item) => (
+                          {/* Mapper KUN navLinksBase her */}
+                          {navLinksBase.map((item) => (
                              <div key={item.key} className="group relative flex items-center gap-x-4 rounded-lg p-3 text-sm leading-6 hover:bg-gray-50">
                                <div className="flex h-10 w-10 flex-none items-center justify-center rounded-lg bg-gray-50 group-hover:bg-green-100">
                                  <item.icon className="h-5 w-5 text-green-500 group-hover:text-green-700" aria-hidden="true"/>
                                </div>
                                <div className="flex-auto">
-                                 <Link href={item.href} className="block font-semibold text-emerald-700" onClick={close}>
+                                 {/* <<< LENKE MED SPRÅK */}
+                                 <Link href={buildHref(item.baseHref)} className="block font-semibold text-emerald-700" onClick={() => closeAllMenus(popoverClose)}>
                                     {t(`header.nav.${item.key}.title`, item.name)}
                                     <span className="absolute inset-0" />
                                  </Link>
@@ -135,9 +158,10 @@ function Header() {
                        </div>
                        {/* CTA-lenker i bunnen av popover */}
                        <div className="grid grid-cols-2 divide-x divide-gray-900/5 bg-gray-50">
-                          {/* Mapper KUN cta her */}
-                          {cta.map((item) => (
-                            <Link key={item.key} href={item.href} className="flex items-center justify-center gap-x-2.5 p-3 text-sm font-semibold leading-6 text-gray-900 hover:bg-gray-100" onClick={close}>
+                          {/* Mapper KUN ctaBase her */}
+                          {ctaBase.map((item) => (
+                            /* <<< LENKE MED SPRÅK */
+                            <Link key={item.key} href={buildHref(item.baseHref)} className="flex items-center justify-center gap-x-2.5 p-3 text-sm font-semibold leading-6 text-gray-900 hover:bg-gray-100" onClick={() => closeAllMenus(popoverClose)}>
                               <item.icon className="h-5 w-5 flex-none text-green-500" aria-hidden="true" />
                               {t(`header.cta.${item.key}.title`, item.name)}
                             </Link>
@@ -149,10 +173,12 @@ function Header() {
              )}
           </Popover>
           {/* Andre hovedlenker for desktop */}
-          <Link href="/nyheter" className="text-sm font-semibold leading-6 text-white hover:text-green-400"> {t('header.news', 'Nyheter')} </Link>
-          <Link href="/spill" className="text-sm font-semibold leading-6 text-white hover:text-green-400"> {t('header.coursePlay', 'Banespill')} </Link>
-          <Link href="/turneringer" className="text-sm font-semibold leading-6 text-white hover:text-green-400"> {t('header.tournaments', 'Turneringer')} </Link>
-          <Link href="/klubber" className="text-sm font-semibold leading-6 text-white hover:text-green-400"> {t('header.clubs', 'Klubber')} </Link>
+          {/* <<< LENKER MED SPRÅK */}
+          {mainLinksBase.map(link => (
+            <Link key={link.baseHref} href={buildHref(link.baseHref)} className="text-sm font-semibold leading-6 text-white hover:text-green-400">
+              {t(link.labelKey, link.fallbackName)}
+            </Link>
+          ))}
         </Popover.Group>
 
         {/* Seksjon for språkvelger og bruker-dropdown på desktop */}
@@ -168,7 +194,8 @@ function Header() {
            <Dialog.Panel className="fixed inset-y-0 right-0 z-50 w-full overflow-y-auto bg-[#000311] px-6 py-6 sm:max-w-sm sm:ring-1 sm:ring-white/10">
              {/* Topplinje i mobilmeny */}
              <div className="flex items-center justify-between">
-                <Link href="/" className="-m-1.5 p-1.5" onClick={() => setMobileMenuOpen(false)}>
+                {/* <<< HJEM-LENKE MED SPRÅK */}
+                <Link href={buildHref('/')} className="-m-1.5 p-1.5" onClick={() => closeAllMenus()}>
                   <span className="sr-only">{t('header.appName', 'DiskGolf')}</span>
                   <Image className="h-8 w-auto" src="/lightgreen.png" alt={t('header.appNameLogoAlt', 'DiskGolf Logo')} width={32} height={32} style={{height: 'auto'}} />
                 </Link>
@@ -192,20 +219,18 @@ function Header() {
                              <ChevronDownIcon className={cn(open ? 'rotate-180' : '', 'h-5 w-5 flex-none text-green-400 transition-transform duration-200')} aria-hidden="true" />
                            </Disclosure.Button>
                            <Disclosure.Panel className="mt-2 space-y-1">
-                              {/* Mapper gjennom BÅDE navLinks og cta */}
-                              {[...navLinks, ...cta].map((item) => (
-                                <Disclosure.Button
+                              {/* Mapper gjennom BÅDE navLinksBase og ctaBase */}
+                              {[...navLinksBase, ...ctaBase].map((item) => (
+                                <Disclosure.Button // Disclosure.Button kan være en Link
                                   key={item.key}
                                   as={Link}
-                                  href={item.href}
+                                  // <<< LENKE MED SPRÅK
+                                  href={buildHref(item.baseHref)}
                                   className="block rounded-lg py-2 pl-6 pr-3 text-sm font-semibold leading-7 text-gray-300 hover:bg-green-700/50 hover:text-green-300"
-                                  onClick={() => {
-                                      disclosureClose();
-                                      setMobileMenuOpen(false);
-                                  }}
+                                  // Bruker closeAllMenus her for å lukke alt
+                                  onClick={() => closeAllMenus(disclosureClose)}
                                 >
                                   {/* Bruker riktig nøkkel for tittelen */}
-                                  {/* Sjekker om item.description finnes for å bestemme om det er nav eller cta */}
                                   {item.description ? t(`header.nav.${item.key}.title`, item.name) : t(`header.cta.${item.key}.title`, item.name)}
                                 </Disclosure.Button>
                               ))}
@@ -214,10 +239,17 @@ function Header() {
                       )}
                     </Disclosure>
                     {/* Hovedlenker i mobilmenyen */}
-                     <Link href="/nyheter" className="-mx-3 block rounded-lg px-3 py-2 text-base font-semibold leading-7 text-white hover:bg-green-700/50 hover:text-green-300" onClick={() => setMobileMenuOpen(false)}>{t('header.news', 'Nyheter')}</Link>
-                     <Link href="/spill" className="-mx-3 block rounded-lg px-3 py-2 text-base font-semibold leading-7 text-white hover:bg-green-700/50 hover:text-green-300" onClick={() => setMobileMenuOpen(false)}>{t('header.coursePlay', 'Banespill')}</Link>
-                     <Link href="/turneringer" className="-mx-3 block rounded-lg px-3 py-2 text-base font-semibold leading-7 text-white hover:bg-green-700/50 hover:text-green-300" onClick={() => setMobileMenuOpen(false)}>{t('header.tournaments', 'Turneringer')}</Link>
-                     <Link href="/klubber" className="-mx-3 block rounded-lg px-3 py-2 text-base font-semibold leading-7 text-white hover:bg-green-700/50 hover:text-green-300" onClick={() => setMobileMenuOpen(false)}>{t('header.clubs', 'Klubber')}</Link>
+                     {/* <<< LENKER MED SPRÅK */}
+                     {mainLinksBase.map(link => (
+                        <Link
+                            key={link.baseHref}
+                            href={buildHref(link.baseHref)}
+                            className="-mx-3 block rounded-lg px-3 py-2 text-base font-semibold leading-7 text-white hover:bg-green-700/50 hover:text-green-300"
+                            onClick={() => closeAllMenus()}
+                        >
+                            {t(link.labelKey, link.fallbackName)}
+                        </Link>
+                     ))}
                   </div>
                   {/* Bruker-seksjon i mobilmenyen */}
                   <div className="py-6">
