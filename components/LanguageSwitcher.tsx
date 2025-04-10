@@ -14,7 +14,7 @@ import { languages } from '@/app/lib/i18n/settings'; // Liste over støttede spr
 
 const flagMap: { [key: string]: { src: string; alt: string } } = {
   no: { src: '/images/Norway-Flag.png', alt: 'Norsk flagg' },
-  en: { src: '/images/British-Flag.webp', alt: 'Britisk flagg' },
+  en: { src: '/images/British-Flag.svg', alt: 'Britisk flagg' },
 };
 
 /**

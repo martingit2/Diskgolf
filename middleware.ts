@@ -5,8 +5,7 @@ import acceptLanguage from 'accept-language';
 
 // Prosjektinterne imports
 import { apiAuthPrefix, authRoutes, DEFAULT_LOGIN_REDIRECT, publicRoutes } from './routes';
-import { cookieName, fallbackLng, languages } from './app/lib/i18n/settings'; // Sjekk denne stien!
-
+import { cookieName, fallbackLng, languages } from './app/lib/i18n/settings'; 
 
 // Registrer støttede språk for accept-language biblioteket
 acceptLanguage.languages([...languages]);
@@ -34,7 +33,6 @@ export default async function middleware(req: NextRequest) {
     const pathname = req.nextUrl.pathname;
 
     // --- i18n Språkdeteksjon og URL-prefiks ---
-    // (Din i18n-logikk her... Denne vil nå IKKE kjøre for /api/...)
     let lng: string | null | undefined;
     if (req.cookies.has(cookieName)) {
         lng = acceptLanguage.get(req.cookies.get(cookieName)?.value);
@@ -62,7 +60,6 @@ export default async function middleware(req: NextRequest) {
     }
 
     // --- Hent språk fra URL og normaliser sti ---
-    // (Din logikk her... Denne vil nå IKKE kjøre for /api/...)
     let currentLng = fallbackLng;
     let pathnameWithoutLocale = pathname;
 
@@ -88,11 +85,11 @@ export default async function middleware(req: NextRequest) {
     }
 
     // --- Autentiseringslogikk ---
-    // (Din auth-logikk her... Denne vil nå IKKE kjøre for /api/...)
+
     const token = await getToken({ req, secret: process.env.NEXTAUTH_SECRET });
     const isLoggedIn = !!token;
 
-    const isApiAuthRoute = pathnameWithoutLocale.startsWith(apiAuthPrefix); // Denne sjekken er OK her
+    const isApiAuthRoute = pathnameWithoutLocale.startsWith(apiAuthPrefix); 
     const isPublicRoute = publicRoutes.includes(pathnameWithoutLocale);
     const isAuthRoute = authRoutes.includes(pathnameWithoutLocale);
 

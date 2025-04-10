@@ -18,9 +18,10 @@ import { auth } from "@/auth";
 import SessionWrapper from "../providers/SessionWrapper";
 import Footer from "@/components/Footer";
 import Header from "@/components/Header";
-import { defaultNS, languages } from "../lib/i18n/settings";
+import { defaultNS, languages, fallbackLng } from "../lib/i18n/settings"; // La til fallbackLng
 
 // Metadata og Viewport
+
 export const metadata: Metadata = { /* ...metadata... */ };
 export const viewport: Viewport = { /* ...viewport... */ };
 
@@ -42,31 +43,36 @@ export default async function RootLayout({
   // Hent ut språkkoden INNE i funksjonen - Dette er standard praksis
   const lng = params.lng;
 
+  // Valider språkkode (valgfritt, men anbefalt)
+  if (!languages.includes(lng)) {
+     console.warn(`Ugyldig språkkode mottatt i RootLayout: ${lng}. Bruker fallback: ${fallbackLng}`);
+     // Håndter dette mer robust ved behov
+  }
+
   // Henter session (med feilhåndtering)
   let session = null;
   try {
     session = await auth();
   } catch (error) {
     console.error("Feil ved henting av session i RootLayout:", error);
-    // Vurder robust feilhåndtering her
   }
 
-  // Henter i18n-instans og ressurser for server-side rendering og klient-hydrering.
-  // VIKTIG: serverUseTranslation MÅ være konfigurert til å laste fra filsystemet.
+  // Henter i18n-instans og ressurser.
   let i18nData;
   try {
      i18nData = await serverUseTranslation(lng, defaultNS);
   } catch (i18nError) {
      console.error(`KRITISK FEIL ved initialisering av i18next for språk '${lng}':`, i18nError);
-     // Uten i18n-data kan ikke siden rendre korrekt.
-     // Returner en enkel feilside eller kast en feil som Next.js kan fange.
-     return (
-       <html lang="no"> {/* Fallback språk */}
-         <body>
-           <h1>Serverfeil</h1>
-           <p>Kunne ikke laste nødvendige språkressurser. Prøv igjen senere.</p>
-           {/* Logg mer detaljer på serveren */}
-         </body>
+     return ( // Fallback HTML ved i18n feil
+       <html lang="no">
+         <head>
+           <title>Serverfeil</title>
+           {/* Legg til favicon link selv på feilsiden om ønskelig */}
+           <link rel="icon" href="/public/favicon.ico" />
+           <link rel="icon" href="/favicon.ico" />
+
+         </head>
+         <body><h1>Serverfeil</h1><p>Kunne ikke laste språkressurser.</p></body>
        </html>
      );
   }
@@ -74,31 +80,30 @@ export default async function RootLayout({
 
 
   return (
-    // Setter språk og retning på HTML-elementet
     <html lang={lng} dir={dir(lng)} suppressHydrationWarning>
+      {/* --------------- START: Lagt til <head> --------------- */}
+      <head>
+        {/* Next.js setter inn metadata og andre head-elementer her */}
+        {/* Legg til favicon-lenken manuelt siden den er i /public */}
+        <link rel="icon" href="/favicon.ico" sizes="any" type="image/x-icon" />
+        {/* Du kan også legge til andre faste head-elementer her om nødvendig */}
+      </head>
+      {/* --------------- SLUTT: Lagt til <head> --------------- */}
       <body className="min-h-screen flex flex-col bg-[#000311] text-gray-100">
-        {/* Provider for i18next på klientsiden */}
-        {/* Sjekk at resources faktisk inneholder data etter at serverUseTranslation er fikset */}
         <TranslationsProvider
           locale={lng}
           namespaces={defaultNS}
           resources={i18n.services.resourceStore.data}
         >
-          {/* Provider for react-hot-toast */}
           <ToasterProvider />
-          {/* Wrapper for NextAuth session */}
           <SessionWrapper session={session}>
-            {/* Global Header */}
             <Header />
-            {/* Modaler (for login, registrering etc.) */}
             <LoginModal />
             <RegisterModal />
             <ResetPasswordModal />
-            {/* Hovedinnholdet på siden */}
             <main className="flex-grow w-full py-8 sm:py-12">
               {children}
             </main>
-            {/* Global Footer */}
             <Footer />
           </SessionWrapper>
         </TranslationsProvider>
