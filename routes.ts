@@ -1,35 +1,33 @@
-/** 
+/**
  * Filnavn: routes.ts
  * Beskrivelse: Definerer ruter for offentlig tilgang, autentisering og API-bruk i DiskGolf-applikasjonen.
  * Inkluderer standard omdirigeringsbane etter innlogging.
  * Utvikler: Martin Pettersen
  */
 
-
-
-
 /**
 * En array av routes som er tilgjengelig for personer.
 * Som ikke er logget inn. Disse sidene krever ikke authentication
 * @type {string[]}
 */
-
 export const publicRoutes = [
     "/",
     "/auth/new-verification",
     "/settings",
     "/spill",
+    "/spill/solo/[id]", 
     "/api/",
     "/api/search",
     "/nyheter",
     "/faq",
     "/turneringer",
-    "/turneringer/ny",  // Legg til ruten for å opprette ny turnering
-    "/turneringer/[id]", // Legg til ruten for turneringsvisning med ID
+    "/turneringer/ny",
+    "/turneringer/[id]",
     "/turneringer/id/",
     "/klubber",
     "/klubb",
     "/klubb/[id]",
+    "/klubber/[id]", // Lagt til for dynamisk klubb side (flertall)
     "/baner",
     "/guide",
     "/arrangementer",
@@ -39,9 +37,9 @@ export const publicRoutes = [
     "/personvern",
     "/vilkar",
     "/api/clubs",
-    "/api/tournaments", // API-rute for å hente turneringer
-    "/api/tournaments/join", // API-rute for å bli med i turneringen
-    "/api/tournaments/[id]", // API-rute for turnering med ID
+    "/api/tournaments",
+    "/api/tournaments/join",
+    "/api/tournaments/[id]",
     "/dashboard",
     "/dashboard/user",
     "/turnering/ny",
@@ -54,14 +52,12 @@ export const publicRoutes = [
     "/find-course",
     "/courses/[id]",
     "/courses",
-    "/spill",
 ];
 
-/** 
+/**
 * En array av routes som brukes til autentisering
 * @type {string[]}
 */
-
 export const authRoutes = [
     "/auth/login",
     "/auth/register",
@@ -76,13 +72,10 @@ export const authRoutes = [
 * routes som starter med denne prefixen er brukt for API.
 * @type {string}
 */
-
-
 export const apiAuthPrefix = "/api/auth";
 
 /**
 * DEfault redirect etter innlogingen
 * @type {string}
 */
-
-export const DEFAULT_LOGIN_REDIRECT = "/settings"
+export const DEFAULT_LOGIN_REDIRECT = "/settings";
