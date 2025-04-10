@@ -4,7 +4,7 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import Image from "next/image";
 import { Button } from "@/components/ui/button";
-import ReviewForm from "@/app/(protected)/_components/ReviewForm"; // Dobbeltsjekk sti
+import ReviewForm from "@/app/[lng]/(protected)/_components/ReviewForm"; // Dobbeltsjekk sti
 import { useRouter } from "next/navigation";
 import { FaPlay } from "react-icons/fa";
 

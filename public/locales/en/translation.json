@@ -1,0 +1,213 @@
+{
+  "translation": {
+    "header": {
+      "appName": "DiscGolf",
+      "appNameLogoAlt": "DiscGolf Logo",
+      "openMenu": "Open menu",
+      "closeMenu": "Close menu",
+      "courses": "Courses",
+      "news": "News",
+      "coursePlay": "Course Play",
+      "tournaments": "Tournaments",
+      "clubs": "Clubs",
+      "nav": {
+        "finn_bane": {
+          "title": "Find Course",
+          "desc": "Search for available courses."
+        },
+        "mest_populære": {
+          "title": "Most Popular",
+          "desc": "The most popular courses."
+        },
+        "rapporter_feil": {
+          "title": "Report Error",
+          "desc": "Notify about errors."
+        }
+      },
+      "cta": {
+        "vis_vær": {
+          "title": "Show Weather"
+        },
+        "kontakt_oss": {
+          "title": "Contact Us"
+        }
+      }
+    },
+    "home": {
+      "title": "Take your game to the next level",
+      "subtitle_suffix": "and much more!",
+      "rotating_texts": [
+        "Discover the best courses",
+        "Improve your technique",
+        "Keep track of your scores",
+        "Become part of the community",
+        "Organize your own tournaments",
+        "Master your statistics"
+      ],
+      "map_section_title": {
+        "part1": "Explore",
+        "part2": "Disc Golf Courses",
+        "part3": "on the map"
+      },
+      "map_section_description": "Zoom in on the map to find nearby courses or discover new destinations.",
+      "search_placeholder": "Search for course or location...",
+      "search_button": "Search"
+    },
+    "course_overview": {
+      "title": "Course Overview",
+      "search_placeholder": "Search for course...",
+      "location_all": "All locations",
+      "difficulty_all": "All difficulties",
+      "difficulty_easy": "Easy",
+      "difficulty_medium": "Medium",
+      "difficulty_hard": "Hard",
+      "sort_by_label": "Sort by",
+      "sort_by_popular": "Most popular",
+      "sort_by_highest_rated": "Highest rated",
+      "loading": "Loading courses...",
+      "no_courses_found": "No courses found with the selected filters."
+    },
+    "footer": {
+      "contact_info": {
+        "title": "Contact Information",
+        "email_label": "Email:",
+        "phone_label": "Phone:",
+        "address_label": "Address:"
+      },
+      "social": {
+        "facebook_aria": "Visit our Facebook page",
+        "instagram_aria": "Visit our Instagram profile",
+        "twitter_aria": "Visit our profile on X (formerly Twitter)"
+      },
+      "links": {
+        "courses": "Course Overview",
+        "membership": "Membership",
+        "guide": "Guide to Disc Golf",
+        "faq": "FAQ",
+        "about": "About Us",
+        "contact": "Contact Us",
+        "privacy": "Privacy Policy",
+        "terms": "Terms of Use"
+      },
+      "copyright": "© {{year}} Diskgolf.app. All rights reserved."
+    },
+    "search_form": {
+      "location_label": "Location",
+      "location_placeholder": "Select location",
+      "location_all": "Show all locations",
+      "rating_label": "Minimum star rating",
+      "rating_placeholder": "Select stars",
+      "rating_all": "Show all",
+      "difficulty_label": "Difficulty",
+      "difficulty_placeholder": "Select difficulty",
+      "difficulty_all": "Show all",
+      "difficulty_easy": "Easy",
+      "difficulty_medium": "Medium",
+      "difficulty_hard": "Hard",
+      "search_button": "Search",
+      "searching_button": "Searching...",
+      "loading_results": "Loading search results...",
+      "no_results": "No courses matched the search criteria."
+    },
+    "popular_courses_carousel": {
+      "header": {
+        "subtitle": "Disc Golf Courses",
+        "title": "Top Rated Disc Golf Courses",
+        "view_all_button": "View all courses"
+      },
+      "error": {
+        "load_failed": "Could not load courses: {{error}}"
+      },
+      "empty": {
+        "message": "No top rated courses found at the moment."
+      }
+    },
+    "tournaments_carousel": {
+      "header": {
+        "subtitle": "Disc Golf Tournaments",
+        "title": "Upcoming Events",
+        "view_all_button": "View all tournaments"
+      },
+      "error": {
+        "title": "Could not load tournaments",
+        "retry_button": "Try again"
+      },
+      "empty": {
+        "message": "No featured tournaments found."
+      },
+      "slide": {
+        "default_description_prefix": "Join the tournament at",
+        "default_description_suffix": "!",
+        "unknown_course": "the course",
+        "participants_one": "{{count}} participant",
+        "participants_other": "{{count}} participants",
+        "participants_with_max": "{{count}}/{{max}} participants",
+        "organizer_prefix": "Org:",
+        "registration_button": "View registration info",
+        "image_alt_prefix": "Image of",
+        "image_alt_fallback": "course"
+      },
+      "pagination": {
+        "aria_label": "Go to slide {{index}}"
+      },
+      "navigation": {
+        "prev_aria_label": "Previous tournament",
+        "next_aria_label": "Next tournament"
+      }
+    },
+    "modals": {
+      "login_title": "Login",
+      "register_title": "Create Account",
+      "reset_password_title": "Reset Password"
+    },
+    "common": {
+      "save": "Save",
+      "cancel": "Cancel",
+      "loading": "Loading...",
+      "close": "Close",
+      "invalid_date": "Invalid date",
+      "unknown_course": "Unknown course",
+      "no_description": "No description available."
+    },
+    "newest_courses_carousel": {
+      "header": {
+        "subtitle": "Disc Golf Courses",
+        "title": "Newest Disc Golf Courses",
+        "view_all_button": "View all courses"
+      },
+      "error": {
+        "load_failed": "Could not load newest courses: {{error}}"
+      },
+      "empty": {
+        "message": "No recently added courses found."
+      }
+    },
+    "review_carousel": {
+      "header": {
+        "subtitle": "Disc Golf Reviews",
+        "title": "Latest Course Reviews",
+        "view_all_button": "View all courses" 
+      },
+      "error": {
+        "title": "Error!",
+        "load_failed": "Could not load reviews: {{error}}"
+      },
+      "empty": {
+        "message": "No reviews found."
+      },
+      "card": {
+        "loading_course": "Loading course...",
+        "anonymous_user": "Anonymous",
+        "user_profile_alt_named": "Profile of {{name}}",
+        "user_profile_alt_anonymous": "User profile",
+        "reviewed": "reviewed" 
+      }
+    },
+    "languageSwitcher": {
+      "alt": {
+        "norwegian": "Switch to Norwegian",
+        "english": "British flag"
+      }
+    }
+  }
+}

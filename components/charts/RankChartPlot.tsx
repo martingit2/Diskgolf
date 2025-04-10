@@ -2,7 +2,7 @@
 "use client";
 
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Label } from 'recharts';
-import { RankDataPoint } from '@/app/(protected)/stats/page'; // Importer felles interface
+import { RankDataPoint } from '@/app/[lng]/(protected)/stats/page'; // Importer felles interface
 
 interface RankChartPlotProps {
   data: RankDataPoint[];

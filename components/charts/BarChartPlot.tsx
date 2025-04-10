@@ -2,7 +2,7 @@
 "use client";
 
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Legend, Label } from 'recharts';
-import { CategoricalDataPoint } from '@/app/(protected)/stats/page'; // Importer felles interface
+import { CategoricalDataPoint } from '@/app/[lng]/(protected)/stats/page'; // Importer felles interface
 
 interface BarChartPlotProps {
   data: CategoricalDataPoint[];

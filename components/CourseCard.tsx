@@ -5,7 +5,7 @@ import { useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import Image from "next/image";
 import { Heart, Loader2, MapPin, Target, Gauge, Ruler, Info } from "lucide-react"; // Importer ikoner
-import ReviewForm from "@/app/(protected)/_components/ReviewForm"; // Sjekk stien hvis nødvendig
+import ReviewForm from "@/app/[lng]/(protected)/_components/ReviewForm"; // Sjekk stien hvis nødvendig
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { FaPlay } from "react-icons/fa";

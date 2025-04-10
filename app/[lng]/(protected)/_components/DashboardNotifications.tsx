@@ -25,7 +25,7 @@ console.log("Imported DropdownMenu type:", typeof DropdownMenu, DropdownMenu);
 
 import { formatDistanceToNow } from 'date-fns';
 import { nb } from 'date-fns/locale';
-import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "../../../components/dropdown-menu-notification"; 
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "../../../../components/dropdown-menu-notification"; 
 
 // Type for rapportene vi henter fra API
 type FetchedErrorReport = ErrorReport & {

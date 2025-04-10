@@ -3,7 +3,7 @@ import { notFound, redirect } from "next/navigation";
 import { auth } from "@/auth";
 import { PrismaClient, Meeting, Prisma } from '@prisma/client';
 import MeetingManagementSection from "@/components/klubber/MeetingManagementSection";
-import { checkMembership } from "../../../../lib/clubUtils"; // Juster sti
+import { checkMembership } from "../../../../../lib/clubUtils"; // Juster sti
 // import { checkAdminAccess } from "../../../../lib/clubUtils";
 
 const prisma = new PrismaClient();

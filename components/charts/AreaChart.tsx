@@ -2,7 +2,7 @@
 "use client";
 
 import { AreaChart, Area, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Legend, Label } from 'recharts';
-import { TimeSeriesDataPoint } from '@/app/(protected)/stats/page'; // Importer felles interface
+import { TimeSeriesDataPoint } from '@/app/[lng]/(protected)/stats/page'; // Importer felles interface
 
 interface AreaChartPlotProps {
   data: TimeSeriesDataPoint[];

@@ -1,0 +1,213 @@
+{
+  "translation": {
+    "header": {
+      "appName": "DiskGolf",
+      "appNameLogoAlt": "DiskGolf Logo",
+      "openMenu": "Åpne meny",
+      "closeMenu": "Lukk meny",
+      "courses": "Baner",
+      "news": "Nyheter",
+      "coursePlay": "Banespill",
+      "tournaments": "Turneringer",
+      "clubs": "Klubber",
+      "nav": {
+        "finn_bane": {
+          "title": "Finn bane",
+          "desc": "Søk etter tilgjengelige baner."
+        },
+        "mest_populære": {
+          "title": "Mest populære",
+          "desc": "De mest populære banene."
+        },
+        "rapporter_feil": {
+          "title": "Rapporter feil",
+          "desc": "Gi beskjed om feil."
+        }
+      },
+      "cta": {
+        "vis_vær": {
+          "title": "Vis vær"
+        },
+        "kontakt_oss": {
+          "title": "Kontakt oss"
+        }
+      }
+    },
+    "home": {
+      "title": "Ta spillet ditt til neste nivå",
+      "subtitle_suffix": "og mye mer!",
+      "rotating_texts": [
+        "Oppdag de beste banene",
+        "Forbedre teknikken din",
+        "Hold styr på poengene dine",
+        "Bli en del av fellesskapet",
+        "Arranger dine egne turneringer",
+        "Få kontroll over statistikken din"
+      ],
+      "map_section_title": {
+        "part1": "Utforsk",
+        "part2": "DiskGolf-baner",
+        "part3": "på kartet"
+      },
+      "map_section_description": "Zoom inn på kartet for å finne baner i nærheten eller oppdag nye destinasjoner.",
+      "search_placeholder": "Søk etter bane eller sted...",
+      "search_button": "Søk"
+    },
+    "course_overview": {
+      "title": "Baneoversikt",
+      "search_placeholder": "Søk etter bane...",
+      "location_all": "Alle steder",
+      "difficulty_all": "Alle vanskelighetsgrader",
+      "difficulty_easy": "Lett",
+      "difficulty_medium": "Middels",
+      "difficulty_hard": "Vanskelig",
+      "sort_by_label": "Sorter etter",
+      "sort_by_popular": "Mest populære",
+      "sort_by_highest_rated": "Høyest vurdert",
+      "loading": "Laster baner...",
+      "no_courses_found": "Ingen baner funnet med de valgte filtrene."
+    },
+    "footer": {
+      "contact_info": {
+        "title": "Kontaktinformasjon",
+        "email_label": "E-post:",
+        "phone_label": "Telefon:",
+        "address_label": "Adresse:"
+      },
+      "social": {
+        "facebook_aria": "Besøk vår Facebook-side",
+        "instagram_aria": "Besøk vår Instagram-profil",
+        "twitter_aria": "Besøk vår profil på X (tidligere Twitter)"
+      },
+      "links": {
+        "courses": "Baneoversikt",
+        "membership": "Medlemskap",
+        "guide": "Guide til Discgolf",
+        "faq": "FAQ",
+        "about": "Om oss",
+        "contact": "Kontakt oss",
+        "privacy": "Personvern",
+        "terms": "Vilkår for bruk"
+      },
+      "copyright": "© {{year}} Diskgolf.app. Alle rettigheter forbeholdt."
+    },
+    "popular_courses_carousel": {
+      "header": {
+        "subtitle": "DiskGolf Baner",
+        "title": "Topprangerte DiskGolf-baner",
+        "view_all_button": "Se alle baner"
+      },
+      "error": {
+        "load_failed": "Kunne ikke laste baner: {{error}}"
+      },
+      "empty": {
+        "message": "Fant ingen topprangerte baner for øyeblikket."
+      }
+    },
+    "tournaments_carousel": {
+      "header": {
+        "subtitle": "DiskGolf Turneringer",
+        "title": "Kommende Arrangementer",
+        "view_all_button": "Se alle turneringer"
+      },
+      "error": {
+        "title": "Kunne ikke laste turneringer",
+        "retry_button": "Prøv igjen"
+      },
+      "empty": {
+        "message": "Ingen fremhevede turneringer funnet."
+      },
+      "slide": {
+        "default_description_prefix": "Bli med på turnering på",
+        "default_description_suffix": "!",
+        "unknown_course": "banen",
+        "participants_one": "{{count}} deltaker",
+        "participants_other": "{{count}} deltakere",
+        "participants_with_max": "{{count}}/{{max}} deltakere",
+        "organizer_prefix": "Arr:",
+        "registration_button": "Vis påmeldingsinfo",
+        "image_alt_prefix": "Bilde av",
+        "image_alt_fallback": "bane"
+      },
+      "pagination": {
+        "aria_label": "Gå til slide {{index}}"
+      },
+      "navigation": {
+        "prev_aria_label": "Forrige turnering",
+        "next_aria_label": "Neste turnering"
+      }
+    },
+    "modals": {
+      "login_title": "Logg inn",
+      "register_title": "Opprett konto",
+      "reset_password_title": "Tilbakestill passord"
+    },
+    "common": {
+      "save": "Lagre",
+      "cancel": "Avbryt",
+      "loading": "Laster...",
+      "close": "Lukk",
+      "invalid_date": "Ugyldig dato",
+      "unknown_course": "Ukjent bane",
+      "no_description": "Ingen beskrivelse tilgjengelig."
+    },
+    "search_form": {
+      "location_label": "Sted",
+      "location_placeholder": "Velg sted",
+      "location_all": "Vis alle steder",
+      "rating_label": "Minst antall stjerner",
+      "rating_placeholder": "Velg stjerner",
+      "rating_all": "Vis alle",
+      "difficulty_label": "Vanskelighetsgrad",
+      "difficulty_placeholder": "Velg vanskelighetsgrad",
+      "difficulty_all": "Vis alle",
+      "difficulty_easy": "Lett",
+      "difficulty_medium": "Middels",
+      "difficulty_hard": "Vanskelig",
+      "search_button": "Søk",
+      "searching_button": "Søker...",
+      "loading_results": "Laster søkeresultater...",
+      "no_results": "Ingen baner matchet søkekriteriene."
+    },
+    "newest_courses_carousel": {
+      "header": {
+        "subtitle": "DiskGolf Baner",
+        "title": "Nyeste DiskGolf-baner",
+        "view_all_button": "Se alle baner"
+      },
+      "error": {
+        "load_failed": "Kunne ikke laste nyeste baner: {{error}}"
+      },
+      "empty": {
+        "message": "Fant ingen nylig tillagte baner."
+      }
+    },
+    "review_carousel": {
+      "header": {
+        "subtitle": "DiskGolf Anmeldelser",
+        "title": "Nyeste baneanmeldelser",
+        "view_all_button": "Se alle baner" 
+      },
+      "error": {
+        "title": "Feil!",
+        "load_failed": "Kunne ikke laste anmeldelser: {{error}}"
+      },
+      "empty": {
+        "message": "Ingen anmeldelser funnet."
+      },
+      "card": {
+        "loading_course": "Laster bane...",
+        "anonymous_user": "Anonym",
+        "user_profile_alt_named": "Profil av {{name}}",
+        "user_profile_alt_anonymous": "Brukerprofil",
+        "reviewed": "anmeldte" 
+      }
+    },
+    "languageSwitcher": {
+      "alt": {
+        "norwegian": "Norsk flagg",
+        "english": "Bytt til Engelsk"
+      }
+    }
+  }
+}
