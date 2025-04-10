@@ -27,7 +27,8 @@ export const publicRoutes = [
     "/klubber",
     "/klubb",
     "/klubb/[id]",
-    "/klubber/[id]", // Lagt til for dynamisk klubb side (flertall)
+    "/klubber/[id]",
+    "/tournament/[id]", 
     "/baner",
     "/guide",
     "/arrangementer",

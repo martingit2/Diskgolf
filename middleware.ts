@@ -28,6 +28,9 @@ function isPathPublic(path: string, publicPatterns: string[]): boolean {
     if (path.startsWith('/klubber/') && publicPatterns.includes('/klubber/[id]')) {
        return true;
     }
+    if (path.startsWith('/tournament/') && publicPatterns.includes('/tournament/[id]')) { 
+        return true;
+     }
     // Sjekk for /klubb/[id] (entall, hvis den fortsatt er relevant)
     if (path.startsWith('/klubb/') && publicPatterns.includes('/klubb/[id]')) {
        return true;
