@@ -1,3 +1,6 @@
+// Utvikler Martin Pettersen
+
+
 /* import getServerSession from "next-auth";
 
 import prisma from "@/app/lib/prismadb";

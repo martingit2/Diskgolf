@@ -4,6 +4,7 @@
  * passordtilbakestilling og e-postbekreftelse. Bruker Resend API for e-postutsending
  * og inline margin på <p>-tags for pålitelig linjeavstand.
  * Utvikler: Martin Pettersen
+ * AI-støtte: Benyttet under utvikling for kodekvalitet, oppdateringer og feilsøking.
  */
 
 import { Resend } from "resend";

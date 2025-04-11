@@ -1,4 +1,13 @@
-// src/components/klubber/MeetingManagementSection.tsx
+// Fil: src/components/klubber/MeetingManagementSection.tsx
+// Formål: Definerer en React-komponent ('use client') for å administrere møtedokumenter innenfor en klubbvisning.
+//         Viser en liste over eksisterende dokumenter (mottatt som `initialMeetings`). Tillater administratorer (`isAdmin`) å:
+//         1) Legge til nye dokumenter via en dialog som inneholder `CreateMeetingForm`.
+//         2) Slette eksisterende dokumenter med en bekreftelsesdialog (`AlertDialog`).
+//         Vanlige brukere kan laste ned dokumentene. Bruker Next.js `useRouter` for å oppdatere visningen og `react-hot-toast` for brukerfeedback.
+// Utvikler: Martin Pettersen
+// AI-støtte: Benyttet under utvikling for kodekvalitet, oppdateringer og feilsøking.
+
+
 "use client";
 
 import { useState } from 'react';

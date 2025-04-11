@@ -1,3 +1,9 @@
+// Fil: src/app/(protected)/edit-map/page.tsx
+// Formål: Dashboard-side for redigering av eksisterende discgolfbaner. Lar brukeren velge en bane, redigere detaljer (navn, sted, par etc.), modifisere kartdata via EditCourseMap-komponenten, og lagre eller slette banen.
+// Utvikler: Martin Pettersen
+// AI-støtte: Benyttet under utvikling for kodekvalitet, oppdateringer og feilsøking.
+
+
 "use client";
 
 import { useEffect, useState } from "react";

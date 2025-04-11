@@ -1,3 +1,9 @@
+// Fil: lib/cloudinary.ts
+// Formål: Konfigurerer og eksporterer Cloudinary SDK-instansen for bruk i applikasjonen.
+//         Bruker miljøvariabler for å sette opp Cloudinary-kontoens credentials.
+// Utvikler: Martin Pettersen
+
+
 import { v2 as cloudinary } from "cloudinary";
 
 cloudinary.config({

@@ -1,16 +1,21 @@
-// src/app/(protected)/_components/TabNavigation.tsx
+
+// Fil: /app/(protected)/_components/TabNavigation.tsx
+// Formål: Komponent som rendrer navigeringsfaner for ulike klubbadministrasjonsseksjoner. Viser faner basert på brukerrolle og oppdaterer valgt fane ved klikk.
+// Utvikler: Martin Pettersen
+// AI-støtte: Benyttet under utvikling for kodekvalitet, oppdateringer og feilsøking.
+
+
+
 "use client";
 
 import { FC } from "react";
-// Fjern import av CreateClubNewsForm herfra
-// import CreateClubNewsForm from "./CreateClubNewsForm";
+
 
 // Props for TabNavigation (trenger ikke clubId for dette formålet lenger)
 interface TabNavigationProps {
   selectedTab: string;
   setSelectedTab: (tab: string) => void;
   userRole: string;
-  // clubId: string; // Fjernet - håndteres av parent
 }
 
 const TabNavigation: FC<TabNavigationProps> = ({ selectedTab, setSelectedTab, userRole }) => {
@@ -44,7 +49,7 @@ const TabNavigation: FC<TabNavigationProps> = ({ selectedTab, setSelectedTab, us
         )}
 
         {/* Opprett Klubb */}
-        {/* Vurder om denne skal være her eller et annet sted */}
+
         <button onClick={() => setSelectedTab("opprettKlubb")} className={`py-2 px-3 sm:px-4 text-xs sm:text-sm font-semibold whitespace-nowrap ${selectedTab === "opprettKlubb" ? "text-green-700 border-b-2 border-green-700" : "text-gray-700 hover:text-green-700"}`}>
           Opprett Klubb
         </button>
@@ -53,9 +58,6 @@ const TabNavigation: FC<TabNavigationProps> = ({ selectedTab, setSelectedTab, us
       {/* Horisontal linje */}
       <hr className="mt-2 border-t border-gray-200 w-full" />
 
-      {/* --- FJERN FORM HERFRA --- */}
-      {/* Skjemaet rendres nå i ClubSettingsPage basert på selectedTab */}
-      {/* ------------------------- */}
     </div>
   );
 };

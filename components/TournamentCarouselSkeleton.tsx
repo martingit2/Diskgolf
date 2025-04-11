@@ -1,4 +1,10 @@
-// src/components/TournamentCarouselSkeleton.tsx
+// Fil: src/components/TournamentCarouselSkeleton.tsx
+// Formål: Definerer en React-komponent som viser en "skeleton"-versjon (lasteplassholder) for turneringskarusellen.
+//         Bruker animerte, grå plassholderelementer for å etterligne layouten til den faktiske karusellen mens data lastes.
+// Utvikler: Martin Pettersen
+
+
+
 import { MapPin, Users, Trophy, ChevronRight } from "lucide-react";
 
 export const TournamentCarouselSkeleton = () => {

@@ -1,3 +1,9 @@
+// Fil: src/app/(undersider)/turneringer/page.tsx
+// Formål: Klientkomponent som viser en oversikt over discgolf-turneringer, fordelt på "Kommende" og "Avsluttede" faner. Inkluderer søk, paginering og mulighet for påmelding til turneringer.
+// Utvikler: Martin Pettersen
+// AI-støtte: Benyttet under utvikling for kodekvalitet, oppdateringer og feilsøking.
+
+
 'use client';
 
 import React, { useState, useEffect, useCallback } from "react";

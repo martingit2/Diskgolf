@@ -193,7 +193,6 @@ exitButton.addEventListener('click', exitGame);
 
 // Funksjonen for å håndtere utgang
 function exitGame() {
-  // Reset to the start page
   gameBoardDiv.style.display = 'none';
   soloGameBtn.style.display = 'inline-block';
   multiPlayerBtn.style.display = 'inline-block';

@@ -1,4 +1,11 @@
-// app/(undersider)/turnerings-spill/[sessionId]/lobby/page.tsx
+// Fil: src/app/(undersider)/turnerings-spill/[sessionId]/lobby/page.tsx
+// Formål: Viser lobbyen for en turneringsrunde. Lister opp påmeldte deltakere, deres klar-status, og lar den innloggede brukeren markere seg som klar. Oppdaterer data jevnlig og navigerer automatisk til spill-siden når alle er klare.
+// Utvikler: Martin Pettersen
+// AI-støtte: Benyttet under utvikling for kodekvalitet, oppdateringer og feilsøking.
+
+
+
+
 'use client';
 
 import { useState, useEffect, useCallback } from 'react';

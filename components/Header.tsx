@@ -3,7 +3,7 @@
  * Beskrivelse: Navigasjonskomponent for DiskGolf-applikasjonen. Viser logo, navigasjonslenker,
  *              språkvelger og bruker-dropdown. Støtter både desktop og mobil visning.
  * Utvikler: Martin Pettersen
- * AI-støtte: Benyttet under utvikling for kodekvalitet, feilsøking og oppdateringer.
+
  */
 'use client';
 
@@ -24,16 +24,16 @@ import { useTranslation } from 'react-i18next'; // <<< Importer hook
 // Importer språkvelger-komponent
 import { LanguageSwitcher } from './LanguageSwitcher';
 
-// Type for ikoner (gjenbrukt fra Heroicons)
+// Type for ikoner
 type HeroIcon = ForwardRefExoticComponent<Omit<SVGProps<SVGSVGElement>, "ref"> & { title?: string | undefined; titleId?: string | undefined; } & RefAttributes<SVGSVGElement>>;
 
 // Definisjoner for navigasjonslenker og CTA i popover
-// Merk: href er nå baseHref (uten språk)
+
 interface NavItemBase {
   key: string;
   name: string; // Fallback-navn
   description?: string; // Gjør description valgfri
-  baseHref: string; // Sti uten språkprefiks
+  baseHref: string; 
   icon: HeroIcon;
 }
 

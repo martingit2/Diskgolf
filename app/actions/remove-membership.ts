@@ -1,4 +1,10 @@
-// src/app/actions/remove-membership.ts
+// Fil: src/app/actions/remove-membership.ts
+// Formål: Server action for en klubb-/global administrator for å fjerne et medlemskap for en bruker i en spesifikk klubb.
+//         Inkluderer autorisasjonssjekk, validering og feilhåndtering.
+// Utvikler: Martin Pettersen
+// AI-støtte: Benyttet under utvikling for kodekvalitet, oppdateringer og feilsøking.
+
+
 "use server"; // Marker som Server Action
 
 import { PrismaClient } from "@prisma/client";

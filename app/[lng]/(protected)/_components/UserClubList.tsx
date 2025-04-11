@@ -1,4 +1,9 @@
-// src/app/(protected)/_components/UserClubsList.tsx
+// Fil: src/app/(protected)/_components/UserClubsList.tsx
+// Formål: Komponent for å vise en liste over klubber brukeren administrerer. Viser grunnleggende klubbinformasjon og en knapp for å gå til klubbens innstillinger. Håndterer lasting og tom liste-tilstander.
+// Utvikler: Martin Pettersen
+// AI-støtte: Benyttet under utvikling for kodekvalitet, oppdateringer og feilsøking.
+
+
 "use client";
 
 import React from "react";

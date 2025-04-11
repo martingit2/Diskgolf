@@ -1,4 +1,8 @@
-// src/app/(protected)/_components/CreateClubNewsForm.tsx
+// Fil: /app/(protected)/_components/CreateClubNewsForm.tsx
+// Formål: Skjemakomponent for å opprette og publisere nyhetsartikler for en valgt klubb.
+// Utvikler: Martin Pettersen
+// AI-støtte: Benyttet under utvikling for kodekvalitet, oppdateringer og feilsøking.
+
 "use client";
 
 import { useState, useEffect } from "react";

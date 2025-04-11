@@ -1,4 +1,13 @@
-// app/api/edit-guide/[pageKey]/route.ts
+// Fil: app/api/edit-guide/[pageKey]/route.ts
+// Formål: API-endepunkt for å administrere redigerbart innhold for spesifikke sider (identifisert med pageKey).
+//         GET: Henter egendefinert innhold hvis det finnes, ellers indikerer standard.
+//         POST: Lagrer eller oppdaterer egendefinert innhold (kun for administratorer).
+//         PUT: Tilbakestiller siden til å bruke standardinnhold (kun for administratorer).
+// Utvikler: Martin Pettersen
+// AI-støtte: Benyttet under utvikling for kodekvalitet, oppdateringer og feilsøking.
+
+
+
 import { NextRequest, NextResponse } from 'next/server'; // NextRequest kan fortsatt brukes for GET hvis du trenger URL-params etc.
 import { PrismaClient, UserRole } from '@prisma/client';
 import { currentUser } from '@/app/lib/auth';

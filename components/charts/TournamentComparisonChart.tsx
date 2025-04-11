@@ -1,3 +1,10 @@
+// Fil: components/charts/TournamentComparisonChart.tsx
+// Formål: Definerer en React-komponent for å vise et søylediagram som sammenligner brukerens score med gjennomsnittlig og beste score for ulike turneringer.
+//         Bruker Recharts-biblioteket for visualisering og inkluderer standard tooltip og legend.
+// Utvikler: Martin Pettersen
+// AI-støtte: Benyttet under utvikling for kodekvalitet, oppdateringer og feilsøking.
+
+
 "use client";
 
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';

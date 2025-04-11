@@ -1,4 +1,12 @@
-// components/tournaments/details/TournamentDetailsCard.tsx
+// Fil: components/tournaments/details/TournamentDetailsCard.tsx
+// Formål: Definerer en React-komponent ('use client') som viser et detaljert informasjonskort for en turnering.
+//         Inkluderer turnerings- og banebilder, detaljer om banen (hull, par, distanse, OB-soner), tidsplan,
+//         påmeldingsstatus og antall deltakere, turneringsbeskrivelse, og en knapp for å se resultater hvis turneringen er fullført.
+//         Bruker Next.js `Image` og `Link`, Lucide-ikoner, og hjelpefunksjoner for formatering og styling.
+// Utvikler: Martin Pettersen
+// AI-støtte: Benyttet under utvikling for kodekvalitet, oppdateringer og feilsøking.
+
+
 import Link from 'next/link';
 import Image from 'next/image';
 import { TournamentStatus } from '@prisma/client';

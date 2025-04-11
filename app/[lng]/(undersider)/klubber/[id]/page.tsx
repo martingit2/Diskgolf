@@ -1,3 +1,10 @@
+// Fil: src/app/klubber/[id]/page.tsx
+// Formål: Serverkomponent som viser den offentlige profilsiden for en spesifikk discgolfklubb. Henter og viser klubbdetaljer, tilknyttede baner, nyheter, administratorer og medlemsinformasjon. Tilbyr knapp for å bli medlem eller gå til medlemsområdet.
+// Utvikler: Martin Pettersen
+// AI-støtte: Benyttet under utvikling for kodekvalitet, oppdateringer og feilsøking.
+
+
+
 import { notFound } from "next/navigation";
 import Image from "next/image";
 import Link from "next/link";
@@ -6,7 +13,7 @@ import { Calendar, Users, Mail, Phone, Globe } from "lucide-react";
 import { auth } from "@/auth"; // Importer din autentiseringsmetode
 import { PrismaClient, Club as PrismaClub, Course as PrismaCourse, ClubNews as PrismaNews, User as PrismaUser } from "@prisma/client"; // Importer Prisma typer
 import { JoinClubButtonClient } from "@/components/klubber/JoinClubButton";
-// *** Dobbeltsjekk at navnet og stien er korrekt ***
+
 
 
 // Initialiser Prisma Client
@@ -21,11 +28,10 @@ interface ClubWithDetails extends Omit<PrismaClub, 'memberships'> {
   _count?: {
       memberships?: number;
   };
-  // membershipPrice arves nå fra PrismaClub som number | null
-}
-// ******************************************************************
 
-// Korrigert type for props (matcher CoursePage.tsx og feilmelding)
+}
+
+
 interface ClubPageProps {
     params: Promise<{
         id: string;

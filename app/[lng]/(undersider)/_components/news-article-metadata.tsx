@@ -1,7 +1,7 @@
-// FILE: components/news/article-metadata.tsx (eller tilsvarende sti)
-// DEV COMMENT: Reusable component for displaying author and date metadata.
-// Designed to be flexible with optional author and different variants.
-// Ensure paths (`cn`, `Avatar` etc.) are correct.
+// Fil: src/components/news/article-metadata.tsx
+// Formål: Gjenbrukbar komponent for å vise metadata (forfatter, dato) for en artikkel, med støtte for ulike visningsvarianter ('default', 'compact').
+// Utvikler: Martin Pettersen
+// AI-støtte: Benyttet under utvikling for kodekvalitet, oppdateringer og feilsøking.
 
 import React from 'react';
 import { format } from 'date-fns';

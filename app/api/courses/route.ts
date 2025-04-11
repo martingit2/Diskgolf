@@ -1,8 +1,9 @@
-
-/*
-* Utvikler: Martin Pettersen
- */
-
+// Fil: api/courses/route.ts
+// Formål: API-endepunkt for å håndtere baner. Inkluderer GET for å hente en liste over alle baner med beregnet
+//         distanse og rating, og POST for å opprette en ny bane, inkludert håndtering av bildeopplasting til Cloudinary
+//         og lagring av bane-detaljer, start/mål/kurver/OB-soner og eventuell klubbtilknytning.
+// Utvikler: Martin Pettersen
+// AI-støtte: Benyttet under utvikling for kodekvalitet, oppdateringer og feilsøking.
 
 
 import { PrismaClient } from "@prisma/client";

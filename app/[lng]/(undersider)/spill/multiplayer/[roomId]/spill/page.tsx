@@ -1,3 +1,10 @@
+// Fil: src/app/(protected)/spill/multiplayer/[roomId]/page.tsx
+// Formål: Klientkomponent for en pågående multiplayer-spilløkt. Henter romdata basert på rom-ID fra URL og rendrer MultiplayerScoreForm for scoreføring.
+// Utvikler: Martin Pettersen
+// AI-støtte: Benyttet under utvikling for kodekvalitet, oppdateringer og feilsøking.
+
+
+
 "use client";
 import { useEffect, useState } from "react";
 import { useRouter, useParams } from "next/navigation";

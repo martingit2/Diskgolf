@@ -1,4 +1,10 @@
-// components/tournaments/details/TournamentStatusBanner.tsx
+// Fil: components/tournaments/details/TournamentStatusBanner.tsx
+// Formål: Definerer en React-komponent ('use client') som viser en dynamisk statusbanner relatert til den aktive spillrunden i en turnering.
+//         Banneret tilpasser utseende (farge, tekst, ikon) og viser relevante handlingsknapper (f.eks. "Start Runde", "Gå til Lobby", "Gå til Spill", "Se Resultater") basert på rundens status ('waiting', 'inProgress', 'completed' eller ingen aktiv runde), og brukerens rolle (arrangør eller deltaker). Håndterer også loading-states.
+// Utvikler: Martin Pettersen
+// AI-støtte: Benyttet under utvikling for kodekvalitet, oppdateringer og feilsøking.
+
+
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 import { Card, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'; // Bruk Card for struktur
@@ -7,7 +13,6 @@ import { Loader2, Play, Users, ListChecks } from 'lucide-react'; // Importer fle
 // Definer User interface minimum
 interface User {
   id: string;
-  // ... andre potensielle brukerfelter
 }
 
 // Definer propstyper

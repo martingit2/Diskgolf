@@ -1,4 +1,11 @@
-// app/api/tournaments/create/route.ts
+// Fil: app/api/tournaments/create/route.ts
+// Formål: API-endepunkt (POST) for å opprette en ny turnering.
+//         Tar imot nødvendige data (navn, sted, dato, bane-ID, arrangør-ID etc.),
+//         validerer input og oppretter en ny turneringsoppføring i databasen med status 'PLANNING'.
+// Utvikler: Martin Pettersen
+// AI-støtte: Benyttet under utvikling for kodekvalitet, oppdateringer og feilsøking.
+
+
 import { NextResponse } from "next/server";
 import { PrismaClient } from "@prisma/client";
 

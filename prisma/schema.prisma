@@ -1,9 +1,9 @@
-/**
- * Filnavn: schema.prisma
- * Beskrivelse: Prisma-datamodell for DiskGolf-applikasjonen.
- * Inkluderer brukere, baner, runder, anmeldelser og autentiseringsrelaterte data.
- * Utvikler: Martin Pettersen
- */
+// Fil: prisma/schema.prisma
+// Formål: Definerer datamodellen for DiskGolf-applikasjonen ved hjelp av Prisma schema language.
+//         Inkluderer modeller for brukere, klubber, baner, hull, spill (solo/multiplayer), turneringer,
+//         anmeldelser, medlemskap, autentisering, møtedokumenter, nyheter, feilrapporter og redigerbart sideinnhold.
+// Utvikler: Martin Pettersen
+// AI-støtte: Benyttet under utvikling for kodekvalitet, oppdateringer og feilsøking.
 
 generator client {
   provider = "prisma-client-js"

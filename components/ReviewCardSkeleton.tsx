@@ -1,4 +1,10 @@
-// src/components/ReviewCardSkeleton.tsx
+// Fil: src/components/ReviewCardSkeleton.tsx
+// Formål: Definerer en React-komponent som viser en "skeleton"-versjon av ReviewCard.
+//         Brukes som en placeholder mens data for faktiske anmeldelseskort lastes, for å forbedre brukeropplevelsen.
+//         Bruker Shadcn UI-komponenter (Card) og Lucide-ikoner (User) for layout og ikoner. Inkluderer animert puls-effekt.
+// Utvikler: Martin Pettersen
+
+
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { User } from "lucide-react"; // Importer User-ikonet for placeholder
 

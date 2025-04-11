@@ -1,4 +1,11 @@
-// app/api/tournaments/[id]/start-round/route.ts
+// Fil: app/api/tournaments/[id]/start-round/route.ts
+// Formål: API-endepunkt (POST) for arrangøren av en turnering for å starte en spesifikk runde (f.eks. runde 1).
+//         Finner eller oppretter en TournamentGameSession for runden, knytter alle turneringsdeltakere til sesjonen,
+//         og returnerer ID-en til sesjonen. Utfører nødvendige autorisasjons- og statussjekker.
+// Utvikler: Martin Pettersen
+// AI-støtte: Benyttet under utvikling for kodekvalitet, oppdateringer og feilsøking.
+
+
 import { Prisma, PrismaClient } from "@prisma/client";
 import { NextResponse } from "next/server";
 import { getServerSession } from "next-auth/next";

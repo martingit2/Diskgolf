@@ -1,4 +1,9 @@
-// app/(undersider)/nyheter/[newsId]/page.tsx
+// Fil: src/app/(undersider)/nyheter/[newsId]/page.tsx
+// Formål: Viser en detaljert visning av en enkelt nyhetsartikkel. Henter artikkeldata basert på ID fra URL, viser innhold, bilde, metadata, og gir administratorer mulighet for redigering, sletting og publisering.
+// Utvikler: Maria Sofie Ulvheim, Martin Pettersen
+// AI-støtte: Benyttet under utvikling for kodekvalitet, oppdateringer og feilsøking.
+
+
 'use client';
 
 import React, { useState, useEffect } from 'react';

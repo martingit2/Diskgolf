@@ -1,3 +1,10 @@
+// Fil: src/app/(undersider)/spill/[gameId]/page.tsx
+// Formål: Klientkomponent for en pågående alenespiller-runde (single-player). Henter spill- og banedata basert på spill-ID fra URL og rendrer ScoreForm for scoreføring.
+// Utvikler: Martin Pettersen
+// AI-støtte: Benyttet under utvikling for kodekvalitet, oppdateringer og feilsøking.
+
+
+
 "use client";
 import { useEffect, useState, use } from "react";
 import { useRouter } from "next/navigation";

@@ -1,3 +1,10 @@
+// Fil: components/dashboard/dashboard-avatar.tsx
+// Formål: Definerer en enkel React-komponent for å vise en placeholder-avatar og grunnleggende brukerinformasjon (brukernavn, rolle) i et dashbord-kontekst.
+//         Komponenten er statisk og viser foreløpig faste verdier.
+// Utvikler: Martin Pettersen
+// AI-støtte: Benyttet under utvikling for kodekvalitet, oppdateringer og feilsøking.
+
+
 "use client";
 
 const Avatar = () => {

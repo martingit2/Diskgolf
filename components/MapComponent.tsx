@@ -1,3 +1,11 @@
+// Fil: components/MapComponent.tsx
+// Formål: Definerer en React-komponent ('use client') som viser et interaktivt Leaflet-kart med markører for flere diskgolfbaner.
+//         Henter en liste over baner fra et API-endepunkt (/api/courses), viser dem på kartet med en grønn markør,
+//         og inkluderer en popup for hver markør med et detaljert informasjonskort (bilde, navn, sted, rating, baneinfo, eier og en lenke til banens detaljside).
+// Utvikler: Martin Pettersen
+// AI-støtte: Benyttet under utvikling for kodekvalitet, oppdateringer og feilsøking.
+
+
 "use client";
 
 import { useEffect, useState } from "react";

@@ -1,4 +1,10 @@
-// components/news/news-card-skeleton.tsx
+// Fil: src/components/news/news-card-skeleton.tsx
+// Formål: Komponent som viser en "skeleton" (lasteindikator) for et standard nyhetskort, brukt mens data lastes inn.
+// Utvikler: Martin Pettersen
+
+
+
+
 import React from 'react';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Card, CardContent, CardFooter, CardHeader } from '@/components/ui/card';

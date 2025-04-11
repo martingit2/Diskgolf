@@ -1,3 +1,11 @@
+// Fil: components/dashboard/stats-table.tsx
+// Formål: Definerer en React-komponent for å vise en tabell med brukerstatistikk.
+//         Komponenten presenterer ulike statistikkpunkter (label og verdi) i et tabellformat.
+//         Bruker foreløpig en hardkodet liste med statistikkdata.
+// Utvikler: Martin Pettersen
+// AI-støtte: Benyttet under utvikling for kodekvalitet, oppdateringer og feilsøking.
+
+
 'use client';
 
 import React from "react";

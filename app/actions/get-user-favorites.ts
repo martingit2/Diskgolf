@@ -1,8 +1,16 @@
-// actions/get-user-favorites.ts
+// Fil: actions/get-user-favorites.ts
+// Formål: Server action for å hente listen over favorittbane-IDer for den innloggede brukeren.
+//         Bruker server-side autentisering, henter brukerdata fra Prisma, og returnerer enten
+//         en liste med ID-er eller en feilmelding.
+// Utvikler: Martin Pettersen
+// AI-støtte: Benyttet under utvikling for kodekvalitet, oppdateringer og feilsøking.
+
+
+
 "use server";
 
-import { auth } from "@/auth"; // Bruk din eksisterende auth-eksport for å hente session server-side
-import prismaClient from "@/app/lib/prismadb"; // Din Prisma-klient
+import { auth } from "@/auth"; 
+import prismaClient from "@/app/lib/prismadb"; 
 
 /**
  * Henter den innloggede brukerens liste over favorittbane-IDer.

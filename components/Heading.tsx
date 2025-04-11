@@ -4,7 +4,7 @@
  * Utvikler: Martin Pettersen
  */
 
-'use client'; // Nødvendig hvis komponenten brukes i andre client components, ellers valgfritt
+'use client';
 
 import React from 'react'; // Importer React
 

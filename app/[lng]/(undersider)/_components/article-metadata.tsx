@@ -1,4 +1,11 @@
-// components/news/article-metadata.tsx
+// Fil: src/components/news/article-metadata.tsx
+// Formål: Komponent for å vise metadata tilknyttet en nyhetsartikkel, slik som forfatter (med avatar) og publiseringsdato. Tilbyr en 'compact' variant for mindre visninger.
+// Utvikler: Martin Pettersen
+// AI-støtte: Benyttet under utvikling for kodekvalitet, oppdateringer og feilsøking.
+
+
+
+
 import React from 'react';
 import { format } from 'date-fns';
 import { nb } from 'date-fns/locale';

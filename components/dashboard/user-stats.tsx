@@ -1,3 +1,12 @@
+// Fil: components/dashboard/user-stats.tsx
+// Formål: Definerer en React-komponent for å vise brukerstatistikk, inkludert et linjediagram.
+//         Komponenten forsøker å hente data fra et API-endepunkt (/api/stats), viser statistikk tekstuelt (hvis hentet),
+//         og bruker Recharts for å visualisere data (foreløpig med hardkodet data for diagrammet).
+// Utvikler: Martin Pettersen
+// AI-støtte: Benyttet under utvikling for kodekvalitet, oppdateringer og feilsøking.
+
+
+
 'use client';
 
 import React, { useEffect, useState } from "react";

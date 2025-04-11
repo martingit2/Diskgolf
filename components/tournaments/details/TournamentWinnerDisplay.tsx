@@ -1,4 +1,11 @@
-// components/tournaments/details/TournamentWinnerDisplay.tsx
+// Fil: components/tournaments/details/TournamentWinnerDisplay.tsx
+// Formål: Definerer en React-komponent ('use client') som viser vinneren(e) av en turnering etter at den er fullført.
+//         Henter data fra standings, håndterer lasting og feiltilstander, viser vinnernavn(ene) og score,
+//         og inkluderer en lenke til den fullstendige resultatlisten. Bruker Card-komponenter for visuell struktur.
+// Utvikler: Martin Pettersen
+// AI-støtte: Benyttet under utvikling for kodekvalitet, oppdateringer og feilsøking.
+
+
 import React from 'react';
 import Link from 'next/link'; // Importer Link
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'; // Importer CardDescription

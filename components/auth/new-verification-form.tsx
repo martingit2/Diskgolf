@@ -3,6 +3,7 @@
  * Beskrivelse: Komponent for håndtering av e-postverifisering. 
  * Henter token fra URL og sender verifiseringsforespørsel automatisk ved innlasting.
  * Utvikler: Martin Pettersen
+ * AI-støtte: Benyttet under utvikling for kodekvalitet, oppdateringer og feilsøking.
  */
 
 

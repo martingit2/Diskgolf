@@ -1,6 +1,15 @@
+// Fil: hooks/use-toast.ts 
+// Formål: Definerer en custom hook (`useToast`) og en tilhørende funksjon (`toast`) for å administrere og vise toast-varsler.
+//         Implementerer en state reducer for å håndtere tilstandsendringer (legg til, oppdater, avvis, fjern toast), setter grenser for antall toasts,
+//         og håndterer timing for fjerning av toasts. Inspirert av `react-hot-toast`.
+// Utvikler: Martin Pettersen
+// AI-støtte: Benyttet under utvikling for kodekvalitet, oppdateringer og feilsøking.
+
+
+
 "use client"
 
-// Inspired by react-hot-toast library
+
 import * as React from "react"
 
 import type {

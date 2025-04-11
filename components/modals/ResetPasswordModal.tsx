@@ -2,6 +2,7 @@
  * Filnavn: ResetPasswordModal.tsx
  * Beskrivelse: Modal-komponent for å be om tilbakestilling av passord.
  * Utvikler: Martin Pettersen
+ * AI-støtte: Benyttet under utvikling for kodekvalitet, oppdateringer og feilsøking.
  */
 "use client";
 

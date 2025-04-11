@@ -1,3 +1,11 @@
+// Fil: components/MapAdminComponent.tsx
+// Formål: Definerer en React-komponent ('use client') som fungerer som en wrapper for den dynamisk importerte kartredigeringskomponenten (`MapAdminComponentNoSSR`).
+//         Sikrer at kartet kun rendres på klientsiden ved å bruke `useEffect` og `useState`. Mottar og videresender props for kartredigeringsfunksjonalitet
+//         (valgt elementtype, settere for avstander, hull, etiketter, start/mål-punkter og OB-soner) til den underliggende kartkomponenten.
+// Utvikler: Martin Pettersen
+// AI-støtte: Benyttet under utvikling for kodekvalitet, oppdateringer og feilsøking.
+
+
 "use client";
 
 import { ObZone } from "@/app/types/obtypes";

@@ -1,4 +1,11 @@
-// app/api/tournaments/[id]/finalize/route.ts
+// Fil: app/api/tournaments/[id]/finalize/route.ts
+// Formål: API-endepunkt (POST) for å finalisere en turnering og lagre de endelige resultatene.
+//         Beregner totalscore, OB og rangering for alle deltakere basert på alle spilte runder,
+//         og lagrer/oppdaterer disse resultatene i TournamentScore-tabellen. Krever at brukeren er arrangør for turneringen.
+// Utvikler: Martin Pettersen
+// AI-støtte: Benyttet under utvikling for kodekvalitet, oppdateringer og feilsøking.
+
+
 import { PrismaClient, TournamentGameScore, TournamentStatus, Prisma } from "@prisma/client";
 import { NextResponse } from "next/server";
 import { getServerSession } from "next-auth/next";

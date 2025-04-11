@@ -1,3 +1,11 @@
+// Fil: app/api/rooms/[id]/results/route.ts
+// Formål: API-endepunkt (GET) for å hente detaljerte resultater for et fullført flerspillerrom.
+//         Henter rom-, spill-, deltaker- og scoredata, beregner totalscore per spiller,
+//         rangerer spillere, og beregner statistikk for hvert hull (gjennomsnittscore, vanskeligste/letteste hull).
+// Utvikler: Martin Pettersen
+// AI-støtte: Benyttet under utvikling for kodekvalitet, oppdateringer og feilsøking.
+
+
 import { NextResponse } from "next/server";
 import { PrismaClient } from "@prisma/client";
 

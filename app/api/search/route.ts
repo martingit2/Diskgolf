@@ -5,11 +5,12 @@
  * antall hull, stjernerangering, antall anmeldelser og banetype. 
  * Returnerer en liste over discgolfbaner som matcher angitte søkekriterier.
  * Utvikler: Martin Pettersen
+ * AI-støtte: Benyttet under utvikling for kodekvalitet, oppdateringer og feilsøking.
  */
 
 
 
-// app/api/search/route.ts
+
 import { NextResponse } from 'next/server';
 
 export async function GET(request: Request) {

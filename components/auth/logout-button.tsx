@@ -3,6 +3,7 @@
  * Beskrivelse: Komponent for å håndtere brukerens utlogging fra applikasjonen. 
  * Utfører utlogging via NextAuth og en tilpasset server-handling.
  * Utvikler: Martin Pettersen
+ * AI-støtte: Benyttet under utvikling for kodekvalitet, oppdateringer og feilsøking.
  */
 
 

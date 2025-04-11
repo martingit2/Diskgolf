@@ -2,6 +2,7 @@
  * Filnavn: LoginModal.tsx
  * Beskrivelse: Modal-komponent for brukerinnlogging, bruker LoginForm.
  * Utvikler: Martin Pettersen
+ * AI-støtte: Benyttet under utvikling for kodekvalitet, oppdateringer og feilsøking.
  */
 "use client";
 

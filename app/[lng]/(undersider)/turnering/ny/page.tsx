@@ -1,4 +1,10 @@
-// components/NyTurnering.tsx
+// Fil: src/components/NyTurnering.tsx
+// Formål: Komponent med et skjema for å opprette en ny turnering. Inneholder felter for navn, sted, beskrivelse, dato/tid og maks antall deltakere. Sender data til et API-endepunkt.
+// Utvikler: Martin Pettersen
+// AI-støtte: Benyttet under utvikling for kodekvalitet, oppdateringer og feilsøking.
+
+
+
 'use client';
 
 import { useState } from "react";

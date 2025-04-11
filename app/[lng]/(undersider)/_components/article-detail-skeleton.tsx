@@ -1,4 +1,11 @@
-// components/news/article-detail-skeleton.tsx
+// Fil: src/components/news/article-detail-skeleton.tsx
+// Formål: React-komponent som viser et "skeleton"-grensesnitt (lasteindikator) for en nyhetsartikkel-detaljside mens dataen lastes.
+// Utvikler: Martin Pettersen
+// AI-støtte: Benyttet under utvikling for kodekvalitet, oppdateringer og feilsøking.
+
+
+
+
 import React from 'react';
 import { Skeleton } from '@/components/ui/skeleton';
 

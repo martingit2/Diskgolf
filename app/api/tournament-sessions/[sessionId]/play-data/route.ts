@@ -1,4 +1,11 @@
-// app/api/tournament-sessions/[sessionId]/play-data/route.ts
+// Fil: app/api/tournament-sessions/[sessionId]/play-data/route.ts
+// Formål: API-endepunkt (GET) for å hente data som trengs for å vise og spille en turneringsrunde.
+//         Inkluderer autentisering, sjekker om runden er aktiv eller fullført, henter info om runde, bane, hull,
+//         deltakere og eksisterende scores (kast). Returnerer data i et strukturert format (PlayData).
+// Utvikler: Martin Pettersen
+// AI-støtte: Benyttet under utvikling for kodekvalitet, oppdateringer og feilsøking.
+
+
 import { NextResponse } from "next/server";
 import { PrismaClient, TournamentStatus, Hole, TournamentGameParticipation, TournamentGameScore, User } from "@prisma/client";
 import { getServerSession } from "next-auth/next";

@@ -1,3 +1,11 @@
+// Fil: src/app/(protected)/server/page.tsx //
+// Formål: Serverkomponent som henter brukerinformasjon på serversiden ved hjelp av currentUser() og viser den med UserInfo-komponenten.
+// Utvikler: Martin Pettersen
+// Inspirasjon: Basert på konsepter fra Antonio's Next Auth v5 tutorial (Code With Antonio).
+// AI-støtte: Benyttet under utvikling for kodekvalitet, oppdateringer og feilsøking.
+
+
+
 import { currentUser } from '@/app/lib/auth';
 import { UserInfo } from '@/components/user-info';
 

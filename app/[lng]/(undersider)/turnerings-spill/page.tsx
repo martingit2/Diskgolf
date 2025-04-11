@@ -1,4 +1,10 @@
-// app/(undersider)/turnerings-spill/page.tsx
+// Fil: app/(undersider)/turnerings-spill/page.tsx
+// Formål: Komponent for lobbyen til en spesifikk turneringsrunde. Viser deltakere, lar innlogget bruker markere seg som klar,
+//         poller serveren for statusoppdateringer, og navigerer til spillesiden når runden starter. Håndterer også lasting, feil og autentisering.
+// Utvikler: Martin Pettersen
+// AI-støtte: Benyttet under utvikling for kodekvalitet, oppdateringer og feilsøking.
+
+
 'use client';
 
 import { useState, useEffect, useCallback } from 'react';

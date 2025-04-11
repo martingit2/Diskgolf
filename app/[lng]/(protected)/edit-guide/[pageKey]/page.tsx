@@ -1,4 +1,9 @@
-// app/(protected)/edit-guide/[pageKey]/page.tsx
+// Fil: src/app/(protected)/edit-guide/[pageKey]/page.tsx
+// Formål: Side for administratorer for å redigere innholdet på dynamiske guidesider. Tillater lasting, lagring (JSON-format) og tilbakestilling til standardinnhold.
+// Utvikler: Martin Pettersen
+// AI-støtte: Benyttet under utvikling for kodekvalitet, oppdateringer og feilsøking.
+
+
 "use client";
 
 import { useState, useEffect, useCallback } from 'react';

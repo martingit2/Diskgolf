@@ -1,4 +1,10 @@
-// app/actions/delete-recent-test-data.ts
+// Fil: app/actions/delete-recent-test-data.ts
+// Formål: Server action designet for administratorer for å slette nylig opprettet testdata fra databasen.
+//         Sletter data fra flere modeller innenfor en angitt tidsramme (f.eks. siste 6 timer) ved hjelp av en database-transaksjon.
+//         Inkluderer autorisasjonssjekk (kun ADMIN), revalidering av stier, og detaljert logging og feilhåndtering.
+// Utvikler: Martin Pettersen
+// AI-støtte: Benyttet under utvikling for kodekvalitet, oppdateringer og feilsøking.
+
 "use server";
 
 // Importer Prisma for feiltyper

@@ -1,7 +1,7 @@
 // Fil: components/layout/Footer.tsx
 // Formål: Footer-komponent for applikasjonen. Viser kontaktinfo, sosiale medier og nyttige lenker.
 // Utvikler: Martin Pettersen
-// AI-støtte: Benyttet under utvikling for kodekvalitet, feilsøking og oppdateringer.
+
 
 "use client"; // Nødvendig for hooks og klientinteraksjon.
 

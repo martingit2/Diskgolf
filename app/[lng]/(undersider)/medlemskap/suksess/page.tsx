@@ -1,4 +1,10 @@
-// src/app/medlemskap/suksess/page.tsx
+// Fil: src/app/medlemskap/suksess/page.tsx
+// Formål: Viser en bekreftelsesside etter vellykket betaling for klubbmedlemskap. Bruker `useSearchParams` (via Suspense) for å hente informasjon og viser en suksessmelding med lenker.
+// Utvikler: Martin Pettersen
+// AI-støtte: Benyttet under utvikling for kodekvalitet, oppdateringer og feilsøking.
+
+
+
 "use client";
 
 import Link from 'next/link';

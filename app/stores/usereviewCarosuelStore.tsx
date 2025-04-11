@@ -1,7 +1,12 @@
-// src/app/stores/useReviewsCarouselStore.ts (eller din sti)
+// Fil: stores/useReviewsStore.ts
+// Formål: Definerer en Zustand store for å håndtere tilstand relatert til brukeranmeldelser.
+//         Inkluderer state for anmeldelser, lasting, feil, og funksjoner for å oppdatere og hente anmeldelser (for øyeblikket simulert).
+// Utvikler: Martin Pettersen
+// AI-støtte: Benyttet under utvikling for kodekvalitet, oppdateringer og feilsøking.
+
 import { create } from 'zustand';
 
-// Types for review and course (uendret)
+// Types for review and course
 interface Review {
   id: string;
   rating: number;
@@ -23,7 +28,7 @@ interface ReviewsCarouselStore {
   loading: boolean;
   error: string | null;
   fetchReviews: () => Promise<void>;
-  // Fjernet unødvendige separate settere hvis de ikke brukes andre steder
+  
   // setReviews: (reviews: Review[]) => void;
   // setCourses: (courses: { [key: string]: Course }) => void;
   // setLoading: (loading: boolean) => void;
@@ -33,7 +38,7 @@ interface ReviewsCarouselStore {
 const useReviewsCarouselStore = create<ReviewsCarouselStore>((set, get) => ({ // Lagt til get
   reviews: [],
   courses: {},
-  loading: false, // <--- KORRIGERT: Start med loading false
+  loading: false, 
   error: null,
   // Fjernet settere herfra også
 
@@ -96,7 +101,7 @@ const useReviewsCarouselStore = create<ReviewsCarouselStore>((set, get) => ({ //
 
         const courseResults = await Promise.all(coursePromises);
         const courseMap = courseResults.reduce((acc, course) => {
-          // Sjekk at course og course.id finnes FØR du legger til
+    
           if (course && course.id) {
             acc[course.id] = course;
           }

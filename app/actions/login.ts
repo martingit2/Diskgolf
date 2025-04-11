@@ -7,6 +7,7 @@
  * - Håndterer tofaktorautentisering (2FA) ved å generere og validere 2FA-koder.
  * - Bruker NextAuth for autentisering og håndtering av økter.
  * Utvikler: Martin Pettersen
+ * AI-støtte: Benyttet under utvikling for kodekvalitet, oppdateringer og feilsøking.
  */
 
 

@@ -1,4 +1,10 @@
-// src/app/om-oss/page.tsx
+// Fil: src/app/om-oss/page.tsx
+// Formål: Viser informasjon om Diskgolf.app, inkludert misjon, visjon, kjernefunksjoner, teamet bak og verdier. Oppfordrer brukere til å laste ned appen eller utforske baner.
+// Utvikler: Martin Pettersen
+// AI-støtte: Benyttet under utvikling for kodekvalitet, oppdateringer og feilsøking.
+
+
+
 "use client";
 
 import { motion } from "framer-motion";

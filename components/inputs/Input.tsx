@@ -2,6 +2,7 @@
  * Filnavn: Input.tsx
  * Beskrivelse: Gjenbrukbar Input-komponent for skjemaer med støtte for validering, etiketter og feilmeldinger ved bruk av react-hook-form.
  * Utvikler: Martin Pettersen
+ * AI-støtte: Benyttet under utvikling for kodekvalitet, oppdateringer og feilsøking.
  */
 
 "use client"; // Nødvendig da den interagerer med react-hook-form state

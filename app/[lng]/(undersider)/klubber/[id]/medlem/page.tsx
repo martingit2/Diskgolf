@@ -1,10 +1,16 @@
-// src/app/klubber/[id]/medlem/page.tsx
+// Fil: src/app/klubber/[id]/medlem/page.tsx
+// Formål: Viser medlemsområdet for en spesifikk klubb. Henter og viser klubbmøter og tillater administrasjon av disse for klubbadministratorer. Sjekker brukerens medlemskap og admin-tilgang.
+// Utvikler: Martin Pettersen
+// AI-støtte: Benyttet under utvikling for kodekvalitet, oppdateringer og feilsøking.
+
+
+
 import { notFound, redirect } from "next/navigation";
 import { auth } from "@/auth";
 import { PrismaClient, Meeting, Prisma } from '@prisma/client';
 import MeetingManagementSection from "@/components/klubber/MeetingManagementSection";
-import { checkMembership } from "../../../../../lib/clubUtils"; // Juster sti
-// import { checkAdminAccess } from "../../../../lib/clubUtils";
+import { checkMembership } from "../../../../../lib/clubUtils"; 
+
 
 const prisma = new PrismaClient();
 
@@ -32,9 +38,7 @@ export default async function MedlemsomradePage({ params }: { params: Promise<{ 
     const isAdminForThisClub = await checkAdminAccess(userId, clubId);
     console.log(`[Medlemsområde - ${clubId}] Bruker ${userId} er admin: ${isAdminForThisClub}`);
 
-    // ------ FJERNET TYPE ClubDataWithMeetings da vi henter alt ------
-    // type ClubDataWithMeetings = Prisma.ClubGetPayload<{ ... }>;
-    // ------------------------------------------------------------
+   
 
     let clubData: Prisma.ClubGetPayload<{ include: { meetings: true } }> | null = null; // Bruker standard payload type
     let fetchError: Error | null = null;
@@ -43,16 +47,14 @@ export default async function MedlemsomradePage({ params }: { params: Promise<{ 
         console.log(`[Medlemsområde - ${clubId}] Henter klubbdata og ALLE møtefelter...`);
         clubData = await prisma.club.findUnique({
             where: { id: clubId },
-            // ------ FJERNET SELECT FRA MEETINGS ------
+           
             include: {
                 meetings: {
-                    // Ingen 'select' her lenger, henter alle felter
                     orderBy: {
                         createdAt: 'desc'
                     }
                 },
             },
-            // -----------------------------------------
         });
 
         if (!clubData) { return notFound(); }

@@ -1,3 +1,9 @@
+// Fil: /_components/EditCourseMap.tsx //
+// Formål: Komponent for å vise et Leaflet-kart som visualiserer en discgolfbane med startpunkter (tees), kurver, mål og OB-soner. Brukes typisk i en visnings- eller redigeringskontekst for banedata.
+// Utvikler: Martin Pettersen
+// AI-støtte: Benyttet under utvikling for kodekvalitet, oppdateringer og feilsøking.
+
+
 "use client";
 
 import { MapContainer, TileLayer, Marker, Popup, Polygon } from "react-leaflet";

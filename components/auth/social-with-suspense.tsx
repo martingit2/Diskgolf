@@ -3,6 +3,7 @@
  * Beskrivelse: Wrapper-komponent for å vise sosiale innloggingsknapper med en fallback-løsning ved innlasting.
  * Bruker React's Suspense for å forbedre brukeropplevelsen ved å vise en lastemelding mens innholdet lastes inn.
  * Utvikler: Martin Pettersen
+ * AI-støtte: Benyttet under utvikling for kodekvalitet, oppdateringer og feilsøking.
  */
 
 

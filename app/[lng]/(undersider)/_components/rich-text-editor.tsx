@@ -1,4 +1,11 @@
-// components/rich-text-editor.tsx
+// Fil: src/components/rich-text-editor.tsx
+// Formål: Komponent som tilbyr en rik teksteditor (WYSIWYG) basert på Tiptap, med mulighet for å bytte til og redigere rå HTML. Inkluderer en toolbar for grunnleggende formatering og placeholder-tekst.
+// Utvikler: Martin Pettersen
+// AI-støtte: Benyttet under utvikling for kodekvalitet, oppdateringer og feilsøking.
+
+
+
+
 'use client';
 
 import { useEditor, EditorContent, Editor } from '@tiptap/react'; // Fjernet ubrukt BubbleMenu

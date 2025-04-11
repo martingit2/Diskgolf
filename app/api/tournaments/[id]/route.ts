@@ -1,4 +1,12 @@
-// /app/api/tournaments/[id]/route.ts
+// Fil: /app/api/tournaments/[id]/route.ts
+// Formål: API-endepunkt for å håndtere en spesifikk turnering basert på ID.
+//         GET: Henter detaljert informasjon om turneringen, inkludert relaterte data (bane, arrangør, klubb, deltakere) og beregnet banedata (distanse, antall hull).
+//         PUT: Oppdaterer en eksisterende turnering, krever autentisering og at brukeren er arrangør. Validerer input og returnerer den oppdaterte turneringen.
+// Utvikler: Martin Pettersen
+// AI-støtte: Benyttet under utvikling for kodekvalitet, oppdateringer og feilsøking.
+
+
+
 import { PrismaClient, TournamentStatus } from "@prisma/client";
 import { NextResponse } from "next/server";
 import { getServerSession } from "next-auth/next";

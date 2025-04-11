@@ -1,4 +1,9 @@
-// src/app/api/clubs/route.ts
+// Fil: src/app/api/clubs/route.ts
+// Formål: API-endepunkt for å håndtere klubber. Inkluderer GET for å hente en paginert liste over klubber,
+//         og POST for å opprette en ny klubb, inkludert validering, bildeopplasting til Cloudinary,
+//         tilordning av oppretter som admin og automatisk opprettelse av medlemskap for oppretter.
+// Utvikler: Martin Pettersen
+// AI-støtte: Benyttet under utvikling for kodekvalitet, oppdateringer og feilsøking.
 
 import { PrismaClient } from "@prisma/client";
 import { NextResponse } from "next/server";

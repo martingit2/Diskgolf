@@ -1,3 +1,11 @@
+// Fil: src/app/api/clubs/create-club/route.ts
+// Formål: API-endepunkt (POST) for å opprette en ny klubb. Tar imot klubbdata via FormData,
+//         henter den innloggede brukeren (oppretteren), oppretter klubben i databasen,
+//         og legger automatisk til oppretteren som medlem av den nye klubben.
+// Utvikler: Martin Pettersen
+// AI-støtte: Benyttet under utvikling for kodekvalitet, oppdateringer og feilsøking.
+
+
 import { PrismaClient } from "@prisma/client";
 import { NextRequest, NextResponse } from "next/server";
 import { currentUser } from "@/app/lib/auth"; // Importere currentUser for å hente den nåværende brukeren

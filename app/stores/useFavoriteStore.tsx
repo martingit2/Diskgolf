@@ -1,11 +1,15 @@
-// src/app/stores/useFavoriteStore.ts
+// Fil: src/app/stores/useFavoriteStore.ts
+// Formål: Zustand store for å håndtere brukerens favorittbaner. Inkluderer state for favoritt-IDer,
+//         status for initialisering og toggling, samt actions for å initialisere listen fra serveren
+//         og for å legge til/fjerne en favoritt via server actions.
+// Utvikler: Martin Pettersen
+// AI-støtte: Benyttet under utvikling for kodekvalitet, oppdateringer og feilsøking.
+
+
 "use client";
 
 import { create } from 'zustand';
-
-// Importer den nye actionen
-
-import { toast } from 'sonner'; // Eller ditt varslingssystem
+import { toast } from 'sonner'; 
 import { getCurrentUserFavorites } from '../actions/get-user-favorites';
 import { toggleFavorite } from '../actions/favorites';
 
@@ -13,10 +17,10 @@ type CourseId = string | number;
 
 interface FavoriteState {
   favoriteIds: CourseId[];
-  isInitialized: boolean; // Ny: Indikerer om initial henting er fullført (eller forsøkt)
-  isInitializing: boolean; // Ny: Indikerer om initial henting pågår NÅ
+  isInitialized: boolean; 
+  isInitializing: boolean; 
   isToggling: Record<CourseId, boolean>;
-  initializeFavorites: () => Promise<void>; // Ny action for initial henting
+  initializeFavorites: () => Promise<void>; 
   toggleFavorite: (courseId: CourseId) => Promise<void>;
   isFavorite: (courseId: CourseId) => boolean;
 }

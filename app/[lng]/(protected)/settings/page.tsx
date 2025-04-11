@@ -1,3 +1,11 @@
+// Fil: src/app/(protected)/settings/page.tsx
+// Formål: Side for brukerinnstillinger. Lar innloggede brukere oppdatere profilinformasjon (navn, e-post, passord, rolle, profilbilde), aktivere/deaktivere tofaktor-autentisering, og slette sin egen konto.
+// Utvikler: Martin Pettersen
+// AI-støtte: Benyttet under utvikling for kodekvalitet, oppdateringer og feilsøking.
+
+
+
+
 "use client";
 
 import * as z from "zod";

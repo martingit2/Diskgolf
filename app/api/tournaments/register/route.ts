@@ -1,8 +1,15 @@
-// app/api/tournaments/register/route.ts
+// Fil: app/api/tournaments/register/route.ts
+// Formål: API-endepunkt (POST) for å la en autentisert bruker melde seg på en turnering.
+//         Inkluderer validering av brukerens rett til å melde seg på, sjekker turneringsstatus (REGISTRATION_OPEN),
+//         om turneringen er full, og om brukeren allerede er påmeldt. Kobler brukeren til turneringens deltakerliste.
+// Utvikler: Martin Pettersen
+// AI-støtte: Benyttet under utvikling for kodekvalitet, oppdateringer og feilsøking.
+
+
 import { PrismaClient } from "@prisma/client";
 import { NextResponse } from "next/server";
 import { getServerSession } from "next-auth/next";
-import { authOptions } from "@/auth"; // Bruker deres sti
+import { authOptions } from "@/auth"; 
 
 const prisma = new PrismaClient();
 

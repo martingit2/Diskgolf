@@ -1,4 +1,10 @@
-// src/app/guide/page.tsx
+// Fil: src/app/guide/page.tsx
+// Formål: Klientkomponent som henter innhold for guidesiden fra API. Viser enten dynamisk innhold (hvis 'useCustom' er satt) eller en statisk standardversjon. Viser også en redigeringsknapp for administratorer.
+// Utvikler: Martin Pettersen
+// AI-støtte: Benyttet under utvikling for kodekvalitet, oppdateringer og feilsøking.
+
+
+
 "use client";
 
 import { useState, useEffect } from 'react';

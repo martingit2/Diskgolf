@@ -1,4 +1,11 @@
-// components/tournaments/details/TournamentHeader.tsx
+// Fil: components/tournaments/details/TournamentHeader.tsx
+// Formål: Definerer en React-komponent som viser hovedoverskriften og nøkkelinformasjon for en turneringsdetaljside.
+//         Inkluderer turneringsnavn, arrangør, klubb (hvis tilgjengelig), bane/sted og en "Rediger"-knapp som kun vises for turneringsarrangøren.
+//         Benytter Next.js Link, Lucide-ikoner og Button-komponent for UI.
+// Utvikler: Martin Pettersen
+// AI-støtte: Benyttet under utvikling for kodekvalitet, oppdateringer og feilsøking.
+
+
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 import { Settings, User, MapPin, Users, Award } from 'lucide-react'; // La til Award-ikonet

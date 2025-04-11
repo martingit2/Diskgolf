@@ -1,4 +1,12 @@
-// src/app/api/clubs/[id]/meetings/route.ts
+// Fil: src/app/api/clubs/[id]/meetings/route.ts
+// Formål: API-endepunkt (POST) for å opprette et nytt klubbmøte (referat) knyttet til en spesifikk klubb.
+//         Håndterer autentisering, autorisasjon (kun klubb- eller global admin), validering av input (tittel, beskrivelse, PDF-fil),
+//         opplasting av PDF til Cloudinary, lagring i database og revalidering av klubbside.
+// Utvikler: Martin Pettersen
+// AI-støtte: Benyttet under utvikling for kodekvalitet, oppdateringer og feilsøking.
+
+
+
 import { NextRequest, NextResponse } from "next/server";
 import { z } from "zod";
 import { PrismaClient } from "@prisma/client";

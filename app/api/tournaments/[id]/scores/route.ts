@@ -1,4 +1,11 @@
-// app/api/tournaments/[id]/scores/route.ts
+// Fil: app/api/tournaments/[id]/scores/route.ts
+// Formål: API-endepunkt (POST) for å lagre de endelige resultatene (score per hull, total score, total OB) for en turnering.
+//         Krever at brukeren er arrangør. Sletter først eventuelle eksisterende resultater for turneringen
+//         og lagrer deretter de nye resultatene for hver spiller i en transaksjon.
+// Utvikler: Martin Pettersen
+// AI-støtte: Benyttet under utvikling for kodekvalitet, oppdateringer og feilsøking.
+
+
 import { PrismaClient, Prisma } from "@prisma/client";
 import { NextResponse } from "next/server";
 import { getServerSession } from "next-auth/next";

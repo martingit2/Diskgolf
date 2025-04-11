@@ -1,3 +1,10 @@
+// Fil: components/spill/SoloSpill.tsx
+// Formål: Definerer en React-komponent ('use client') for å starte et nytt solo-spill.
+//         Lar brukere (innloggede og gjester) velge en bane og starte en solo-spilløkt. Kaller et API-endepunkt (/api/games) for å opprette spillet og håndterer omdirigering, loading state og feil. Krever navn for gjestespillere.
+// Utvikler: Martin Pettersen
+// AI-støtte: Benyttet under utvikling for kodekvalitet, oppdateringer og feilsøking.
+
+
 "use client";
 import { useState } from "react";
 import { useRouter } from "next/navigation";

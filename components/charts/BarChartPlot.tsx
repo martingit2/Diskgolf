@@ -1,4 +1,11 @@
-// components/charts/BarChartPlot.tsx
+// Fil: components/charts/BarChartPlot.tsx
+// Formål: Definerer en gjenbrukbar React-komponent for å vise et søylediagram ved hjelp av Recharts-biblioteket.
+//         Komponenten visualiserer kategorisk data (f.eks. per turnering), støtter stablede søyler (f.eks. rene kast vs. OB-kast),
+//         og inkluderer tilpassede tooltips, akseetiketter, legender, håndtering av begrenset data og skråstilte aksetekster.
+// Utvikler: Martin Pettersen
+// AI-støtte: Benyttet under utvikling for kodekvalitet, oppdateringer og feilsøking.
+
+
 "use client";
 
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Legend, Label } from 'recharts';

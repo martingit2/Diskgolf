@@ -1,3 +1,11 @@
+// Fil: src/app/api/clubs/[id]/route.ts
+// Formål: API-endepunkt (GET) for å hente detaljert informasjon om en spesifikk klubb basert på ID.
+//         Inkluderer relaterte data (baner, medlemskap, nyheter, administratorer) og beregner
+//         aggregerte data som totalt antall medlemmer og gjennomsnittlig rating basert på banenes anmeldelser.
+// Utvikler: Martin Pettersen
+// AI-støtte: Benyttet under utvikling for kodekvalitet, oppdateringer og feilsøking.
+
+
 import { PrismaClient } from "@prisma/client";
 import { NextResponse } from "next/server";
 

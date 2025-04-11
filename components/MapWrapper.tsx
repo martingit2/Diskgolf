@@ -1,3 +1,11 @@
+// Fil: components/MapAdminWrapper.tsx
+// Formål: Definerer en React-komponent ('use client') som fungerer som en hovedwrapper for kartadministrasjonsgrensesnittet.
+//         Den inkluderer en meny for å velge markørtype, selve kartkomponenten (dynamisk importert `MapAdminComponentNoSSR`),
+//         og et skjema for å legge til en ny bane (logikk for skjemaet ikke fullt implementert her).
+//         Komponenten håndterer state for valgt markørtype og sender nødvendige props videre til kartkomponenten.
+// Utvikler: Martin Pettersen
+// AI-støtte: Benyttet under utvikling for kodekvalitet, oppdateringer og feilsøking.
+
 "use client";
 
 import { ObZone } from "@/app/types/obtypes";

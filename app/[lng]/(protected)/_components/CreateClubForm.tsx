@@ -1,4 +1,9 @@
-// src/components/klubber/CreateClubForm.tsx (eller hvor den ligger)
+
+// Fil: /_components/klubber/CreateClubForm.tsx
+// Formål: Skjemakomponent for å opprette en ny discgolfklubb. Håndterer input, validering, filopplasting og innsending til API.
+// Utvikler: Martin Pettersen
+// AI-støtte: Benyttet under utvikling for kodekvalitet, oppdateringer og feilsøking.
+
 "use client";
 
 import { FC, useState } from "react";

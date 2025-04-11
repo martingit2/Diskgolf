@@ -1,4 +1,10 @@
-// app/tournament/[id]/standings/edit.tsx
+// Fil: src/app/tournament/[id]/edit/page.tsx
+// Formål: Tilbyr et skjema for å redigere detaljene til en eksisterende turnering, som navn, datoer, bane, status og maks deltakere.
+// Utvikler: Martin Pettersen
+// AI-støtte: Benyttet under utvikling for kodekvalitet, oppdateringer og feilsøking.
+
+
+
 "use client";
 import { useState, useEffect, use } from "react";
 import { useRouter } from "next/navigation";

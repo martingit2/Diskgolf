@@ -1,4 +1,9 @@
-// Utviklere Martin og Said
+// Fil: /_components/ReviewForm.tsx 
+// Formål: Komponent som viser en dialog for å sende inn stjernerangering og kommentar for en bane (course). Kan justeres i størrelse.
+// Utvikler: Martin Pettersen, Said Hussain Khawajazad
+// AI-støtte: Benyttet under utvikling for kodekvalitet, oppdateringer og feilsøking.
+
+
 "use client";
 
 import { useState } from "react";

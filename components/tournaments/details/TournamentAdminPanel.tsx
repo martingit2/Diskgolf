@@ -1,4 +1,11 @@
-// components/tournaments/details/TournamentAdminPanel.tsx
+// Fil: components/tournaments/details/TournamentAdminPanel.tsx
+// Formål: Definerer en React-komponent for et administrasjonspanel spesifikt for turneringsarrangører.
+//         Tillater endring av turneringsstatus (via en Select-komponent) og oppstart av første spillrunde (eller navigering til lobby hvis den eksisterer).
+//         Håndterer visning av ulike knapper og informasjon basert på turneringsstatus og aktiv spilløkt, samt loading states for statusoppdateringer og rundoppstart.
+// Utvikler: Martin Pettersen
+// AI-støtte: Benyttet under utvikling for kodekvalitet, oppdateringer og feilsøking.
+
+
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";

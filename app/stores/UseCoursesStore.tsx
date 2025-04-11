@@ -1,4 +1,14 @@
-// Zustand fil for å lagre data så vi kan bruke dem mellom sider uten å laste de på nytt for raskere lasting.
+// Fil: store/useCoursesStore.ts
+// Formål: Zustand store for å håndtere og persistere en global liste over baner (`Course[]`).
+//         Bruker `persist` middleware for å lagre banedata i localStorage for raskere lasting mellom sesjoner.
+//         Inkluderer state for baner og en funksjon for å hente data fra API kun hvis storen er tom.
+//         Dette var bare for å teste hvordan det ble, å lagre dette i localStorage er ikke en bra løsning
+//         siden man da ikke får oppdaterte baner om det blir laget en ny bane mens det er lagret en ny bane
+//         dette var bare for å se om det gjorde applikasjon noe raskere så den slapp så mange API kall
+// Utvikler: Martin Pettersen
+// AI-støtte: Benyttet under utvikling for kodekvalitet, oppdateringer og feilsøking.
+
+
 import { create } from 'zustand';
 import { persist, createJSONStorage } from 'zustand/middleware';
 

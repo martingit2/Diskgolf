@@ -3,6 +3,7 @@
  * Beskrivelse: Komponent for brukerprofilmeny med avatar og utloggingsfunksjonalitet.
  * Viser en nedtrekksmeny med brukerens profilbilde og mulighet til å logge ut.
  * Utvikler: Martin Pettersen
+ * AI-støtte: Benyttet under utvikling for kodekvalitet, oppdateringer og feilsøking.
  */
 
 

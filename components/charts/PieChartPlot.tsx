@@ -1,4 +1,11 @@
-// components/charts/PieChartPlot.tsx
+// Fil: components/charts/PieChartPlot.tsx
+// Formål: Definerer en gjenbrukbar React-komponent for å vise et kakediagram ved hjelp av Recharts-biblioteket.
+//         Komponenten visualiserer fordelingen mellom to kategorier (f.eks. alenespill vs. vennespill) som prosentandeler,
+//         og inkluderer tilpassede tooltips, segmentetiketter, legender og farger. Håndterer tilfeller uten data.
+// Utvikler: Martin Pettersen
+// AI-støtte: Benyttet under utvikling for kodekvalitet, oppdateringer og feilsøking.
+
+
 'use client';
 
 import { PieChart, Pie, Cell, Tooltip, ResponsiveContainer, Legend } from 'recharts';

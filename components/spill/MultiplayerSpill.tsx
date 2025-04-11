@@ -1,3 +1,13 @@
+// Fil: components/spill/MultiplayerSpill.tsx
+// Formål: Definerer en React-komponent ('use client') som fungerer som hovedsiden for flerspillermodus.
+//         Lar brukere (innloggede og gjester) opprette nye spillrom ved å velge bane, sette romnavn, passord (valgfritt),
+//         maks antall spillere, og oppgi navn hvis de er gjest. Kaller et API-endepunkt for å opprette rommet.
+//         Viser også tilgjengelige rom ved å rendre `AvailableRooms`-komponenten.
+// Utvikler: Martin Pettersen
+// AI-støtte: Benyttet under utvikling for kodekvalitet, oppdateringer og feilsøking.
+
+
+
 "use client";
 import { useState } from "react";
 import { useRouter } from "next/navigation";

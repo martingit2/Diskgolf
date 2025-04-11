@@ -1,4 +1,9 @@
-// src/app/(protected)/_components/ClubMembers.tsx
+
+// Fil: src/app/(protected)/_components/ClubMembers.tsx
+// Formål: Komponent for å vise og administrere medlemmer i en valgt klubb.
+// Utvikler: Martin Pettersen
+// AI-støtte: Benyttet under utvikling for kodekvalitet og feilsøking.
+
 "use client";
 
 import React, { useEffect, useState, useCallback } from 'react';
@@ -106,7 +111,7 @@ const ClubMembers: React.FC<ClubMembersProps> = ({ managedClubs = [], initialClu
     const nextPage = () => setCurrentPage(prev => Math.min(prev + 1, totalPages));
     const prevPage = () => setCurrentPage(prev => Math.max(1, prev - 1));
 
-    // --- JSX (uendret fra forrige, men AlertDialogAction fikset) ---
+    // --- JSX (AlertDialogAction) ---
     return (
         <div className="space-y-6">
             <h2 className="text-2xl font-semibold text-gray-800">Administrer Medlemmer</h2>

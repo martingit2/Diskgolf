@@ -1,4 +1,12 @@
-// app/actions/deleteCourse.ts
+// Fil: app/actions/deleteCourse.ts
+// Formål: Server action for å slette en spesifikk bane fra databasen basert på dens ID.
+//         Etter vellykket sletting, revalideres admin-stien for UI-oppdatering og brukeren
+//         omdirigeres til admin-siden.
+// Utvikler: Martin Pettersen
+// AI-støtte: Benyttet under utvikling for kodekvalitet, oppdateringer og feilsøking.
+
+
+
 "use server"; // Marker funksjonen som en server action
 
 import { PrismaClient } from "@prisma/client";

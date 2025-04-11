@@ -1,5 +1,9 @@
-// Fil: featured-news.tsx
-// DEV NOTE: Viser 1 hovedartikkel og 2 sekundære i et responsivt, moderne grid.
+// Fil: src/components/news/featured-news.tsx
+// Formål: Komponent som viser en seksjon med fremhevede nyheter, vanligvis én hovedartikkel og to sekundære, i et responsivt grid-layout ved hjelp av FeaturedNewsCard.
+// Utvikler: Martin Pettersen
+// AI-støtte: Benyttet under utvikling for kodekvalitet, oppdateringer og feilsøking.
+
+
 
 import React from 'react';
 import { motion } from 'framer-motion';

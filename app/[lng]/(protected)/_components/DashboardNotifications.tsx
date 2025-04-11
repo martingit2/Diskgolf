@@ -1,4 +1,8 @@
-// components/DashboardNotifications.tsx (eller app/(protected)/_components/DashboardNotifications.tsx)
+// Fil: /app/(protected)/_components/DashboardNotifications.tsx
+// Formål: Komponent som viser nylige feilrapporter for baner til administratorer og klubbledere. Tillater statusoppdatering av rapporter.
+// Utvikler: Martin Pettersen
+// AI-støtte: Benyttet under utvikling for kodekvalitet, oppdateringer og feilsøking.
+
 "use client";
 
 import React, { useState, useEffect, useTransition } from 'react';

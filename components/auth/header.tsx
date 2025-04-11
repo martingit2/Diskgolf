@@ -3,6 +3,7 @@
  * Beskrivelse: Komponent for å vise en overskrift med en valgfri beskrivelse.
  * Inkluderer animasjon og tilpasset skrifttype for en profesjonell visning.
  * Utvikler: Martin Pettersen
+ * AI-støtte: Benyttet under utvikling for kodekvalitet, oppdateringer og feilsøking.
  */
 
 

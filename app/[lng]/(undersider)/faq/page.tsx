@@ -1,4 +1,11 @@
-// src/app/faq/page.tsx
+// Fil: src/app/faq/page.tsx
+// Formål: Viser en side med ofte stilte spørsmål (FAQ) presentert i et trekkspill-format (accordion), samt en seksjon for å kontakte support.
+// Utvikler: Martin Pettersen, Said Hussain Khawajazada
+// AI-støtte: Benyttet under utvikling for kodekvalitet, oppdateringer og feilsøking.
+
+
+
+
 "use client";
 
 import { motion } from "framer-motion";

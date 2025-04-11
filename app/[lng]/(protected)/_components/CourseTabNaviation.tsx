@@ -1,3 +1,9 @@
+// Fil: _components/CourseTabNavigation.tsx // (Antatt filsti, juster om nødvendig)
+// Formål: Komponent for fanebasert navigasjon mellom seksjonene 'Opprett Bane' og 'Legg til Baneeier'.
+// Utvikler: Martin Pettersen
+// AI-støtte: Benyttet under utvikling for kodekvalitet, oppdateringer og feilsøking.
+
+
 "use client";
 
 import { FC } from "react";

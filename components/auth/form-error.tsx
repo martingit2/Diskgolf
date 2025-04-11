@@ -3,6 +3,7 @@
  * Beskrivelse: Komponent for å vise feilmeldinger i skjemaer. 
  * Viser en advarsel til brukeren med en tilhørende melding.
  * Utvikler: Martin Pettersen
+ * AI-støtte: Benyttet under utvikling for kodekvalitet, oppdateringer og feilsøking.
  */
 
 

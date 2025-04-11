@@ -1,4 +1,12 @@
-// app/api/error-reports/route.ts
+// Fil: app/api/error-reports/route.ts
+// Formål: API-endepunkt for å håndtere feilrapporter.
+//         POST: Oppretter en ny feilrapport for en bane, krever autentisering.
+//         GET: Henter feilrapporter basert på brukerens rolle (ADMIN ser alle, CLUB_LEADER ser rapporter for sine klubber).
+// Utvikler: Martin Pettersen
+// AI-støtte: Benyttet under utvikling for kodekvalitet, oppdateringer og feilsøking.
+
+
+
 import { NextRequest, NextResponse } from "next/server";
 import { PrismaClient, UserRole, ErrorReportStatus } from "@prisma/client";
 import { z } from "zod";

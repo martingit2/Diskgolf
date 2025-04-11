@@ -1,4 +1,11 @@
-// app/(protected)/courses/[id]/page.tsx
+// Fil: src/app/(protected)/courses/[id]/page.tsx
+// Formål: Viser detaljert informasjon om en spesifikk discgolfbane, inkludert beskrivelse, bilder, baneinfo, værdata, anmeldelser og brukerhandlinger som favorittmarkering og spillstart. Henter data fra flere API-endepunkter på serversiden.
+// Utvikler: Martin Pettersen
+// AI-støtte: Benyttet under utvikling for kodekvalitet, oppdateringer og feilsøking.
+
+
+
+
 import { notFound } from "next/navigation";
 import Image from "next/image";
 import React from "react";

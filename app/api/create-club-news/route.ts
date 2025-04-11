@@ -1,4 +1,12 @@
-// src/app/api/create-club-news/route.ts
+// Fil: src/app/api/create-club-news/route.ts
+// Formål: API-endepunkt (POST) for å opprette en ny klubbnyhet. Håndterer autentisering/autorisasjon,
+//         tar imot tittel, innhold, klubb-ID og eventuelt et bilde via FormData, laster opp bildet
+//         til Cloudinary, og lagrer nyhetsdataen i databasen.
+// Utvikler: Martin Pettersen
+// AI-støtte: Benyttet under utvikling for kodekvalitet, oppdateringer og feilsøking.
+
+
+
 import { NextRequest, NextResponse } from "next/server";
 import { PrismaClient } from "@prisma/client";
 import { currentUser, currentRole } from "@/app/lib/auth";

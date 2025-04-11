@@ -1,5 +1,7 @@
-// FILE: app/(undersider)/nyheter/page.tsx
-// DEV COMMENT: High-End News Listing Page - Refactored with Separate API Calls
+// Fil: src/app/(undersider)/nyheter/page.tsx
+// Formål: Viser en oversikt over nyhetsartikler. Inkluderer fremhevede artikler, en paginert liste over vanlige artikler, søkefunksjonalitet, og admin-handlinger for å opprette/redigere/slette/publisere artikler.
+// Utvikler: Maria Sofie Ulvheim, Martin Pettersen
+// AI-støtte: Benyttet under utvikling for kodekvalitet, oppdateringer og feilsøking.
 
 "use client";
 

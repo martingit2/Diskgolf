@@ -1,4 +1,11 @@
-// components/charts/ScatterChartPlot.tsx
+// Fil: components/charts/ScatterChartPlot.tsx
+// Formål: Definerer en gjenbrukbar React-komponent for å vise et spredningsdiagram (scatter plot) ved hjelp av Recharts-biblioteket.
+//         Komponenten visualiserer datapunkter (f.eks. turneringsresultater) over tid, med tid på X-aksen og score på Y-aksen.
+//         Inkluderer tilpassede tooltips med detaljert informasjon (turneringsnavn, dato, score, plassering), en referanselinje for gjennomsnittsscore, og håndterer formatering og visning av data.
+// Utvikler: Martin Pettersen
+// AI-støtte: Benyttet under utvikling for kodekvalitet, oppdateringer og feilsøking.
+
+
 "use client";
 
 import {

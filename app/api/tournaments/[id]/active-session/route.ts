@@ -1,4 +1,11 @@
-// app/api/tournaments/[id]/active-session/route.ts
+// Fil: app/api/tournaments/[id]/active-session/route.ts
+// Formål: API-endepunkt (GET) for å finne den aktive (ikke fullførte) turneringsrunden (sesjonen) for en spesifikk turnering.
+//         Prioriterer 'inProgress' over 'waiting' og den siste runden. Krever autentisering.
+//         Returnerer ID og status for den aktive sesjonen, eller null hvis ingen er aktiv.
+// Utvikler: Martin Pettersen
+// AI-støtte: Benyttet under utvikling for kodekvalitet, oppdateringer og feilsøking.
+
+
 import { PrismaClient, TournamentGameSession } from "@prisma/client"; // Importer TournamentGameSession for status
 import { NextResponse } from "next/server";
 import { getServerSession } from "next-auth/next";

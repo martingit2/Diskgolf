@@ -1,3 +1,13 @@
+// Fil: components/spill/MultiplayerScoreForm.tsx
+// Formål: Definerer en React-komponent ('use client') for scoreføring under et multiplayer-spill.
+//         Komponenten lar den aktuelle brukeren (innlogget eller gjest) registrere kast og OB per hull.
+//         Den henter og viser scores for alle deltakere i rommet periodisk via API-kall,
+//         lagrer brukerens score for hvert hull, og håndterer navigasjon mellom hull.
+//         Den oppdager når alle spillere har fullført alle hull og markerer spillet som fullført via API.
+// Utvikler: Martin Pettersen
+// AI-støtte: Benyttet under utvikling for kodekvalitet, oppdateringer og feilsøking.
+
+
 "use client";
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";

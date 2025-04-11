@@ -3,6 +3,7 @@
  * Beskrivelse: Komponent for å håndtere brukerregistrering med skjema, validering og innsending.
  * Inkluderer feilmeldinger, suksessmeldinger og sosial innlogging.
  * Utvikler: Martin Pettersen
+ * AI-støtte: Benyttet under utvikling for kodekvalitet, oppdateringer og feilsøking.
  */
 
 // Rettet skrivefeil fra "Use client" til "use client"

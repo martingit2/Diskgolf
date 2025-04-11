@@ -1,3 +1,9 @@
+// Fil: src/actions/addCourseOwner.ts
+// Formål: Server action for å knytte en spesifikk klubb som eier til en spesifikk bane i databasen.
+//         Oppdaterer Course-modellen med clubId og revaliderer angitt sti for UI-oppdatering.
+// Utvikler: Martin Pettersen
+
+
 "use server";
 
 import { PrismaClient } from "@prisma/client";

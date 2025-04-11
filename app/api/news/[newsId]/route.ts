@@ -1,3 +1,13 @@
+// Fil: src/app/api/news/[newsId]/route.ts
+// Formål: API-endepunkt for å håndtere spesifikke nyhetsartikler (basert på ID).
+//         GET: Henter en enkelt nyhetsartikkel, med autorisasjonssjekk for upubliserte artikler.
+//         PUT: Oppdaterer en eksisterende nyhetsartikkel (tittel, innhold, publiseringsstatus, kategorier, bilde), krever ADMIN-rettigheter. Inkluderer HTML-sanering, utdraggenerering og Cloudinary bildehåndtering (opplasting/sletting).
+//         DELETE: Sletter en nyhetsartikkel, inkludert tilhørende bilde fra Cloudinary, krever ADMIN-rettigheter.
+// Utvikler: Martin Pettersen
+// AI-støtte: Benyttet under utvikling for kodekvalitet, oppdateringer og feilsøking.
+
+
+
 import { NextResponse, NextRequest } from 'next/server';
 import { PrismaClient, Prisma, UserRole } from '@prisma/client'; // Import Prisma namespace for error types
 import { z } from 'zod';

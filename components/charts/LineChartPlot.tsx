@@ -1,4 +1,11 @@
-// components/charts/LineChartPlot.tsx
+// Fil: components/charts/LineChartPlot.tsx
+// Formål: Definerer en gjenbrukbar React-komponent for å vise et linjediagram ved hjelp av Recharts-biblioteket.
+//         Komponenten visualiserer tidsseriedata, viser en enkelt dataserie (f.eks. score over tid),
+//         og inkluderer tilpassede tooltips, akseetiketter og grunnleggende datahåndtering.
+// Utvikler: Martin Pettersen
+// AI-støtte: Benyttet under utvikling for kodekvalitet, oppdateringer og feilsøking.
+
+
 "use client";
 
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Label } from 'recharts';

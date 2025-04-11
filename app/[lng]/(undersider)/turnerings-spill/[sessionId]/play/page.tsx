@@ -1,4 +1,10 @@
-// app/(undersider)/turnerings-spill/[sessionId]/play/page.tsx
+// Fil: src/app/(undersider)/turnerings-spill/[sessionId]/play/page.tsx
+// Formål: Klientkomponent som håndterer selve spillingen av en turneringsrunde. Viser scorekort for gjeldende hull, lar brukeren registrere score, og navigerer mellom hullene.
+// Utvikler: Martin Pettersen
+// AI-støtte: Benyttet under utvikling for kodekvalitet, oppdateringer og feilsøking.
+
+
+
 'use client';
 
 import React, { useState, useEffect, useCallback } from 'react';

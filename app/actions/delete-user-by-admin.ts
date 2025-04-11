@@ -1,4 +1,12 @@
-// app/actions/delete-user-by-admin.ts
+// Fil: app/actions/delete-user-by-admin.ts
+// Formål: Server action for å la en administrator slette en spesifikk bruker og tilhørende data.
+//         Inkluderer autorisasjonssjekk (kun ADMIN), hindrer selv-sletting, håndterer relaterte
+//         dataoppføringer i en transaksjon, og revaliderer relevante stier.
+// Utvikler: Martin Pettersen
+// AI-støtte: Benyttet under utvikling for kodekvalitet, oppdateringer og feilsøking.
+
+
+
 "use server";
 
 // Importer PrismaClient OG Prisma (for feiltyper)

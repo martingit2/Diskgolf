@@ -1,3 +1,10 @@
+// Fil: src/actions/leaveClub.ts
+// Formål: Server action for å la en autentisert bruker melde seg ut av en spesifikk klubb.
+//         Fjerner den tilsvarende Membership-oppføringen fra databasen.
+// Utvikler: Martin Pettersen
+// AI-støtte: Benyttet under utvikling for kodekvalitet, oppdateringer og feilsøking.
+
+
 "use server";
 
 import { PrismaClient } from "@prisma/client";

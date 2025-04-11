@@ -1,3 +1,11 @@
+// Fil: app/api/stats/route.ts
+// Formål: API-endepunkt (GET) for å hente månedlig spillstatistikk for en spesifikk bruker.
+//         Grupperer spilldata per måned og beregner totalt antall kast, beste runde, antall fullførte spill, OB-kast og gjennomsnittlig par.
+//         Krever at brukeren er autentisert og henter data for seg selv.
+// Utvikler: Martin Pettersen
+// AI-støtte: Benyttet under utvikling for kodekvalitet, oppdateringer og feilsøking.
+
+
 import { NextRequest, NextResponse } from "next/server";
 import { getServerSession } from "next-auth";
 import { PrismaClient } from "@prisma/client";

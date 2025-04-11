@@ -1,4 +1,12 @@
-// components/tournaments/details/TournamentParticipantCard.tsx
+// Fil: components/tournaments/details/TournamentParticipantCard.tsx
+// Formål: Definerer en React-komponent ('use client') som viser en liste over påmeldte deltakere til en turnering.
+//         Inkluderer knapper for påmelding og avmelding for den innloggede brukeren, basert på turneringsstatus,
+//         tilgjengelige plasser, og om brukeren allerede er påmeldt eller er arrangør.
+//         Viser også antall påmeldte (med maksgrense hvis satt), og håndterer loading-tilstander for på/avmelding.
+// Utvikler: Martin Pettersen
+// AI-støtte: Benyttet under utvikling for kodekvalitet, oppdateringer og feilsøking.
+
+
 import { Button } from '@/components/ui/button';
 import { Loader2, LogIn, LogOut, CheckCircle, XCircle } from 'lucide-react';
 import { TournamentStatus } from '@prisma/client';

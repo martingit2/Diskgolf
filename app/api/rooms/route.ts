@@ -1,3 +1,12 @@
+// Fil: app/api/rooms/route.ts
+// Formål: API-endepunkt for å håndtere flerspillerrom.
+//         GET: Henter en liste over alle aktive rom med tilhørende bane- og deltakerinformasjon.
+//         POST: Oppretter et nytt flerspillerrom, inkludert passordhashing, opprettelse av tilknyttet Game,
+//               og legger til eieren som første deltaker. Bruker en database-transaksjon.
+// Utvikler: Martin Pettersen
+// AI-støtte: Benyttet under utvikling for kodekvalitet, oppdateringer og feilsøking.
+
+
 import { NextResponse } from "next/server";
 import { PrismaClient } from "@prisma/client";
 import { hash } from "bcryptjs";

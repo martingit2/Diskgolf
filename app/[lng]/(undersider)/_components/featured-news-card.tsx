@@ -1,5 +1,10 @@
-// Fil: featured-news-card.tsx
-// DEV NOTE: Premium-versjon for fremhevet nyhetskort. Fokus på lesbarhet og visuell appell.
+// Fil: src/components/news/featured-news-card.tsx
+// Formål: Komponent for å vise et fremhevet nyhetskort, typisk brukt på forsider eller lister. Håndterer bildevisning/fallback, tittel, utdrag, metadata og kategorier med fokus på visuell appell og mulighet for prioritering (LCP).
+// Utvikler: Martin Pettersen
+// AI-støtte: Benyttet under utvikling for kodekvalitet, oppdateringer og feilsøking.
+
+
+
 
 import React, { useState } from 'react';
 import Link from 'next/link';

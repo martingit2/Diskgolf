@@ -1,4 +1,12 @@
-// app/api/tournament-sessions/[sessionId]/route.ts
+// Fil: app/api/tournament-sessions/[sessionId]/route.ts
+// Formål: API-endepunkt (GET) for å hente detaljert informasjon om en spesifikk turneringsrunde (sesjon).
+//         Krever autentisering og validerer at brukeren er deltaker. Returnerer rundeinfo, turneringsinfo,
+//         banedetaljer (navn, antall hull, par) og en liste over deltakere.
+// Utvikler: Martin Pettersen
+// AI-støtte: Benyttet under utvikling for kodekvalitet, oppdateringer og feilsøking.
+
+
+
 import { PrismaClient } from "@prisma/client";
 import { NextResponse } from "next/server";
 import { getServerSession } from "next-auth/next";

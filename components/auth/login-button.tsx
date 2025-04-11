@@ -2,6 +2,7 @@
  * Filnavn: login-button.tsx
  * Beskrivelse: En fleksibel påloggingsknapp som kan fungere enten som en modaldialog eller en redirect til innloggingssiden.
  * Utvikler: Martin Pettersen
+ * AI-støtte: Benyttet under utvikling for kodekvalitet, oppdateringer og feilsøking.
  */
 
 

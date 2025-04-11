@@ -1,4 +1,11 @@
-// app/api/delete-picture/route.ts
+// Fil: app/api/delete-picture/route.ts
+// Formål: API-endepunkt (DELETE) for å slette et bilde fra Cloudinary.
+//         Tar imot en 'public_id' i request body og bruker Cloudinary API for sletting.
+// Utvikler: Martin Pettersen
+// AI-støtte: Benyttet under utvikling for kodekvalitet, oppdateringer og feilsøking.
+
+
+
 import { NextResponse } from "next/server";
 import cloudinary from "@/app/lib/cloudinary";
 

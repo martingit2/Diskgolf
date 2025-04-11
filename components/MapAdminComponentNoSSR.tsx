@@ -1,3 +1,10 @@
+// Fil: components/MapAdminComponentNoSSR.tsx
+// Formål: Definerer React-komponenten ('use client') for selve kartredigeringsgrensesnittet ved hjelp av Leaflet (uten SSR).
+//         Lar administratorer plassere, redigere og slette markører (bane, start, kurv, mål) og definere OB-soner (polygoner).
+//         Håndterer kartklikk, beregner avstander, og oppdaterer tilstanden via props mottatt fra wrapper-komponenten. Bruker AwesomeMarkers.
+// Utvikler: Martin Pettersen
+// AI-støtte: Benyttet under utvikling for kodekvalitet, oppdateringer og feilsøking.
+
 "use client";
 
 import L from "leaflet";

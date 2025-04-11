@@ -1,13 +1,22 @@
-// src/components/klubber/JoinClubButtonClient.tsx
+// Fil: src/components/klubber/JoinClubButtonClient.tsx
+// Formål: Definerer en klient-side React-komponent ('use client') for "Bli medlem"-knappen på en klubbside.
+//         Håndterer logikk for å sjekke innlogging (NextAuth), medlemsstatus, medlemskapspris,
+//         og starter en Stripe Checkout-økt ved å kalle et API-endepunkt (/api/clubs/[clubId]/checkout).
+//         Viser tilbakemeldinger (loading, success, error) med react-hot-toast og håndterer Stripe.js initialisering og omdirigering.
+// Utvikler: Martin Pettersen
+// AI-støtte: Benyttet under utvikling for kodekvalitet, oppdateringer og feilsøking.
+
+
+
 "use client"; // Viktig for hooks og event handlers
 
 import React, { useState } from 'react';
-import axios from "axios"; // For API-kall
-import { loadStripe, Stripe } from '@stripe/stripe-js'; // Stripe frontend bibliotek
-import toast from "react-hot-toast";                  // For varsler
-import { useSession } from "next-auth/react";         // For å sjekke session status
-import { Button } from "@/components/ui/button";      // Din Button komponent
-import { FiUserPlus } from "react-icons/fi";         // Ikon for knappen
+import axios from "axios"; 
+import { loadStripe, Stripe } from '@stripe/stripe-js';
+import toast from "react-hot-toast";                  
+import { useSession } from "next-auth/react";       
+import { Button } from "@/components/ui/button";      
+import { FiUserPlus } from "react-icons/fi";         
 
 // --- Stripe Initialisering ---
 // Initialiserer Stripe.js på klienten med publishable key

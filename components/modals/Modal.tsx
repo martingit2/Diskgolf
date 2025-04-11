@@ -2,6 +2,7 @@
  * Filnavn: Modal.tsx
  * Beskrivelse: Gjenbrukbar modal-komponent...
  * Utvikler: Martin Pettersen
+ * AI-støtte: Benyttet under utvikling for kodekvalitet, oppdateringer og feilsøking.
  */
 "use client";
 

@@ -1,4 +1,10 @@
-// app/(protected)/stats/page.tsx
+// Fil: src/app/(protected)/stats/page.tsx
+// Formål: Viser brukerens personlige statistikk, inkludert spillhistorikk og turneringsresultater, ved hjelp av ulike diagrammer og et sammendragsvisning. Henter data fra flere API-endepunkter.
+// Utvikler: Martin Pettersen
+// AI-støtte: Benyttet under utvikling for kodekvalitet, oppdateringer og feilsøking.
+
+
+
 "use client";
 
 import { useState, useEffect, ReactNode } from "react";

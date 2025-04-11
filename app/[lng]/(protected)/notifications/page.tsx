@@ -1,4 +1,9 @@
-// app/(protected)/notifications/page.tsx
+// Fil: src/app/(protected)/notifications/page.tsx
+// Formål: Serverkomponent-side dedikert til å vise varsler om banefeil (feilrapporter) til autoriserte brukere (ADMIN/CLUB_LEADER). Henter brukerdata og rendrer DashboardNotifications-komponenten.
+// Utvikler: Martin Pettersen
+// AI-støtte: Benyttet under utvikling for kodekvalitet, oppdateringer og feilsøking.
+
+
 
 
 import { UserRole } from "@prisma/client";

@@ -1,4 +1,12 @@
-// /app/api/tournaments/unregister/route.ts
+// Fil: /app/api/tournaments/unregister/route.ts
+// Formål: API-endepunkt (POST) for å la en autentisert bruker melde seg av en turnering.
+//         Validerer at brukeren melder av seg selv, at turneringen tillater avmelding (status),
+//         og at brukeren faktisk er påmeldt. Fjerner relasjonen mellom bruker og turnering.
+// Utvikler: Martin Pettersen
+// AI-støtte: Benyttet under utvikling for kodekvalitet, oppdateringer og feilsøking.
+
+
+
 import { PrismaClient, TournamentStatus } from "@prisma/client";
 import { NextResponse } from "next/server";
 import { getServerSession } from "next-auth/next";

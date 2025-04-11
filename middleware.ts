@@ -1,4 +1,11 @@
-// middleware.ts
+// Fil: middleware.ts
+// Formål: Håndterer forespørsler for rutebeskyttelse og internasjonalisering (i18n).
+//         Sjekker brukerautentisering (NextAuth JWT), omdirigerer uautoriserte brukere fra beskyttede ruter,
+//         og sikrer korrekt språk-prefiks i URL basert på cookie eller 'Accept-Language' header, inkludert støtte for dynamiske offentlige ruter.
+// Utvikler: Martin Pettersen
+// AI-støtte: Benyttet under utvikling for kodekvalitet, oppdateringer og feilsøking.
+
+
 import { NextRequest, NextResponse } from 'next/server';
 import { getToken } from 'next-auth/jwt';
 import acceptLanguage from 'accept-language';

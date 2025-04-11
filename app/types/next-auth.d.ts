@@ -12,7 +12,7 @@ import { DefaultSession } from "next-auth";
 export type ExtendedUser = DefaultSession["user"] & {
   id: string;
   role: UserRole;
-  isTwoFactorEnable?: boolean; // Legg til denne linjen
+  isTwoFactorEnable?: boolean; 
   isOAuth: boolean;
 };
 

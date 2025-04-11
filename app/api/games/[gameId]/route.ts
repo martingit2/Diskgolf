@@ -1,3 +1,11 @@
+// Fil: app/api/games/[gameId]/route.ts
+// Formål: API-endepunkt (GET) for å hente detaljert informasjon om et spesifikt spill (gameId).
+//         Inkluderer tilhørende banedata (hull, kurver, start/mål) og beregner total banelengde.
+//         Henter også alle score-oppføringer for spillet.
+// Utvikler: Martin Pettersen
+// AI-støtte: Benyttet under utvikling for kodekvalitet, oppdateringer og feilsøking.
+
+
 import { NextResponse } from "next/server";
 import { PrismaClient } from "@prisma/client";
 

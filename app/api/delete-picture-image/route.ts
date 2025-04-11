@@ -1,3 +1,10 @@
+// Fil: app/api/delete-profile-picture/route.ts
+// Formål: API-endepunkt (DELETE) for å fjerne (sette til null) en brukers profilbilde-URL i databasen.
+//         Tar imot 'userId' i request body og oppdaterer brukerprofilen.
+// Utvikler: Martin Pettersen
+// AI-støtte: Benyttet under utvikling for kodekvalitet, oppdateringer og feilsøking.
+
+
 import { NextResponse } from "next/server";
 import client from "@/app/lib/prismadb";
 

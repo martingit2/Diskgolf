@@ -1,4 +1,11 @@
-// /app/api/tournaments/status/route.ts
+// Fil: /app/api/tournaments/status/route.ts
+// Formål: API-endepunkt (POST) for å oppdatere statusen på en spesifikk turnering.
+//         Krever autentisering og at brukeren er arrangør for turneringen.
+//         Validerer den nye statusverdien og oppdaterer databasen. Returnerer den oppdaterte turneringen.
+// Utvikler: Martin Pettersen
+// AI-støtte: Benyttet under utvikling for kodekvalitet, oppdateringer og feilsøking.
+
+
 import { PrismaClient, TournamentStatus } from "@prisma/client";
 import { NextResponse } from "next/server";
 import { getServerSession } from "next-auth/next";

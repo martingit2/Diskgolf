@@ -2,6 +2,7 @@
  * Filnavn: Button.tsx
  * Beskrivelse: Gjenbrukbar knapp-komponent med støtte for tilpasset stil, ikoner og interaksjoner.
  * Utvikler: Martin Pettersen
+ * AI-støtte: Benyttet under utvikling for kodekvalitet, oppdateringer og feilsøking.
  */
 
 

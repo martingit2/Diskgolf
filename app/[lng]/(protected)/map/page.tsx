@@ -1,3 +1,10 @@
+// Fil: src/app/(protected)/map/page.tsx
+// Formål: Administrasjonsdashboard for å opprette nye discgolfbaner med kartredigering og for å tilknytte eksisterende klubber som eiere til baner. Bruker faner for å skille mellom opprettelse og eiertilknytning.
+// Utvikler: Martin Pettersen
+// AI-støtte: Benyttet under utvikling for kodekvalitet, oppdateringer og feilsøking.
+
+
+
 "use client";
 
 import { useSession } from "next-auth/react";

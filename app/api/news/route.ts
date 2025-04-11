@@ -1,12 +1,19 @@
-// app/api/news/route.ts
+// Fil: app/api/news/route.ts
+// Formål: API-endepunkt for å håndtere nyhetsartikler.
+//         GET: Henter en liste over artikler med paginering, søk, og kategorifiltrering, med tilgangskontroll for upubliserte artikler.
+//         POST: Oppretter en ny nyhetsartikkel (kun for administratorer), inkludert validering, sanering, bildeopplasting og lagring.
+// Utvikler: Martin Pettersen
+// AI-støtte: Benyttet under utvikling for kodekvalitet, oppdateringer og feilsøking.
+
+
 import { NextResponse, NextRequest } from 'next/server';
 import { Prisma, PrismaClient, UserRole } from '@prisma/client';
 import { getServerSession } from 'next-auth/next';
-import { authOptions } from '@/auth'; // Juster stien om nødvendig
+import { authOptions } from '@/auth'; 
 import DOMPurify from 'isomorphic-dompurify';
 import { JSDOM } from 'jsdom';
 import { z } from 'zod';
-import cloudinary from '@/app/lib/cloudinary'; // Juster stien om nødvendig
+import cloudinary from '@/app/lib/cloudinary'; 
 import type { UploadApiResponse } from 'cloudinary';
 
 // Konfigurer DOMPurify (som før)

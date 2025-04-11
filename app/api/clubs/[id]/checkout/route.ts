@@ -1,4 +1,10 @@
-// src/app/api/clubs/[id]/checkout/route.ts
+// Fil: src/app/api/clubs/[id]/checkout/route.ts
+// Formål: API-endepunkt (POST) for å initiere en Stripe Checkout-sesjon for kjøp av klubbmedlemskap.
+//         Håndterer brukerautentisering, validering av klubb-ID og medlemspris, sjekker eksisterende medlemskap,
+//         finner/oppretter nødvendige Stripe Customer-, Product- og Price-objekter, og returnerer en URL til Stripe Checkout.
+// Utvikler: Martin Pettersen
+// AI-støtte: Benyttet under utvikling for kodekvalitet, oppdateringer og feilsøking.
+
 
 import { NextRequest, NextResponse } from 'next/server';
 import { headers } from "next/headers";

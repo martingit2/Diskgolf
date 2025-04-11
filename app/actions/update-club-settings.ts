@@ -1,4 +1,11 @@
-// app/actions/update-club-settings.ts
+// Fil: app/actions/update-club-settings.ts
+// Formål: Server action for å oppdatere innstillinger for en spesifikk klubb. Inkluderer funksjonalitet for å laste opp
+//         logo og bilde til Cloudinary, samt administrere og oppdatere Stripe-priser knyttet til klubbmedlemskap.
+//         Utførere autorisasjonssjekk for å sikre at kun globale administratorer eller klubbens egne administratorer kan utføre endringer.
+// Utvikler: Martin Pettersen
+// AI-støtte: Benyttet under utvikling for kodekvalitet, oppdateringer og feilsøking.
+
+
 "use server";
 
 import { PrismaClient, UserRole } from "@prisma/client";

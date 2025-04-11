@@ -1,4 +1,10 @@
-// app/auth/login/page.tsx
+// Fil: app/auth/login/page.tsx
+// Formål: Definerer innloggingssiden for applikasjonen. Bruker LoginForm-komponenten for selve skjemaet
+//         og inkluderer Suspense for å håndtere asynkron lasting eller bruk av searchParams i underliggende komponenter.
+// Utvikler: Martin Pettersen
+
+
+
 "use client";
 
 import React, { Suspense } from 'react'; // Importer Suspense

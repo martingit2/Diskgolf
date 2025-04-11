@@ -1,11 +1,17 @@
-// src/components/CourseCard.tsx
+// Fil: src/components/CourseCard.tsx
+// Formål: Definerer en gjenbrukbar React-komponent ('use client') for å vise et informasjonskort om en diskgolfbane.
+//         Inkluderer bilde, navn, sted, nøkkelstatistikk (hull, par, lengde), vanskelighetsgrad, beskrivelse (med "les mer"),
+//         en favoritt-knapp, visning av anmeldelser (via ReviewForm), og knapper for å se detaljer eller starte et spill på banen.
+// Utvikler: Martin Pettersen
+// AI-støtte: Benyttet under utvikling for kodekvalitet, oppdateringer og feilsøking.
+
 "use client";
 
 import { useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import Image from "next/image";
 import { Heart, Loader2, MapPin, Target, Gauge, Ruler, Info } from "lucide-react"; // Importer ikoner
-import ReviewForm from "@/app/[lng]/(protected)/_components/ReviewForm"; // Sjekk stien hvis nødvendig
+import ReviewForm from "@/app/[lng]/(protected)/_components/ReviewForm"; 
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { FaPlay } from "react-icons/fa";
@@ -13,7 +19,7 @@ import { useRouter } from "next/navigation";
 import toast from 'react-hot-toast';
 import { cn } from "@/app/lib/utils"; // Importer cn for conditional classNames
 
-// Type (uendret)
+// Type 
 type Course = {
   id: string;
   name: string;
@@ -29,7 +35,7 @@ type Course = {
   numHoles?: number | null;
 };
 
-// Props (uendret)
+// Props 
 type CourseCardProps = {
   course: Course;
   isFavorite: boolean;

@@ -3,6 +3,7 @@
  * Beskrivelse: Komponent for sosiale innloggingsknapper via Google og GitHub. 
  * Håndterer innlogging med NextAuth og støtter tilpasset callback-URL.
  * Utvikler: Martin Pettersen
+ * AI-støtte: Benyttet under utvikling for kodekvalitet, oppdateringer og feilsøking.
  */
 
 

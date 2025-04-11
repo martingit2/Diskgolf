@@ -1,4 +1,12 @@
-// components/tournaments/TournamentScoreForm.tsx
+// Fil: components/tournaments/TournamentScoreForm.tsx
+// Formål: Definerer en React-komponent ('use client') for scoreføring per hull i en turnering.
+//         Komponenten presenterer et skjema for én deltaker om gangen, lar brukeren legge inn antall kast og OB-kast,
+//         inkluderer validering, knapper for rask justering av OB, og håndterer lagring av score via en `onSaveScore` callback.
+//         Den er designet for å brukes i et grensesnitt for live scoreføring.
+// Utvikler: Martin Pettersen
+// AI-støtte: Benyttet under utvikling for kodekvalitet, oppdateringer og feilsøking.
+
+
 'use client';
 
 import React, { useState, useEffect, useCallback, useRef } from 'react';
@@ -17,7 +25,7 @@ import { Loader2, Minus, Plus, AlertTriangle, Target } from 'lucide-react'; // L
 import { toast } from "react-hot-toast";
 import { cn } from '@/app/lib/utils'; // Sørg for at denne er korrekt importert
 
-// --- Typer (uendret) ---
+// --- Typer ---
 interface ScoreInputData { score: string; ob: string; }
 interface ParticipantInput extends ScoreInputData { playerId: string; playerName: string; currentScore?: number | null; currentOb?: number | null; }
 interface TournamentScoreFormProps {
@@ -27,7 +35,7 @@ interface TournamentScoreFormProps {
     isSaving: boolean;
 }
 
-// --- Hjelpefunksjoner (uendret) ---
+// --- Hjelpefunksjoner ---
 const isValidNumericInput = (value: string): boolean => /^\d*$/.test(value);
 const parseNumericInput = (value: string | undefined, defaultValue: number): number => {
     const parsed = parseInt(value || '', 10);
@@ -89,7 +97,7 @@ export function TournamentScoreForm({
         setValidationError(null);
     }, []);
 
-    // --- Validering (uendret logikk) ---
+    // --- Validering  ---
     const validatePlayerInput = (playerId: string): string | null => {
         const input = playerInputs[playerId];
         if (!input || input.score.trim() === '') return "Mangler antall kast"; // Mer spesifikk melding
@@ -98,7 +106,7 @@ export function TournamentScoreForm({
         return null;
     };
 
-    // --- Submit Handler (uendret logikk) ---
+    // --- Submit Handler ---
     const handleSubmit = useCallback(async (event: React.FormEvent) => {
         event.preventDefault();
         setValidationError(null);

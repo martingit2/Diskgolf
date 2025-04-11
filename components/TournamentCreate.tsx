@@ -1,3 +1,12 @@
+// Fil: components/TournamentCreate.tsx
+// Formål: Definerer en React-komponent ('use client') for et enkelt skjema for å opprette en ny turnering.
+//         Tillater brukeren å angi turneringsnavn, velge type (bruker/klubb), og legge til deltakere (foreløpig via input-felt).
+//         Inkluderer en placeholder-funksjon for å håndtere innsending til backend.
+// Utvikler: Martin Pettersen
+
+
+
+
 'use client'
 
 import { useState } from "react";

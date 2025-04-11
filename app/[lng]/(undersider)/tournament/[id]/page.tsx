@@ -1,4 +1,10 @@
-// app/(undersider)/tournament/[id]/page.tsx
+// Fil: src/app/(undersider)/tournament/[id]/page.tsx
+// Formål: Viser detaljsiden for en spesifikk turnering. Inkluderer header, statusbanner, detaljer, deltakerliste, leaderboard-preview (live), adminpanel og resultatvisning (for fullførte). Håndterer brukerregistrering/avmelding og admin-handlinger.
+// Utvikler: Martin Pettersen
+// AI-støtte: Benyttet under utvikling for kodekvalitet, oppdateringer og feilsøking.
+
+
+
 "use client";
 
 import { useState, useEffect, use, useCallback } from "react";

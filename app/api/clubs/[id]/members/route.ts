@@ -1,4 +1,12 @@
-// src/app/api/clubs/[id]/members/route.ts
+// Fil: src/app/api/clubs/[id]/members/route.ts
+// Formål: API-endepunkt (GET) for å hente en paginert liste over medlemmer for en spesifikk klubb.
+//         Inkluderer autentisering og autorisasjon (kun klubb- eller global admin kan se medlemslisten).
+//         Returnerer medlemsdata (navn, e-post, status etc.) og pagineringsinformasjon.
+// Utvikler: Martin Pettersen
+// AI-støtte: Benyttet under utvikling for kodekvalitet, oppdateringer og feilsøking.
+
+
+
 import { NextRequest, NextResponse } from "next/server";
 import { PrismaClient, UserRole } from "@prisma/client";
 import { auth } from "@/auth"; //

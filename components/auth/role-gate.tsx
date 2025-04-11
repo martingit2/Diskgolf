@@ -3,6 +3,7 @@
  * Beskrivelse: Komponent for tilgangskontroll basert på brukerrolle. 
  * Viser innhold kun hvis brukeren har nødvendig rolle.
  * Utvikler: Martin Pettersen
+ * AI-støtte: Benyttet under utvikling for kodekvalitet, oppdateringer og feilsøking.
  */
 
 

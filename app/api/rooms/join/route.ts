@@ -1,3 +1,10 @@
+// Fil: app/api/rooms/join/route.ts
+// Formål: API-endepunkt (POST) for å la en spiller bli med i et eksisterende flerspillerrom.
+//         Håndterer passordvalidering (hvis nødvendig), sjekker om rommet er fullt,
+//         og oppretter en ny GameParticipation-oppføring for spilleren i rommet.
+// Utvikler: Martin Pettersen
+// AI-støtte: Benyttet under utvikling for kodekvalitet, oppdateringer og feilsøking.
+
 import { NextResponse } from "next/server";
 import { PrismaClient } from "@prisma/client";
 import bcrypt from "bcryptjs";

@@ -1,4 +1,10 @@
-// src/app/personvern/page.tsx
+// Fil: src/app/personvern/page.tsx
+// Formål: Viser personvernerklæringen for Diskgolf.app, og forklarer hvordan brukerdata samles inn, brukes og beskyttes, samt brukerens rettigheter.
+// Utvikler: Martin Pettersen
+// AI-støtte: Benyttet under utvikling for kodekvalitet, oppdateringer og feilsøking.
+
+
+
 "use client";
 
 import { motion } from "framer-motion";

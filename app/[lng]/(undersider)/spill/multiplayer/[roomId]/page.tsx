@@ -1,3 +1,10 @@
+// Fil: src/app/(protected)/spill/multiplayer/[roomId]/lobby/page.tsx // (Antatt filsti)
+// Formål: Viser lobbyen for en multiplayer-spilløkt. Lister opp deltakere, viser klar-status og lar spillere markere seg som klare. Oppdaterer periodisk for å se etter statusendringer og starter spillet når alle er klare.
+// Utvikler: Martin Pettersen
+// AI-støtte: Benyttet under utvikling for kodekvalitet, oppdateringer og feilsøking.
+
+
+
 "use client";
 import { useEffect, useState } from "react";
 import { useRouter, useParams } from "next/navigation";

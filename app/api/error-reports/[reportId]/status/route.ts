@@ -1,4 +1,12 @@
-// app/api/error-reports/[reportId]/status/route.ts
+// Fil: app/api/error-reports/[reportId]/status/route.ts
+// Formål: API-endepunkt (PATCH) for å oppdatere statusen på en spesifikk feilrapport.
+//         Inkluderer autentisering og autorisasjon (kun Admin eller relevant Club Leader),
+//         validering av ny status, og oppdatering i databasen.
+// Utvikler: Martin Pettersen
+// AI-støtte: Benyttet under utvikling for kodekvalitet, oppdateringer og feilsøking.
+
+
+
 import { NextResponse } from "next/server";
 import { PrismaClient, UserRole, ErrorReportStatus } from "@prisma/client";
 import { z } from "zod";

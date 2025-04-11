@@ -1,4 +1,12 @@
-// src/app/vilkar/page.tsx
+// Fil: src/app/vilkar/page.tsx
+// Formål: Komponent som viser siden for "Vilkår for Bruk". Inneholder detaljert juridisk tekst om bruken av tjenesten,
+//         inkludert aksept, brukerkontoer, tillatt bruk, brukerinnhold, immaterielle rettigheter, ansvarsfraskrivelser,
+//         ansvarsbegrensning, opphør, endringer, lovvalg og kontaktinformasjon. Benytter Framer Motion for animasjonseffekter.
+// Utvikler: Martin Pettersen
+// AI-støtte: Benyttet under utvikling for kodekvalitet, oppdateringer og feilsøking.
+
+
+
 "use client";
 
 import { motion } from "framer-motion";

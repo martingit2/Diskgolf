@@ -1,5 +1,12 @@
+// Fil: src/app/tournament/[id]/standings/register/page.tsx // (Antatt filsti basert på funksjon)
+// Formål: Klientkomponent som tilbyr et skjema for å manuelt registrere score (antall kast) for deltakere i en spesifikk turnering.
+// Utvikler: Martin Pettersen
+// AI-støtte: Benyttet under utvikling for kodekvalitet, oppdateringer og feilsøking.
+
+
+
 "use client";
-import { useState, useEffect, use } from "react"; // Legg til 'use' her
+import { useState, useEffect, use } from "react"; 
 import { useRouter } from "next/navigation";
 import { toast } from "react-hot-toast";
 

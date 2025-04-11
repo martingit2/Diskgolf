@@ -1,4 +1,8 @@
-// src/app/(protected)/club-settings/page.tsx
+// Fil: src/app/(protected)/club-settings/page.tsx
+// Formål: Hovedside for klubbadministrasjon. Gir brukeren mulighet til å se sine administrerte klubber, redigere innstillinger, administrere medlemmer, opprette nye klubber og publisere nyheter via et fanebasert grensesnitt.
+// Utvikler: Martin Pettersen
+// AI-støtte: Benyttet under utvikling for kodekvalitet, oppdateringer og feilsøking.
+
 "use client";
 
 import { useState, useEffect, useCallback } from "react";

@@ -1,4 +1,11 @@
-// app/api/tournaments/route.ts
+// Fil: app/api/tournaments/route.ts
+// Formål: API-endepunkt for å håndtere turneringer.
+//         GET: Henter en liste over turneringer med støtte for paginering, søk, og filtrering (kommende/tidligere).
+//         POST: Oppretter en ny turnering, krever autentisering.
+// Utvikler: Martin Pettersen
+// AI-støtte: Benyttet under utvikling for kodekvalitet, oppdateringer og feilsøking.
+
+
 import { PrismaClient, TournamentStatus } from "@prisma/client"; // Importer TournamentStatus
 import { NextRequest, NextResponse } from "next/server";
 import { getServerSession } from "next-auth/next";

@@ -1,3 +1,11 @@
+// Fil: app/api/rooms/[id]/ready/route.ts
+// Formål: API-endepunkt (POST) for å markere en deltaker i et flerspillerrom som "klar".
+//         Oppdaterer deltakerstatus og sjekker om alle er klare for å starte spillet.
+//         Hvis alle er klare, oppdateres rommets status til "inProgress".
+// Utvikler: Martin Pettersen
+
+
+
 import { NextResponse } from "next/server";
 import { PrismaClient } from "@prisma/client";
 

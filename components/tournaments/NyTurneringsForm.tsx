@@ -1,4 +1,11 @@
-// components/tournaments/NyTurneringForm.tsx eller lignende
+// Fil: components/tournaments/NyTurneringForm.tsx
+// Formål: Definerer en React-komponent ('use client') for et skjema som lar brukere opprette en ny turnering.
+//         Komponenten henter tilgjengelige baner, samler inn turneringsdetaljer (navn, beskrivelse, datoer, bane, maks deltakere, etc.),
+//         validerer input, og sender dataen til et API-endepunkt (/api/tournaments) for lagring. Bruker `react-hot-toast` for tilbakemeldinger og `useRouter` for navigasjon etter vellykket opprettelse.
+// Utvikler: Martin Pettersen
+// AI-støtte: Benyttet under utvikling for kodekvalitet, oppdateringer og feilsøking.
+
+
 'use client';
 
 import { useState, useEffect } from "react";

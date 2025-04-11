@@ -1,4 +1,11 @@
-/* globals.css */
+/* Fil: /globals.css */
+/* Formål: Definerer globale stiler for applikasjonen ved hjelp av Tailwind CSS. */
+/*         Inkluderer Tailwind base, komponenter og verktøy, definerer CSS-variabler for tema (lys/mørk), */
+/*         og legger til egendefinerte globale klasser og spesifikke stiler for tredjepartsbiblioteker som Leaflet og Swiper. */
+/* Utvikler: Martin Pettersen */
+
+
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;

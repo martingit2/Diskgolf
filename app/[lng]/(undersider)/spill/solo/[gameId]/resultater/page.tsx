@@ -1,3 +1,10 @@
+// Fil: src/app/(undersider)/spill/[gameId]/results/page.tsx
+// Formål: Viser resultatsiden for en fullført alenespiller-runde (single-player). Henter data basert på spill-ID fra URL, viser scorekort, totalscore og statistikk for runden.
+// Utvikler: Martin Pettersen
+// AI-støtte: Benyttet under utvikling for kodekvalitet, oppdateringer og feilsøking.
+
+
+
 "use client";
 import { useEffect, useState, use } from "react";
 import { useRouter } from "next/navigation";

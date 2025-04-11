@@ -1,4 +1,10 @@
-// src/app/kontakt/page.tsx
+// Fil: src/app/kontakt/page.tsx
+// Formål: Viser en kontaktside med et skjema for å sende meldinger, samt alternativ kontaktinformasjon som e-post, telefon og adresse.
+// Utvikler:  Mina Vamnes Nyhagen
+
+
+
+
 "use client"; // Markerer komponenten for klient-side rendering, nødvendig for hooks som useState og event handlers.
 
 import { useState } from "react";

@@ -1,3 +1,12 @@
+// Fil: src/actions/courseActions.ts
+// Formål: Server actions for å administrere baner. Inkluderer funksjoner for å slette en bane (`deleteCourse`)
+//         og for å oppdatere en bane (`updateCourse`), inkludert håndtering av relaterte startpunkter og OB-soner.
+//         Begge funksjonene revaliderer relevante stier for UI-oppdateringer.
+// Utvikler: Martin Pettersen
+// AI-støtte: Benyttet under utvikling for kodekvalitet, oppdateringer og feilsøking.
+
+
+
 "use server";
 
 import { PrismaClient } from "@prisma/client";

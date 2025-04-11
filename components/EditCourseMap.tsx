@@ -1,3 +1,11 @@
+// Fil: components/maps/EditCourseMap.tsx
+// Formål: Definerer en React-komponent ('use client') for interaktiv redigering av et diskgolfbane-kart ved hjelp av Leaflet.
+//         Henter banedata, lar brukere plassere/slette markører (start, kurv, mål), tegne OB-soner (polygoner),
+//         beregner avstander mellom punkter, og kaller en `onUpdate`-funksjon når data endres. Inkluderer instruksjoner og tilbakestillingsfunksjon.
+// Utvikler: Martin Pettersen
+// AI-støtte: Benyttet under utvikling for kodekvalitet, oppdateringer og feilsøking.
+
+
 "use client";
 
 import L from "leaflet";

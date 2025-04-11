@@ -1,3 +1,11 @@
+// Fil: app/api/clubs/update-settings/route.ts 
+// Formål: API-endepunkt (POST) for å oppdatere klubbinnstillinger (navn, adresse, telefon, postnummer).
+//         Inkluderer logikk for å håndtere opplasting av en logo-fil til serverens lokale filsystem (`public/uploads`).
+// Utvikler: Martin Pettersen
+// AI-støtte: Benyttet under utvikling for kodekvalitet, oppdateringer og feilsøking.
+
+
+
 import { NextRequest, NextResponse } from "next/server";
 import { PrismaClient } from "@prisma/client";
 import fs from "fs"; // For filhåndtering

@@ -1,4 +1,9 @@
-// src/app/api/webhooks/stripe/route.ts
+// Fil: app/api/webhooks/stripe/route.ts
+// Formål: API-endepunkt (POST) for å motta og behandle webhooks fra Stripe.
+//         Håndterer hendelser som `checkout.session.completed` (oppretter/aktiverer medlemskap),
+//         `invoice.payment_succeeded` (fornyer medlemskap), og `customer.subscription.*` (oppdaterer status ved kansellering/endring).
+// Utvikler: Martin Pettersen
+// AI-støtte: Benyttet under utvikling for kodekvalitet, oppdateringer og feilsøking.
 
 import { headers } from 'next/headers'; // Importer headers
 import { NextResponse } from 'next/server';

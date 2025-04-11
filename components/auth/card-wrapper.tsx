@@ -2,6 +2,7 @@
  * Filnavn: card-wrapper.tsx
  * Beskrivelse: Wrapper-komponent for kortlayout for autentiseringsskjemaer.
  * Utvikler: Martin Pettersen
+ * AI-støtte: Benyttet under utvikling for kodekvalitet, oppdateringer og feilsøking.
  */
 "use client";
 

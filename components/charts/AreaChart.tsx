@@ -1,4 +1,11 @@
-// components/charts/AreaChartPlot.tsx
+// Fil: components/charts/AreaChartPlot.tsx
+// Formål: Definerer en gjenbrukbar React-komponent for å vise et arealdiagram ved hjelp av Recharts-biblioteket.
+//         Komponenten visualiserer tidsseriedata, støtter visning av to serier (f.eks. score og OB-kast),
+//         og inkluderer tilpassede tooltips, akseetiketter, legender og datahåndtering.
+// Utvikler: Martin Pettersen
+// AI-støtte: Benyttet under utvikling for kodekvalitet, oppdateringer og feilsøking.
+
+
 "use client";
 
 import { AreaChart, Area, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Legend, Label } from 'recharts';

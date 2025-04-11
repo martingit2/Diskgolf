@@ -1,6 +1,13 @@
-// src/components/CourseCardSkeleton.tsx
+// Fil: src/components/CourseCardSkeleton.tsx
+// Formål: Definerer en React-komponent som viser en "skeleton"-versjon av CourseCard.
+//         Brukes som en placeholder mens data for faktiske banekort lastes, for å gi en bedre brukeropplevelse ved lasting.
+//         Bruker Skeleton-komponenten fra Shadcn UI for å etterligne layouten til CourseCard.
+// Utvikler: Martin Pettersen
+// AI-støtte: Benyttet under utvikling for kodekvalitet, oppdateringer og feilsøking.
+
+
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
-import { Skeleton } from "@/components/ui/skeleton"; // Importer Skeleton fra Shadcn
+import { Skeleton } from "@/components/ui/skeleton"; 
 
 export function CourseCardSkeleton() {
   return (

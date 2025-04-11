@@ -1,4 +1,10 @@
-// app/tournament/[id]/page.tsx
+// Fil: src/app/tournament/[id]/page.tsx
+// Formål: Viser detaljsiden for en spesifikk turnering. Henter og viser informasjon om turneringen, bane, deltakere, og tillater påmelding/statusoppdatering. Tilbyr lenker til redigering og resultatvisning.
+// Utvikler: Martin Pettersen
+// AI-støtte: Benyttet under utvikling for kodekvalitet, oppdateringer og feilsøking.
+
+
+
 "use client";
 
 import { useState, useEffect, use } from "react";

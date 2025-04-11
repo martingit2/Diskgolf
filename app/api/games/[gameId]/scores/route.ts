@@ -1,3 +1,10 @@
+// Fil: app/api/games/[gameId]/scores/route.ts
+// Formål: API-endepunkt (POST) for å lagre/oppdatere score (kast, OB) for et spesifikt hull innenfor et spill (gameId).
+//         Sletter først eventuell eksisterende score for hullet før ny score opprettes.
+// Utvikler: Martin Pettersen
+// AI-støtte: Benyttet under utvikling for kodekvalitet, oppdateringer og feilsøking.
+
+
 import { NextResponse } from "next/server";
 import { PrismaClient } from "@prisma/client";
 

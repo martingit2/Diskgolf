@@ -1,3 +1,10 @@
+// Fil: app/api/rooms/[id]/route.ts
+// Formål: API-endepunkt (GET) for å hente detaljert informasjon om et spesifikt flerspillerrom (basert på ID).
+//         Inkluderer rommets deltakere og tilhørende banedata (med hull, start/mål, OB-soner etc.),
+//         samt beregner totalt antall hull og banelengde.
+// Utvikler: Martin Pettersen
+// AI-støtte: Benyttet under utvikling for kodekvalitet, oppdateringer og feilsøking.
+
 import { NextResponse } from "next/server";
 import { PrismaClient } from "@prisma/client";
 

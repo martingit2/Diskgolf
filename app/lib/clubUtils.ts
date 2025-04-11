@@ -1,12 +1,14 @@
-// src/lib/clubUtils.ts
-// ------ FJERN IMPORT AV DELET KLIENT ------
-// import { prisma } from "@/lib/prismadb";
-// ------------------------------------------
-import { PrismaClient } from "@prisma/client"; // Importer kun klassen
+// Fil: src/lib/clubUtils.ts
+// Formål: Inneholder hjelpefunksjoner relatert til klubber, som f.eks. `checkMembership`
+//         for å sjekke om en bruker er medlem av en spesifikk klubb.
+// Utvikler: Martin Pettersen
 
-// ------ OPPRETT LOKAL INSTANS HER ------
+
+import { PrismaClient } from "@prisma/client"; 
+
+
 const prisma = new PrismaClient();
-// ---------------------------------------
+
 
 // Hjelpefunksjon for medlemskapssjekk
 export async function checkMembership(userId: string | undefined, clubId: string): Promise<boolean> {

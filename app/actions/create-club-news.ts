@@ -1,3 +1,10 @@
+// Fil: src/actions/createClubNews.ts
+// Formål: Server action for å opprette en ny nyhetsartikkel for en spesifikk klubb.
+//         Inkluderer sjekk for brukerautentisering og at brukeren har rollen ADMIN eller CLUB_LEADER
+//         for å kunne opprette nyheter. Lagrer tittel og innhold i databasen.
+// Utvikler: Martin Pettersen
+// AI-støtte: Benyttet under utvikling for kodekvalitet, oppdateringer og feilsøking.
+
 import { currentUser } from "../lib/auth"; // Importer autentisering
 import client from "../lib/prismadb"; // Prisma-klient
 

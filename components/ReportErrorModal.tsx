@@ -1,4 +1,11 @@
-// components/ReportErrorModal.tsx
+// Fil: components/ReportErrorModal.tsx
+// Formål: Definerer en modal dialog ('use client') for å rapportere feil på en diskgolfbane.
+//         Bruker Shadcn UI-komponenter (Dialog, Button, Form, Textarea), react-hook-form for skjemahåndtering,
+//         Zod for validering, og sender rapporten til et API-endepunkt (/api/error-reports). Viser suksess/feilmeldinger.
+// Utvikler: Martin Pettersen
+// AI-støtte: Benyttet under utvikling for kodekvalitet, oppdateringer og feilsøking.
+
+
 "use client";
 
 import { useState } from 'react';

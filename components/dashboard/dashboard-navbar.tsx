@@ -1,3 +1,11 @@
+// Fil: components/dashboard/dashboard-navbar.tsx
+// Formål: Definerer en React-komponent for hovednavigasjonsbaren i brukerens dashbord.
+//         Viser brukerens avatar, rollebaserte navigasjonslenker (admin, klubbleder, bruker),
+//         og en logg ut-knapp. Bruker Next.js Link for navigasjon.
+// Utvikler: Martin Pettersen
+// AI-støtte: Benyttet under utvikling for kodekvalitet, oppdateringer og feilsøking.
+
+
 'use client';
 
 import Link from "next/link";

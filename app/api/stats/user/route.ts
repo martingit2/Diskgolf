@@ -1,3 +1,11 @@
+// Fil: app/api/user/stats/route.ts
+// Formål: API-endepunkt (GET) for å hente statistikk for en spesifikk bruker.
+//         Returnerer antall spilte singleplayer- og multiplayer-spill, samt en liste over unike baner brukeren har spilt på.
+//         Krever at brukeren er autentisert og henter data for seg selv.
+// Utvikler: Martin Pettersen
+// AI-støtte: Benyttet under utvikling for kodekvalitet, oppdateringer og feilsøking.
+
+
 import { NextRequest, NextResponse } from "next/server";
 import { getServerSession } from "next-auth";
 import { PrismaClient } from "@prisma/client";

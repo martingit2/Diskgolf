@@ -1,4 +1,10 @@
-// store/useReviewsStore.ts
+// Fil: store/useReviewsStore.ts
+// Formål: Zustand store for å håndtere tilstanden til brukeranmeldelser (reviews).
+//         Inkluderer state for selve anmeldelsene, lastestatus, og feilmeldinger.
+//         Tilbyr funksjoner for å oppdatere state og (foreløpig simulert) hente anmeldelser.
+// Utvikler: Martin Pettersen
+// AI-støtte: Benyttet under utvikling for kodekvalitet, oppdateringer og feilsøking.
+
 import { create } from 'zustand';
 
 type Review = {

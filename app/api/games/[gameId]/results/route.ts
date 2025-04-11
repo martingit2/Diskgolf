@@ -1,3 +1,9 @@
+// Fil: app/api/games/[gameId]/results/route.ts
+// Formål: API-endepunkt (GET) for å hente formaterte resultater for et spesifikt spill (gameId).
+//         Inkluderer banenavn, spillernavn og score per hull (par, kast, OB).
+// Utvikler: Martin Pettersen
+// AI-støtte: Benyttet under utvikling for kodekvalitet, oppdateringer og feilsøking.
+
 import { NextResponse } from "next/server";
 import { PrismaClient } from "@prisma/client";
 

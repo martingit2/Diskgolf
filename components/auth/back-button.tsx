@@ -3,6 +3,7 @@
  * Beskrivelse: Tilpasset tilbakeknapp-komponent som gir fleksibilitet med valgfri klikkhendelse.
  * Kombinerer Next.js Link med en knapp for å støtte navigasjon og eventuelle egendefinerte handlinger.
  * Utvikler: Martin Pettersen
+ * AI-støtte: Benyttet under utvikling for kodekvalitet, oppdateringer og feilsøking.
  */
 
 

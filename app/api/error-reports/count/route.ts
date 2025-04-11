@@ -1,4 +1,12 @@
-// app/api/error-reports/count/route.ts
+// Fil: app/api/error-reports/count/route.ts
+// Formål: API-endepunkt (GET) for å hente antall åpne feilrapporter.
+//         Returnerer totalt antall åpne rapporter for ADMIN, eller antall åpne rapporter
+//         knyttet til brukerens klubber for CLUB_LEADER. Returnerer 0 for andre roller eller uautentiserte brukere.
+// Utvikler: Martin Pettersen
+// AI-støtte: Benyttet under utvikling for kodekvalitet, oppdateringer og feilsøking.
+
+
+
 import { NextRequest, NextResponse } from "next/server";
 import { PrismaClient, UserRole, ErrorReportStatus } from "@prisma/client";
 import { auth } from "@/auth"; // Importer auth-funksjonen din

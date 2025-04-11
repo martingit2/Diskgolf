@@ -1,4 +1,10 @@
-// src/app/(undersider)/klubber/page.tsx
+// Fil: src/app/(undersider)/klubber/page.tsx
+// Formål: Klientkomponent som viser en liste over discgolfklubber med søk, filtrering og paginering. Inkluderer funksjonalitet for å bli medlem via Stripe Checkout.
+// Utvikler: Martin Pettersen
+// AI-støtte: Benyttet under utvikling for kodekvalitet, oppdateringer og feilsøking.
+
+
+
 "use client";
 
 import { useState, useEffect, ChangeEvent } from "react";

@@ -1,3 +1,11 @@
+// Fil: app/api/upload/route.ts
+// Formål: API-endepunkt (POST) for å håndtere opplasting av et bilde (f.eks. for en bane) til Cloudinary.
+//         Mottar en fil via FormData, validerer filtype og størrelse, og laster opp til en spesifikk mappe.
+//         Returnerer den sikre URL-en til det opplastede bildet.
+// Utvikler: Martin Pettersen
+// AI-støtte: Benyttet under utvikling for kodekvalitet, oppdateringer og feilsøking.
+
+
 import { NextResponse } from "next/server";
 import cloudinary from "@/app/lib/cloudinary";
 import type { UploadApiResponse } from "cloudinary";

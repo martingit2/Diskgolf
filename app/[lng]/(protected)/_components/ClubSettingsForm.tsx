@@ -1,4 +1,8 @@
-// src/app/(protected)/_components/ClubSettingsForm.tsx
+// Fil: src/app/(protected)/_components/ClubSettingsForm.tsx
+// Formål: Komponent for å redigere innstillinger for en valgt klubb. Håndterer skjemafelter, validering og bildeopplasting.
+// Utvikler: Martin Pettersen
+// AI-støtte: Benyttet under utvikling for kodekvalitet, oppdateringer og feilsøking.
+
 "use client";
 
 import { FC, useState, useEffect } from "react";

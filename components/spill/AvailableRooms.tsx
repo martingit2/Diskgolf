@@ -1,3 +1,11 @@
+// Fil: components/spill/AvailableRooms.tsx
+// Formål: Definerer en React-komponent ('use client') som viser en liste over tilgjengelige multiplayer-spillrom.
+//         Lar brukere (både gjester og innloggede) søke etter rom, se detaljer (bane, hull, eier, antall spillere),
+//         håndterer paginering, og lar dem bli med i rom (inkludert passordbeskyttede rom via en modal). Oppdaterer listen periodisk.
+// Utvikler: Martin Pettersen
+// AI-støtte: Benyttet under utvikling for kodekvalitet, oppdateringer og feilsøking.
+
+
 "use client";
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";

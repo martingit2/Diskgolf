@@ -1,4 +1,10 @@
-// app/api/categories/route.ts
+// Fil: app/api/categories/route.ts
+// Formål: API-endepunkt (GET) for å hente en liste over alle tilgjengelige nyhetskategorier.
+//         Returnerer kategoriens ID, navn og slug, sortert alfabetisk på navn.
+// Utvikler: Martin Pettersen, Maria Sofie Ulvheim
+// AI-støtte: Benyttet under utvikling for kodekvalitet, oppdateringer og feilsøking.
+
+
 import { NextResponse } from 'next/server';
 import { PrismaClient } from '@prisma/client';
 

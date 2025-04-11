@@ -1,3 +1,10 @@
+// Fil: src/app/(undersider)/spill/page.tsx
+// Formål: Hovedside for å starte et banespill. Tilbyr valg mellom alenespill (SoloSpill) og flerspiller (MultiplayerSpill), og henter nødvendige data som baner, rom og brukerinformasjon.
+// Utvikler: Martin Pettersen
+// AI-støtte: Benyttet under utvikling for kodekvalitet, oppdateringer og feilsøking.
+
+
+
 "use client";
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";

@@ -1,3 +1,11 @@
+// Fil: next.config.ts
+// Formål: Konfigurerer innstillinger for Next.js-applikasjonen.
+//         Inkluderer aktivering av React Strict Mode, definisjon av miljøvariabler (spesielt NEXT_PUBLIC_APP_URL for utvikling/produksjon),
+//         konfigurasjon av tillatte domener for bilder (Next/Image), Webpack fallbacks, og deaktivering av ESLint under bygging.
+// Utvikler: Martin Pettersen
+// AI-støtte: Benyttet under utvikling for kodekvalitet, oppdateringer og feilsøking.
+
+
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {

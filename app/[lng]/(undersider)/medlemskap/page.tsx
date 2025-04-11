@@ -1,4 +1,10 @@
-// src/app/medlemskap/page.tsx
+// Fil: src/app/medlemskap/page.tsx
+// Formål: Informasjonsside som forklarer medlemskapsfunksjonen i Diskgolf.app, fordelene ved klubbmedlemskap og hvordan man blir medlem via appen. Oppfordrer brukere til å utforske tilgjengelige klubber.
+// Utvikler: Martin Pettersen
+// AI-støtte: Benyttet under utvikling for kodekvalitet, oppdateringer og feilsøking.
+
+
+
 "use client";
 
 import { motion } from "framer-motion";

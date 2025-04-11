@@ -3,6 +3,7 @@
  * Beskrivelse: Komponent for å vise en feilmelding med en tilbakeknapp til innloggingssiden.
  * Viser en advarsel til brukeren hvis en feil oppstår.
  * Utvikler: Martin Pettersen
+ * AI-støtte: Benyttet under utvikling for kodekvalitet, oppdateringer og feilsøking.
  */
 
 

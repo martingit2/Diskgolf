@@ -1,3 +1,12 @@
+// Fil: components/ProfileAvatar.tsx 
+// Formål: Definerer en React-komponent ('use client') for å håndtere en brukers profilbilde.
+//         Viser det eksisterende bildet, tillater opplasting av et nytt bilde (via /api/upload),
+//         og sletting av det nåværende bildet (både fra Cloudinary via /api/delete-picture og fra databasen via /api/delete-profile-image).
+//         Bruker `react-hot-toast` for tilbakemeldinger og håndterer loading state under opplasting.
+// Utvikler: Martin Pettersen
+// AI-støtte: Benyttet under utvikling for kodekvalitet, oppdateringer og feilsøking.
+
+
 "use client";
 
 import { Input } from "@/components/ui/input";

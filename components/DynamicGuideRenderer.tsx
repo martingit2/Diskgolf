@@ -1,4 +1,12 @@
-// src/app/guide/_components/DynamicGuideRenderer.tsx
+// Fil: src/app/guide/_components/DynamicGuideRenderer.tsx
+// Formål: Definerer en React-komponent ('use client') som dynamisk render ulike typer innholdsseksjoner basert på en JSON-databasert struktur ('DynamicContent').
+//         Støtter ulike seksjonstyper (Hero, Text, CardGrid, Steps, Etiquette, CTA, etc.), bruker Framer Motion for animasjoner,
+//         Next.js Image for bilder, Lucide-ikoner (dynamisk rendret), og Shadcn UI-komponenter (Card, Button).
+//         Inkluderer bruk av 'dangerouslySetInnerHTML' for å rendre HTML fra databasen (med forbehold om at innholdet er renset på forhånd).
+// Utvikler: Martin Pettersen
+// AI-støtte: Benyttet under utvikling for kodekvalitet, oppdateringer og feilsøking.
+
+
 "use client";
 
 import { motion } from "framer-motion";

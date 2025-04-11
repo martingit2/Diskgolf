@@ -1,4 +1,11 @@
-// app/api/tournaments/[id]/participants/route.ts
+// Fil: app/api/tournaments/[id]/participants/route.ts
+// Formål: API-endepunkt (GET) for å hente listen over deltakere for en spesifikk turnering.
+//         Krever autentisering. Returnerer en liste med deltakerens ID, navn og bilde, samt totalt antall deltakere.
+// Utvikler: Martin Pettersen
+// AI-støtte: Benyttet under utvikling for kodekvalitet, oppdateringer og feilsøking.
+
+
+
 import { PrismaClient } from "@prisma/client";
 import { NextResponse } from "next/server";
 import { getServerSession } from "next-auth/next";

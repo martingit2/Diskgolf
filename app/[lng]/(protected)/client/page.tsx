@@ -1,3 +1,11 @@
+// Fil: src/app/(protected)/client/page.tsx // (Antatt filsti, juster om nødvendig)
+// Formål: Klient-side komponent som henter og viser informasjon om den innloggede brukeren ved hjelp av useCurrentUser-hooken og UserInfo-komponenten.
+// Utvikler: Martin Pettersen
+// Inspirasjon: Basert på konsepter fra Antonio's Next Auth v5 tutorial (Code With Antonio).
+// AI-støtte: Benyttet under utvikling for kodekvalitet, oppdateringer og feilsøking.
+
+
+
 'use client';
 
 import { useCurrentUser } from '@/app/hooks/use-current-user';

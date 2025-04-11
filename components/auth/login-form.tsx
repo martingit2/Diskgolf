@@ -2,6 +2,7 @@
  * Filnavn: login-form.tsx
  * Beskrivelse: Komponent for brukerinnlogging med CardWrapper.
  * Utvikler: Martin Pettersen
+ * AI-støtte: Benyttet under utvikling for kodekvalitet, oppdateringer og feilsøking.
  */
 "use client";
 

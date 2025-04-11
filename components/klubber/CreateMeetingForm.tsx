@@ -1,4 +1,12 @@
-// src/components/klubber/CreateMeetingForm.tsx
+// Fil: src/components/klubber/CreateMeetingForm.tsx
+// Formål: Definerer en React-komponent for et skjema som lar brukere opprette og laste opp et møtedokument (PDF) for en klubb.
+//         Bruker `react-hook-form` for skjemahåndtering, `zod` for validering (tittel, beskrivelse, PDF-fil),
+//         og sender dataen som FormData til et API-endepunkt. Håndterer filvalg, viser valgt filnavn,
+//         sender tilbakemeldinger (loading/error/success) via `react-hot-toast`, og håndterer loading state.
+// Utvikler: Martin Pettersen
+// AI-støtte: Benyttet under utvikling for kodekvalitet, oppdateringer og feilsøking.
+
+
 "use client";
 
 import { FC, useState, ChangeEvent } from "react";

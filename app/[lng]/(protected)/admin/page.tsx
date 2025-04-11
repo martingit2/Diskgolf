@@ -1,4 +1,10 @@
-// app/(protected)/admin/page.tsx
+// Fil: /app/(protected)/admin/page.tsx
+// Formål: Side for administratorer som gir tilgang til funksjoner som brukeradministrasjon (visning, sletting), testing av admin-tilgang, og sletting av nylig opprettede testdata. Beskyttet med RoleGate.
+// Utvikler: Martin Pettersen
+// AI-støtte: Benyttet under utvikling for kodekvalitet, oppdateringer og feilsøking.
+
+
+
 "use client";
 
 import { useState } from "react";

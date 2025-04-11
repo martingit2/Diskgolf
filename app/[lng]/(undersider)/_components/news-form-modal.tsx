@@ -1,4 +1,10 @@
-// app/(undersider)/_components/news-form-modal.tsx
+// Fil: src/app/(undersider)/_components/news-form-modal.tsx
+// Formål: Modalkomponent som inneholder et skjema for å opprette eller redigere nyhetsartikler. Inkluderer tittel, innhold (rich text), kategorier, bildeopplasting og publiseringsstatus.
+// Utvikler: Martin Pettersen
+// AI-støtte: Benyttet under utvikling for kodekvalitet, oppdateringer og feilsøking.
+
+
+
 'use client';
 
 import React, { useState, useEffect, useRef } from 'react';

@@ -1,3 +1,11 @@
+// Fil: app/api/games/route.ts
+// Formål: API-endepunkt (POST) for å opprette et nytt enkeltspillerspill (singleplayer).
+//         Tar imot bane-ID, spiller-ID (valgfritt) og spillernavn, oppretter Game og GameParticipation,
+//         henter og formaterer banedata (inkl. OB-soner og distanse) og returnerer data som trengs for å starte spillet.
+// Utvikler: Martin Pettersen
+// AI-støtte: Benyttet under utvikling for kodekvalitet, oppdateringer og feilsøking.
+
+
 import { NextResponse } from "next/server";
 import { PrismaClient } from "@prisma/client";
 

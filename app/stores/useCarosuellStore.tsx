@@ -1,3 +1,10 @@
+// Fil: store/useCarouselStore.ts
+// Formål: Zustand store for å håndtere data og tilstand for banekaruseller (topprangerte og nyeste baner).
+//         Inkluderer state for banelistene, lastestatus, feilmeldinger, og funksjoner for å hente
+//         og oppdatere disse dataene fra API-endepunktet `/api/courses`.
+// Utvikler: Martin Pettersen
+// AI-støtte: Benyttet under utvikling for kodekvalitet, oppdateringer og feilsøking.
+
 import { create } from 'zustand';
 
 export type Course = {

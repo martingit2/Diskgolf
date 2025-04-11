@@ -1,3 +1,12 @@
+// Fil: components/CourseMap.tsx
+// Formål: Definerer en React-komponent ('use client') som viser et interaktivt Leaflet-kart for en spesifikk bane.
+//         Komponenten henter banedata (startpunkter, kurver, mål, OB-soner) fra et API-endepunkt basert på `courseId`,
+//         og rendrer disse elementene på kartet med tilpassede ikoner (AwesomeMarkers).
+//         Inkluderer også `AutoResizeMapMobile` for bedre visning på mobile enheter.
+// Utvikler: Martin Pettersen
+// AI-støtte: Benyttet under utvikling for kodekvalitet, oppdateringer og feilsøking.
+
+
 "use client";
 
 import L from "leaflet";

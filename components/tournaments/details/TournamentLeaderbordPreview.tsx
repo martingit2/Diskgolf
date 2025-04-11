@@ -1,4 +1,11 @@
-// components/tournaments/details/TournamentLeaderboardPreview.tsx
+// Fil: components/tournaments/details/TournamentLeaderboardPreview.tsx
+// Formål: Definerer en React-komponent ('use client') som viser en forhåndsvisning (default topp 5) av ledertavlen for en turnering.
+//         Tar imot spillerresultater, økt-ID (for lenke til full resultatside), totalt par for banen, og en valgfri grense for antall viste resultater.
+//         Bruker UI-komponenter som Card og Table for presentasjon, og inkluderer en lenke til den komplette resultatsiden.
+// Utvikler: Martin Pettersen
+// AI-støtte: Benyttet under utvikling for kodekvalitet, oppdateringer og feilsøking.
+
+
 import Link from 'next/link';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Button } from '@/components/ui/button';

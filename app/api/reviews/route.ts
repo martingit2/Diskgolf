@@ -10,6 +10,7 @@
  *     - Returnerer en liste med anmeldelser i JSON-format, inkludert brukerens navn og profilbilde.
  *   - Håndterer validering og feilmeldinger for manglende eller ugyldige data.
  * Utvikler: Martin Pettersen, Said Hussain Khawajazada
+ * AI-støtte: Benyttet under utvikling for kodekvalitet, oppdateringer og feilsøking.
  */
 
 import { NextResponse } from "next/server";

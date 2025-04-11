@@ -1,4 +1,10 @@
-// Inkluder clubId i schemaet
+// Fil: schemas/clubSettingsSchema.ts
+// Formål: Definerer et Zod-schema for validering av data relatert til klubbinnstillinger.
+//         Inkluderer felter som navn, e-post, beskrivelse, logo, sted, adresse, telefon, og postnummer med tilhørende valideringsregler.
+// Utvikler: Martin Pettersen
+
+
+
 import { z } from "zod";
 
 export const ClubSettingsSchema = z.object({

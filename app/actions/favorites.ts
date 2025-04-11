@@ -1,3 +1,12 @@
+// Fil: src/actions/toggleFavorite.ts
+// Formål: Server action for å legge til eller fjerne en bane fra en brukers favorittliste.
+//         Sjekker brukerautentisering, henter brukerens nåværende favoritter, oppdaterer listen,
+//         og lagrer endringen i databasen.
+// Utvikler: Martin Pettersen
+// AI-støtte: Benyttet under utvikling for kodekvalitet, oppdateringer og feilsøking.
+
+
+
 "use server";
 
 import { currentUser } from "../lib/auth"; // Importer autentisering

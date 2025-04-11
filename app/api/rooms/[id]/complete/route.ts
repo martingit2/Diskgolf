@@ -1,3 +1,10 @@
+// Fil: app/api/rooms/[id]/complete/route.ts
+// Formål: API-endepunkt (POST) for å markere et flerspillerrom (og det tilknyttede spillet) som fullført.
+//         Setter rommets status til "completed" og både rommet og spillet til inaktivt.
+// Utvikler: Martin Pettersen
+
+
+
 import { NextResponse } from "next/server";
 import { PrismaClient } from "@prisma/client";
 

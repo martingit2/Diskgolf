@@ -1,7 +1,14 @@
-// src/app/api/meetings/[meetingId]/route.ts
+// Fil: src/app/api/meetings/[meetingId]/route.ts
+// Formål: API-endepunkt for å håndtere spesifikke klubbmøter (referater).
+//         GET: Tillater nedlasting av PDF-filen for møtet, krever autentisering og medlemskap i klubben.
+//         DELETE: Sletter møtereferatet og tilhørende fil fra Cloudinary, krever admin-tilgang til klubben.
+// Utvikler: Martin Pettersen
+// AI-støtte: Benyttet under utvikling for kodekvalitet, oppdateringer og feilsøking.
+
+
 import { NextRequest, NextResponse } from "next/server";
 import { PrismaClient } from "@prisma/client";
-import { auth } from "@/auth"; // Use alias import for auth
+import { auth } from "@/auth"; 
 
 import { revalidatePath } from "next/cache";
 import cloudinary from "@/app/lib/cloudinary";

@@ -3,6 +3,7 @@
  * Beskrivelse: Komponent for å håndtere tilbakestilling av passord via CardWrapper (Alternativ implementasjon, muligens ikke i bruk).
  * Gir brukeren mulighet til å be om en e-post for å tilbakestille passordet.
  * Utvikler: Martin Pettersen
+ * AI-støtte: Benyttet under utvikling for kodekvalitet, oppdateringer og feilsøking.
  */
 
 "use client";

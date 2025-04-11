@@ -1,4 +1,10 @@
-// src/components/MapPopupCard.tsx
+// Fil: src/components/MapPopupCard.tsx
+// Formål: Definerer en React-komponent ('use client') spesielt designet for å vises inne i en Leaflet popup på et kart.
+//         Presenterer et kompakt informasjonskort om en bane, inkludert bilde, navn, sted, nøkkelinfo (par, nivå, hull, lengde),
+//         anmeldelser (via ReviewForm i 'small' størrelse), og knapper for å se detaljer eller starte spill.
+// Utvikler: Martin Pettersen
+// AI-støtte: Benyttet under utvikling for kodekvalitet, oppdateringer og feilsøking.
+
 "use client";
 
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -8,7 +14,7 @@ import ReviewForm from "@/app/[lng]/(protected)/_components/ReviewForm"; // Dobb
 import { useRouter } from "next/navigation";
 import { FaPlay } from "react-icons/fa";
 
-// Interface (uendret)
+// Interface 
 interface MapPopupCourse {
   id: string;
   name: string;
@@ -26,7 +32,7 @@ interface MapPopupCardProps {
   course: MapPopupCourse;
 }
 
-// Fargefunksjon (uendret)
+// Fargefunksjon 
 const getDifficultyClass = (difficulty?: string) => {
   switch (difficulty) {
     case "Lett": return "text-green-500";

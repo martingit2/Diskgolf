@@ -1,3 +1,13 @@
+// Fil: components/spill/ScoreForm.tsx
+// Formål: Definerer en React-komponent ('use client') for scoreføring under et solo-spill.
+//         Lar brukeren registrere kast og OB per hull, navigere mellom hull, og se en resultatoversikt.
+//         Lagrer score for hvert hull til et API-endepunkt (/api/games/[gameId]/scores),
+//         sporer fullføringsprosenten, og håndterer lagring og omdirigering når runden er fullført.
+// Utvikler: Martin Pettersen
+// AI-støtte: Benyttet under utvikling for kodekvalitet, oppdateringer og feilsøking.
+
+
+
 "use client";
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";

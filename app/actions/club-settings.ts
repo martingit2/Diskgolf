@@ -1,3 +1,10 @@
+// Fil: src/actions/updateClubSettings.ts
+// Formål: Server action for å oppdatere innstillinger for en spesifikk klubb (navn, adresse, telefon, postnummer, logo).
+//         Inkluderer sjekk for brukerautentisering og at brukeren har rollen ADMIN eller CLUB_LEADER for å utføre handlingen.
+// Utvikler: Martin Pettersen
+// AI-støtte: Benyttet under utvikling for kodekvalitet, oppdateringer og feilsøking.
+
+
 
 import { currentUser } from "../lib/auth";
 import client from "../lib/prismadb";

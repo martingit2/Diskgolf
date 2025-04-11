@@ -1,4 +1,11 @@
-// app/api/tournament-sessions/[sessionId]/ready/route.ts
+// Fil: app/api/tournament-sessions/[sessionId]/ready/route.ts
+// Formål: API-endepunkt (POST) for å markere en spiller som "klar" i en turneringsrunde-lobby.
+//         Validerer at innlogget bruker markerer seg selv, oppdaterer deltakerstatusen,
+//         og sjekker om alle deltakere er klare. Hvis alle er klare, oppdateres rundens status til "inProgress".
+// Utvikler: Martin Pettersen
+// AI-støtte: Benyttet under utvikling for kodekvalitet, oppdateringer og feilsøking.
+
+
 import { NextResponse } from "next/server";
 import { PrismaClient } from "@prisma/client";
 import { getServerSession } from "next-auth/next";

@@ -1,3 +1,9 @@
+// Fil: src/app/(protected)/spill/multiplayer/[roomId]/results/page.tsx
+// Formål: Viser resultatsiden for en fullført multiplayer-runde. Henter data basert på rom-ID fra URL, viser rangering, scorekort, vinner og enkel statistikk. Tilbyr muligheter for deling og å starte en ny runde.
+// Utvikler: Martin Pettersen
+// AI-støtte: Benyttet under utvikling for kodekvalitet, oppdateringer og feilsøking.
+
+
 "use client";
 import { useEffect, useState } from "react";
 import { useRouter, usePathname } from "next/navigation";

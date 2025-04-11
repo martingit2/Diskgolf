@@ -1,17 +1,23 @@
-// components/dropdown-menu-notificaton.tsx
+// Fil: components/dropdown-menu-notification.tsx
+// Formål: Definerer og eksporterer de ulike delene av en Dropdown Menu-komponent, bygget på Radix UI-primitiver og stylet med Shadcn UI (`cn`).
+//         Tilbyr tilpassede versjoner av DropdownMenu-elementer (Trigger, Content, Item, Separator, etc.) for bruk i applikasjonen, potensielt for varslingsmenyer.
+// Utvikler: Martin Pettersen
+// AI-støtte: Benyttet under utvikling for kodekvalitet, oppdateringer og feilsøking.
+
+
 "use client";
 
 import * as React from "react";
-// Importer primitivene for klarhet
+
 import * as DropdownMenuPrimitive from "@radix-ui/react-dropdown-menu";
-import { CheckIcon, ChevronRightIcon, CircleIcon } from "lucide-react"; // Importer nødvendige ikoner
+import { CheckIcon, ChevronRightIcon, CircleIcon } from "lucide-react"; 
 import { cn } from "@/app/lib/utils";
 
 
 
-// --- DEFINER ROT-KOMPONENTEN ---
+
 const DropdownMenu = DropdownMenuPrimitive.Root;
-// -----------------------------
+
 
 const DropdownMenuTrigger = DropdownMenuPrimitive.Trigger;
 

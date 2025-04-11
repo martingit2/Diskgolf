@@ -1,4 +1,10 @@
-// FILE: app/(undersider)/_components/newscard.tsx
+// Fil: src/app/(undersider)/_components/newscard.tsx
+// Formål: Komponent for å vise et individuelt nyhetskort med bilde, tittel, utdrag, metadata og (hvis brukeren er admin) knapper for redigering, sletting og publisering.
+// Utvikler: Martin Pettersen
+// AI-støtte: Benyttet under utvikling for kodekvalitet, oppdateringer og feilsøking.
+
+
+
 
 import React from 'react';
 import Link from 'next/link';

@@ -2,6 +2,7 @@
  * Filnavn: RegisterModal.tsx
  * Beskrivelse: Modal-komponent for brukerregistrering, bruker RegisterForm.
  * Utvikler: Martin Pettersen
+ * AI-støtte: Benyttet under utvikling for kodekvalitet, oppdateringer og feilsøking.
  */
 "use client";
 

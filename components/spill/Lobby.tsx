@@ -1,3 +1,12 @@
+// Fil: components/spill/Lobby.tsx
+// Formål: Definerer en React-komponent ('use client') som fungerer som lobbyen for et multiplayer-spillrom.
+//         Viser rominformasjon (navn, bane) og en liste over deltakere med deres klar-status.
+//         Henter og oppdaterer romdata periodisk fra et API-endepunkt (/api/rooms/[roomId]).
+//         Lar den aktuelle brukeren markere seg som klar, og omdirigerer til selve spillet når romstatusen endres til "inProgress".
+// Utvikler: Martin Pettersen
+// AI-støtte: Benyttet under utvikling for kodekvalitet, oppdateringer og feilsøking.
+
+
 "use client";
 import { useEffect, useState } from "react";
 import { useRouter, useParams } from "next/navigation";

@@ -3,6 +3,7 @@
  * Beskrivelse: Hjelpefunksjoner for å generere og lagre tokens for tofaktorautentisering, passordtilbakestilling og e-postverifisering.
  * Funksjonene sikrer at eksisterende tokens slettes før nye opprettes for å unngå duplikater og forbedre sikkerheten.
  * Utvikler: Martin Pettersen
+ * AI-støtte: Benyttet under utvikling for kodekvalitet, oppdateringer og feilsøking.
  */
 
 

@@ -1,4 +1,9 @@
-// FILE: app/api/news/featured/route.ts
+// Fil: app/api/news/featured/route.ts
+// Formål: API-endepunkt (GET) for å hente et begrenset antall fremhevede (siste publiserte) nyhetsartikler.
+//         Returnerer de nyeste publiserte artiklene med forfatter- og kategoriinformasjon.
+// Utvikler: Martin Pettersen
+// AI-støtte: Benyttet under utvikling for kodekvalitet, oppdateringer og feilsøking.
+
 import { NextResponse } from 'next/server';
 import { PrismaClient, Prisma } from '@prisma/client';
 

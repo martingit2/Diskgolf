@@ -1,4 +1,11 @@
-// components/charts/RankChartPlot.tsx
+// Fil: components/charts/RankChartPlot.tsx
+// Formål: Definerer en gjenbrukbar React-komponent for å vise et linjediagram spesifikt for plasseringsutvikling over tid (f.eks. i turneringer) ved hjelp av Recharts.
+//         Komponenten visualiserer tidsseriedata for rangering, inkluderer en reversert Y-akse (lavere tall er bedre),
+//         tilpassede tooltips, akseetiketter og håndterer datavalidering og formatering.
+// Utvikler: Martin Pettersen
+// AI-støtte: Benyttet under utvikling for kodekvalitet, oppdateringer og feilsøking.
+
+
 "use client";
 
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Label } from 'recharts';

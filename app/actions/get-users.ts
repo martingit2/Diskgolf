@@ -1,4 +1,11 @@
-// app/actions/get-users.ts
+// Fil: app/actions/get-users.ts
+// Formål: Server action for administratorer for å hente en liste over alle brukere fra databasen.
+//         Returnerer en liste med brukerobjekter uten sensitive felt som passord. Inkluderer autorisasjonssjekk.
+// Utvikler: Martin Pettersen
+// AI-støtte: Benyttet under utvikling for kodekvalitet, oppdateringer og feilsøking.
+
+
+
 "use server";
 
 import { PrismaClient, UserRole, User } from "@prisma/client";

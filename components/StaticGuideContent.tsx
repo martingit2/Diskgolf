@@ -1,4 +1,11 @@
-// src/app/guide/_components/StaticGuideContent.tsx
+// Fil: src/app/guide/_components/StaticGuideContent.tsx
+// Formål: Definerer en React-komponent ('use client') som inneholder en statisk, hardkodet versjon av nybegynnerguiden til discgolf.
+//         Brukes som en fallback når dynamisk innhold ikke er tilgjengelig. Inkluderer tekstseksjoner, kort, bilder og call-to-action.
+//         Benytter Framer Motion for animasjoner og Lucide-ikoner for visuell forbedring.
+// Utvikler: Martin Pettersen
+
+
+
 import { motion } from "framer-motion";
 import Image from "next/image";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";

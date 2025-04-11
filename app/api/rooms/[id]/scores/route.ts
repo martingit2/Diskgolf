@@ -1,3 +1,11 @@
+// Fil: app/api/rooms/[id]/scores/route.ts
+// Formål: API-endepunkt for å håndtere scores for et spesifikt flerspillerrom.
+//         GET: Henter alle registrerte scores for spillet knyttet til rommet.
+//         POST: Lagrer eller oppdaterer score (kast, OB) for et spesifikt hull, spiller og rom. Bruker 'upsert' for å håndtere både nye og eksisterende scoreoppføringer.
+// Utvikler: Martin Pettersen
+// AI-støtte: Benyttet under utvikling for kodekvalitet, oppdateringer og feilsøking.
+
+
 import { NextResponse } from "next/server";
 import { PrismaClient } from "@prisma/client";
 

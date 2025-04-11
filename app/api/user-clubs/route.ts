@@ -1,3 +1,11 @@
+// Fil: app/api/user-clubs/route.ts
+// Formål: API-endepunkt for å håndtere en brukers klubbmedlemskap.
+//         GET: Henter alle klubber en spesifikk bruker er medlem av, inkludert status om det er brukerens primærklubb.
+//         POST: Setter eller fjerner en spesifikk klubb som brukerens primærklubb.
+// Utvikler: Martin Pettersen
+// AI-støtte: Benyttet under utvikling for kodekvalitet, oppdateringer og feilsøking.
+
+
 import { NextRequest, NextResponse } from "next/server";
 import { PrismaClient } from "@prisma/client";
 

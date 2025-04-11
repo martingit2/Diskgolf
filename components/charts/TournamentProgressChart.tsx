@@ -1,3 +1,10 @@
+// Fil: components/charts/TournamentProgressChart.tsx
+// Formål: Definerer en React-komponent for å vise et linjediagram som visualiserer progresjon (score og plassering) gjennom rundene i en turnering.
+//         Bruker Recharts-biblioteket og to Y-akser for å vise de ulike metrikkene.
+// Utvikler: Martin Pettersen
+// AI-støtte: Benyttet under utvikling for kodekvalitet, oppdateringer og feilsøking.
+
+
 "use client";
 
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';

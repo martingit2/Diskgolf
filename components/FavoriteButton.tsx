@@ -1,12 +1,17 @@
-// src/components/FavoriteButton.tsx (Tilbake til react-hot-toast)
+// Fil: src/components/FavoriteButton.tsx
+// Formål: Definerer en React-komponent ('use client') som fungerer som en "favoritt"-knapp for en bane.
+//         Bruker `useTransition` for asynkron oppdatering via `toggleFavorite` (server action),
+//         utfører optimistisk UI-oppdatering, og gir brukerfeedback (suksess/feil) via `react-hot-toast`.
+// Utvikler: Martin Pettersen
+// AI-støtte: Benyttet under utvikling for kodekvalitet, oppdateringer og feilsøking.
+
 "use client";
 
 import { useState, useTransition, useEffect } from "react";
 import { Heart, Loader2 } from "lucide-react";
 import toast from "react-hot-toast";
 import { toggleFavorite } from "@/app/actions/favorites";
-// Shadcn Button er fortsatt valgfritt her
-// import { Button } from "@/components/ui/button";
+
 
 interface FavoriteButtonProps {
   courseId: string;

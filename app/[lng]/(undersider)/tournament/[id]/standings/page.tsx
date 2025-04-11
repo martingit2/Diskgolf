@@ -1,4 +1,10 @@
-// app/tournament/[id]/standings/page.tsx
+// Fil: src/app/tournament/[id]/standings/page.tsx
+// Formål: Viser den offisielle stillingen (leaderboard) for en spesifikk turnering, inkludert rangering, spillernavn, totalscore og lenke til detaljer per spiller.
+// Utvikler: Martin Pettersen
+// AI-støtte: Benyttet under utvikling for kodekvalitet, oppdateringer og feilsøking.
+
+
+
 "use client";
 import { useState, useEffect, use } from "react";
 import { useRouter } from "next/navigation";

@@ -1,14 +1,9 @@
-
-// api/courses/[id]/route.ts
-/*
-* Utvikler: Martin Pettersen, Said Hussain Khawajazada
- */
-
-
-
-
-
-
+// Fil: api/courses/[id]/route.ts
+// Formål: API-endepunkt (GET) for å hente detaljert informasjon om en spesifikk bane basert på ID.
+//         Inkluderer relaterte data (start, mål, kurver, OB-soner, anmeldelser, klubb) og beregner
+//         total banelengde ved hjelp av Haversine-formelen samt gjennomsnittlig rating.
+// Utvikler: Martin Pettersen, Said Hussain Khawajazada
+// AI-støtte: Benyttet under utvikling for kodekvalitet, oppdateringer og feilsøking.
 
 
 

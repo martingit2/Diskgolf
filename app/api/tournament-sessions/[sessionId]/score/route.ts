@@ -1,4 +1,12 @@
-// app/api/tournament-sessions/[sessionId]/score/route.ts
+// Fil: app/api/tournament-sessions/[sessionId]/score/route.ts
+// Formål: API-endepunkt (POST) for å lagre eller oppdatere scores for et spesifikt hull i en turneringsrunde.
+//         Tar imot hullnummer og en liste med scores (spiller-ID, kast, OB), validerer dataen,
+//         og bruker `upsert` i en transaksjon for å lagre/oppdatere for hver spiller.
+// Utvikler: Martin Pettersen
+// AI-støtte: Benyttet under utvikling for kodekvalitet, oppdateringer og feilsøking.
+
+
+
 import { NextResponse } from "next/server";
 import { PrismaClient } from "@prisma/client";
 import { getServerSession } from "next-auth/next";

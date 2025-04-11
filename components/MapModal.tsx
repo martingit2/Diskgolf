@@ -1,3 +1,11 @@
+// Fil: components/MapModal.tsx 
+// Formål: Definerer en React-komponent ('use client') som viser en modal med et interaktivt Leaflet-kart (via CourseMap)
+//         og detaljert baneinformasjon (via GolfInfo) for en spesifikk bane. Komponenten henter banedata
+//         når modalen åpnes, og GolfInfo beregner avstander mellom tee/kurv og til OB-soner.
+// Utvikler: Martin Pettersen
+// AI-støtte: Benyttet under utvikling for kodekvalitet, oppdateringer og feilsøking.
+
+
 "use client";
 
 import { useState, useEffect } from "react";

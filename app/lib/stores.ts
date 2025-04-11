@@ -1,13 +1,18 @@
-// lib/stores.ts
+// Fil: lib/stores.ts 
+// Formål: Definerer TypeScript-typer/interfaces for sentrale datastrukturer i applikasjonen,
+//         slik som 'Review' (anmeldelse) og 'Course' (bane), for å sikre datakonsistens.
+// Utvikler: Martin Pettersen
+
+
 export type Review = {
     id: string;
     username: string;
     comment: string;
     rating: number;
     role: string;
-    createdAt?: string; // Legg til hvis nødvendig
-    courseId?: string; // Legg til hvis nødvendig
-    user?: { name: string; image?: string }; // Legg til hvis nødvendig
+    createdAt?: string; 
+    courseId?: string; 
+    user?: { name: string; image?: string }; 
   };
   
   export type Course = {

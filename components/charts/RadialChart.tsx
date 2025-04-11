@@ -1,4 +1,11 @@
-// components/charts/RadialChartPlot.tsx
+// Fil: components/charts/RadialChartPlot.tsx
+// Formål: Definerer en gjenbrukbar React-komponent for å vise et radialt søylediagram ved hjelp av Recharts-biblioteket.
+//         Komponenten visualiserer kategorisk data (f.eks. turneringsplasseringer) som radiale søyler,
+//         inkluderer sentrert tekst (f.eks. totalt antall), tilpassede tooltips, legender og håndterer fargetildeling og sortering av data.
+// Utvikler: Martin Pettersen
+// AI-støtte: Benyttet under utvikling for kodekvalitet, oppdateringer og feilsøking.
+
+
 "use client";
 
 import { RadialBarChart, RadialBar, Legend, ResponsiveContainer, Tooltip, Cell, PolarAngleAxis } from 'recharts';

@@ -1,4 +1,10 @@
-// hooks/use-debounce.ts
+// Fil: hooks/use-debounce.ts
+// Formål: Custom React hook for å forsinke oppdateringen av en verdi (debouncing). Nyttig for å begrense hyppige oppdateringer,
+//         som f.eks. API-kall ved tastetrykk i et søkefelt. Returnerer den forsinkede verdien.
+// Utvikler: Martin Pettersen
+// AI-støtte: Benyttet under utvikling for kodekvalitet, oppdateringer og feilsøking.
+
+
 import { useState, useEffect } from 'react';
 
 /**
@@ -32,5 +38,3 @@ export function useDebounce<T>(value: T, delay: number): T {
   return debouncedValue;
 }
 
-// Gjør hooken tilgjengelig for import
-// export default useDebounce; // Kan bruke default export hvis du foretrekker det

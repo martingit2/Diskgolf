@@ -1,4 +1,8 @@
-// Filnavn: components/ClubTabs.tsx
+// Fil: components/ClubTabs.tsx
+// Formål: Komponent som viser faner for navigasjon innenfor en klubbside. Viser/skjuler faner basert på brukerens rettigheter.
+// Utvikler: Martin Pettersen
+// AI-støtte: Benyttet under utvikling for kodekvalitet, oppdateringer og feilsøking.
+
 "use client";
 
 import { useState } from "react";

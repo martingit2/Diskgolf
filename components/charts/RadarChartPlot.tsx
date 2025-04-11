@@ -1,4 +1,11 @@
-// components/charts/RadarChartPlot.tsx
+// Fil: components/charts/RadarChartPlot.tsx
+// Formål: Definerer en gjenbrukbar React-komponent for å vise et radardiagram ved hjelp av Recharts-biblioteket.
+//         Komponenten visualiserer fleraksede data (f.eks. ulike prestasjonsmetrikker),
+//         og inkluderer tilpassede tooltips, dynamisk skalering av akser og grunnleggende datahåndtering.
+// Utvikler: Martin Pettersen
+// AI-støtte: Benyttet under utvikling for kodekvalitet, oppdateringer og feilsøking.
+
+
 "use client";
 
 import { RadarChart, PolarGrid, PolarAngleAxis, PolarRadiusAxis, Radar, ResponsiveContainer, Tooltip, Legend } from 'recharts';

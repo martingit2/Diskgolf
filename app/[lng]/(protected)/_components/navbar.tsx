@@ -1,4 +1,8 @@
-// components/layout/navbar.tsx (eller hvor filen din ligger)
+// Fil: /_components/navbar.tsx
+// Formål: Hovednavigasjonskomponent for applikasjonen. Viser relevante lenker og brukerinformasjon basert på autentiseringsstatus og brukerrolle. Inkluderer også varsling for nye feilrapporter for administratorer og klubbledere.
+// Utvikler: Martin Pettersen
+// AI-støtte: Benyttet under utvikling for kodekvalitet, oppdateringer og feilsøking.
+
 "use client";
 
 import Link from "next/link";

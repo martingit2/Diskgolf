@@ -1,4 +1,10 @@
-// app/(undersider)/turnerings-spill/[sessionId]/results/page.tsx
+// Fil: src/app/(undersider)/turnerings-spill/[sessionId]/results/page.tsx
+// Formål: Viser den detaljerte resultatlisten (leaderboard) for en spesifikk, fullført turneringsrunde (session). Henter data, beregner score og rangering, og presenterer det i en tabell.
+// Utvikler: Martin Pettersen
+// AI-støtte: Benyttet under utvikling for kodekvalitet, oppdateringer og feilsøking.
+
+
+
 'use client';
 
 import { useState, useEffect, useCallback } from 'react';

@@ -3,6 +3,7 @@
  * Beskrivelse: Provider-komponent for å rendre Toaster-komponenten som viser varslinger.
  * Sikrer at Toaster kun rendres på klienten for å unngå hydreringsfeil.
  * Utvikler: Martin Pettersen
+ * AI-støtte: Benyttet under utvikling for kodekvalitet, oppdateringer og feilsøking.
  */
 
 "use client"; // Nødvendig for useState og useEffect

@@ -1,4 +1,13 @@
-// app/api/tournaments/[id]/standings/route.ts
+// Fil: app/api/tournaments/[id]/standings/route.ts
+// Formål: API-endepunkt (GET) for å hente resultatlisten (standings) for en spesifikk turnering.
+//         Hvis turneringen er 'COMPLETED', hentes de lagrede resultatene fra TournamentScore.
+//         Hvis turneringen er 'IN_PROGRESS', beregnes en live-stilling basert på TournamentGameScore.
+//         For andre statuser returneres en tom liste. Resultatene sorteres og rangeres før retur.
+// Utvikler: Martin Pettersen
+// AI-støtte: Benyttet under utvikling for kodekvalitet, oppdateringer og feilsøking.
+
+
+
 import { PrismaClient, TournamentGameScore, TournamentStatus } from "@prisma/client";
 import { NextResponse } from "next/server";
 
