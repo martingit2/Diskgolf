@@ -1,10 +1,6 @@
 /* Fil: /globals.css */
 /* Formål: Definerer globale stiler for applikasjonen ved hjelp av Tailwind CSS. */
-/*         Inkluderer Tailwind base, komponenter og verktøy, definerer CSS-variabler for tema (lys/mørk), */
-/*         og legger til egendefinerte globale klasser og spesifikke stiler for tredjepartsbiblioteker som Leaflet og Swiper. */
 /* Utvikler: Martin Pettersen */
-
-
 
 @tailwind base;
 @tailwind components;
@@ -67,7 +63,7 @@
   }
 
   .dark {
-    /* ... dark mode variables ... */
+    /* Dark mode variabler */
     --background: 222.2 84% 4.9%;
     --foreground: 210 40% 98%;
     --card: 222.2 84% 4.9%;
@@ -105,54 +101,44 @@
 }
 
 
-/* Sikrer at kartet ligger bak alt annet */
+/* Leaflet map styles */
 .leaflet-container {
   z-index: 0 !important;
 }
-
-/* Kartkontroller skal være synlige, men under modaler */
-.leaflet-top, 
+.leaflet-top,
 .leaflet-bottom {
   z-index: 400 !important;
 }
-
-/* Popups og markører skal være over kontroller, men under modaler */
 .leaflet-pane,
 .leaflet-marker-pane,
 .leaflet-popup-pane {
   z-index: 450 !important;
 }
-
-
 .leaflet-popup-content-wrapper {
   padding: 0 !important;
-  border-radius: 10px !important; /* Matcher rounded-lg */
-  background-color: transparent !important; /* Viktig */
-  box-shadow: none !important; /* Viktig */
-  overflow: hidden !important; /* Viktig */
+  border-radius: 10px !important;
+  background-color: transparent !important;
+  box-shadow: none !important;
+  overflow: hidden !important;
 }
-
 .leaflet-popup-content {
   margin: 0 !important;
   width: 250px !important;
-  background-color: transparent !important; /* Sørg for at card styrer */
-  /* Hindre at Leaflet legger til scrollbar for tidlig */
+  background-color: transparent !important;
   max-height: none !important;
-  overflow-y: auto !important; /* Tillat scroll HVIS innholdet blir for høyt */
+  overflow-y: auto !important;
 }
 
 
-
+/* Custom utility classes */
 .avatar {
   width: 60px;
   height: 60px;
   border-radius: 50%;
-  border: 2px solid #fffffffd; /* Tailwind grønn farge */
+  border: 2px solid #fffffffd;
   object-fit: cover;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
-
-
 .clamp-2 {
   display: -webkit-box;
   -webkit-line-clamp: 2;
@@ -161,57 +147,46 @@
 }
 
 
-/* Styling for Swiper navigation arrows in BaneCarousel */
+/* Swiper styles for BaneCarousel */
 .bane-carousel-swiper .swiper-button-next::after,
 .bane-carousel-swiper .swiper-button-prev::after {
-  color: #4ade80; /* Tailwind's green-400 (en lys grønnfarge) */
-  transition: color 0.2s ease-in-out; /* Legg til en myk overgang */
-}
-
-
-.bane-carousel-swiper .swiper-button-next:hover::after,
-.bane-carousel-swiper .swiper-button-prev:hover::after {
-  color: #22c55e; /* Tailwind's green-500 (litt mørkere) */
-}
-
-
-/* Sikre at pagination-prikkene ikke får pilfargen (i tilfelle konflikt) */
-.bane-carousel-swiper .swiper-pagination-bullet {
-    background-color: #16a34a; /* Tilbake til din opprinnelige pagination-farge (green-600) */
-}
-.bane-carousel-swiper .swiper-pagination-bullet-active {
-    background-color: #15803d; /* Kanskje en mørkere grønn for aktiv (green-700) */
-}
-
-
-/* === Styling for Swiper controls in ReviewCarousel === */
-.review-carousel-swiper .swiper-button-next::after,
-.review-carousel-swiper .swiper-button-prev::after {
-  color: #4ade80; /* Tailwind's green-400 (lys grønn) */
-  font-size: 1.5rem; /* Juster størrelse om ønskelig */
+  color: #4ade80;
   transition: color 0.2s ease-in-out;
 }
+.bane-carousel-swiper .swiper-button-next:hover::after,
+.bane-carousel-swiper .swiper-button-prev:hover::after {
+  color: #22c55e;
+}
+.bane-carousel-swiper .swiper-pagination-bullet {
+    background-color: #16a34a;
+}
+.bane-carousel-swiper .swiper-pagination-bullet-active {
+    background-color: #15803d;
+}
 
+
+/* Swiper styles for ReviewCarousel */
+.review-carousel-swiper .swiper-button-next::after,
+.review-carousel-swiper .swiper-button-prev::after {
+  color: #4ade80;
+  font-size: 1.5rem;
+  transition: color 0.2s ease-in-out;
+}
 .review-carousel-swiper .swiper-button-next:hover::after,
 .review-carousel-swiper .swiper-button-prev:hover::after {
-  color: #22c55e; /* Tailwind's green-500 (litt mørkere) */
+  color: #22c55e;
 }
-
 .review-carousel-swiper .swiper-pagination-bullet {
-    background-color: #16a34a !important; /* green-600 */
-    opacity: 0.7; /* Litt svakere for inaktive */
+    background-color: #16a34a !important;
+    opacity: 0.7;
     transition: background-color 0.2s ease-in-out, opacity 0.2s ease-in-out;
 }
-
 .review-carousel-swiper .swiper-pagination-bullet-active {
-    background-color: #15803d !important; /* green-700 */
-    opacity: 1; /* Full opasitet for aktiv */
+    background-color: #15803d !important;
+    opacity: 1;
 }
-
-
 .review-carousel-swiper .swiper-button-next,
 .review-carousel-swiper .swiper-button-prev {
-    /* padding: 1rem; */ /* Uncomment og juster ved behov */
-    /* background-color: rgba(255, 255, 255, 0.5); */ /* Eksempel: svak bakgrunn */
-    /* border-radius: 50%; */
+    /* Styling for Swiper buttons if needed */
 }
+
