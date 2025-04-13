@@ -1,25 +1,22 @@
-
 // Fil: /app/(protected)/_components/TabNavigation.tsx
 // Formål: Komponent som rendrer navigeringsfaner for ulike klubbadministrasjonsseksjoner. Viser faner basert på brukerrolle og oppdaterer valgt fane ved klikk.
 // Utvikler: Martin Pettersen
 // AI-støtte: Benyttet under utvikling for kodekvalitet, oppdateringer og feilsøking.
 
-
-
 "use client";
 
 import { FC } from "react";
+import { UserRole } from "@prisma/client";
 
-
-// Props for TabNavigation (trenger ikke clubId for dette formålet lenger)
+// Props for TabNavigation
 interface TabNavigationProps {
   selectedTab: string;
   setSelectedTab: (tab: string) => void;
-  userRole: string;
+  userRole: UserRole | string; // Kan være Enum eller string fra session
 }
 
 const TabNavigation: FC<TabNavigationProps> = ({ selectedTab, setSelectedTab, userRole }) => {
-  // console.log("TabNavigation rendered. Selected tab:", selectedTab);
+
 
   return (
     // Bruk w-full for å la containeren bestemme bredden
@@ -42,14 +39,19 @@ const TabNavigation: FC<TabNavigationProps> = ({ selectedTab, setSelectedTab, us
         </button>
 
         {/* Klubbnyheter (kun knapp, innhold vises i parent) */}
-        {(userRole === "ADMIN" || userRole === "CLUB_LEADER") && (
-          <button onClick={() => setSelectedTab("redigerKlubb")} className={`py-2 px-3 sm:px-4 text-xs sm:text-sm font-semibold whitespace-nowrap ${selectedTab === "redigerKlubb" ? "text-green-700 border-b-2 border-green-700" : "text-gray-700 hover:text-green-700"}`}>
+        {(userRole === UserRole.ADMIN || userRole === UserRole.CLUB_LEADER) && ( 
+          <button
+            onClick={() => setSelectedTab("klubbNyheter")}
+            className={`py-2 px-3 sm:px-4 text-xs sm:text-sm font-semibold whitespace-nowrap ${
+             
+              selectedTab === "klubbNyheter" ? "text-green-700 border-b-2 border-green-700" : "text-gray-700 hover:text-green-700"
+            }`}
+          >
             Nyheter
           </button>
         )}
 
         {/* Opprett Klubb */}
-
         <button onClick={() => setSelectedTab("opprettKlubb")} className={`py-2 px-3 sm:px-4 text-xs sm:text-sm font-semibold whitespace-nowrap ${selectedTab === "opprettKlubb" ? "text-green-700 border-b-2 border-green-700" : "text-gray-700 hover:text-green-700"}`}>
           Opprett Klubb
         </button>

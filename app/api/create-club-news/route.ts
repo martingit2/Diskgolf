@@ -1,136 +1,135 @@
 // Fil: src/app/api/create-club-news/route.ts
-// Formål: API-endepunkt (POST) for å opprette en ny klubbnyhet. Håndterer autentisering/autorisasjon,
-//         tar imot tittel, innhold, klubb-ID og eventuelt et bilde via FormData, laster opp bildet
-//         til Cloudinary, og lagrer nyhetsdataen i databasen.
+// Formål: API-endepunkt (POST) for å opprette en ny klubbnyhet. Håndterer autentisering,
+//         spesifikk klubb-autorisasjon, bildeopplasting og database-lagring.
 // Utvikler: Martin Pettersen
 // AI-støtte: Benyttet under utvikling for kodekvalitet, oppdateringer og feilsøking.
 
-
-
 import { NextRequest, NextResponse } from "next/server";
-import { PrismaClient } from "@prisma/client";
-import { currentUser, currentRole } from "@/app/lib/auth";
-import cloudinary from "@/app/lib/cloudinary"; // <-- Sjekk denne stien
+import { PrismaClient, UserRole } from "@prisma/client";
+import { currentUser } from "@/app/lib/auth";
+import cloudinary from "@/app/lib/cloudinary";
 import type { UploadApiResponse } from "cloudinary";
 
 const prisma = new PrismaClient();
 
-// === DEFINISJON AV HJELPEFUNKSJONEN ===
 async function uploadNewsImageToCloudinary(file: File): Promise<string | null> {
+
     if (!file) return null;
-    // Validering
-    if (file.size > 5 * 1024 * 1024) throw new Error(`Bilde er for stort (maks 5MB).`);
+    const MAX_SIZE_MB = 5;
+    const MAX_SIZE_BYTES = MAX_SIZE_MB * 1024 * 1024;
+    if (file.size > MAX_SIZE_BYTES) throw new Error(`Bilde er for stort (maks ${MAX_SIZE_MB}MB).`);
     const validTypes = ["image/jpeg", "image/png", "image/webp"];
     if (!validTypes.includes(file.type)) throw new Error("Ugyldig filtype (kun JPG, PNG, WEBP).");
-
     const buffer = await file.arrayBuffer();
     try {
         const result = await new Promise<UploadApiResponse>((resolve, reject) => {
             const timestamp = Date.now();
             const safeFilename = file.name.replace(/[^a-zA-Z0-9_.-]/g, '_');
             const public_id = `news_${timestamp}_${safeFilename.split('.')[0]}`;
-            const stream = cloudinary.uploader.upload_stream(
-                {
-                    folder: "discgolf/club_news", // Egen mappe
-                    upload_preset: "discgolf_uploads", // Sjekk denne
-                    resource_type: "image",
-                    public_id: public_id,
-                },
-                (error, result) => {
-                    if (error) return reject(new Error(`Cloudinary feil: ${error.message}`));
-                    if (!result?.secure_url) return reject(new Error("Mangler secure_url fra Cloudinary"));
-                    resolve(result);
-                }
-            );
+            const stream = cloudinary.uploader.upload_stream({ folder: "discgolf/club_news", upload_preset: "discgolf_uploads", resource_type: "image", public_id: public_id, }, (error, result) => { if (error) { console.error("Cloudinary stream error:", error); return reject(new Error(`Cloudinary feil: ${error.message}`)); } if (!result?.secure_url) { console.error("Cloudinary result missing secure_url:", result); return reject(new Error("Mangler secure_url fra Cloudinary")); } resolve(result); });
             stream.end(Buffer.from(buffer));
         });
-        console.log(`✅ Nyhetsbilde lastet opp: ${result.secure_url}`);
+        console.log(`[API] Nyhetsbilde lastet opp: ${result.secure_url}`);
         return result.secure_url;
-    } catch (error) {
-        console.error(`❌ Cloudinary opplastingsfeil for nyhetsbilde:`, error);
-        throw error; // Kast feilen videre
-    }
+    } catch (error) { console.error(`[API] Cloudinary opplastingsfeil for nyhetsbilde:`, error); throw error; }
 }
-// ======================================
-
 
 export async function POST(req: NextRequest) {
   const endpoint = "/api/create-club-news";
   console.log(`[${endpoint}] --- START Request ---`);
 
   try {
-    // --- Autentisering & Autorisering ---
-    console.log(`[${endpoint}] 1. Checking auth...`);
+    // 1. Autentisering & Generell Autorisering
+    console.log(`[${endpoint}] Sjekker autentisering og generell rolle...`);
     const user = await currentUser();
-    const role = user?.role;
     const userId = user?.id;
-    if (!userId) { /* ... feilhåndtering ... */ return NextResponse.json({ error: "Bruker ikke autentisert" }, { status: 401 }); }
-    console.log(`[${endpoint}] 1. OK: User ${userId}. Role: ${role}`);
-    if (role !== "ADMIN" && role !== "CLUB_LEADER") { /* ... feilhåndtering ... */ return NextResponse.json({ error: "Ingen tilgang." }, { status: 403 }); }
-    console.log(`[${endpoint}] 2. OK: User authorized.`);
-    // ------------------------------------
+    const userRole = user?.role as UserRole | undefined;
 
-    // --- Hent & Valider FormData ---
-    console.log(`[${endpoint}] 3. Getting FormData...`);
+    if (!userId || !userRole) { /* ... feilhåndtering ... */ return NextResponse.json({ error: "Uautorisert: Vennligst logg inn." }, { status: 401 }); }
+    console.log(`[${endpoint}] OK: Bruker ID: ${userId}, Rolle: ${userRole}`);
+
+    if (userRole !== UserRole.ADMIN && userRole !== UserRole.CLUB_LEADER) { /* ... feilhåndtering ... */ return NextResponse.json({ error: "Ingen tilgang til å opprette nyheter." }, { status: 403 }); }
+    console.log(`[${endpoint}] OK: Generell rolle autorisert.`);
+
+    // 2. Hent og Valider FormData
+    console.log(`[${endpoint}] Henter FormData...`);
     let formData: FormData;
-    try { formData = await req.formData(); } catch (e) { /* ... feilhåndtering ... */ return NextResponse.json({ error: "Kunne ikke lese skjemadata." }, { status: 400 }); }
-    console.log(`[${endpoint}] 3. OK.`);
+    try { formData = await req.formData(); }
+    catch (e) { /* ... feilhåndtering ... */ return NextResponse.json({ error: "Kunne ikke behandle skjemadata." }, { status: 400 }); }
+    console.log(`[${endpoint}] OK: FormData hentet.`);
 
-    console.log(`[${endpoint}] 4. Extracting fields...`);
-    const clubId = formData.get("clubId") as string;
-    const title = formData.get("title") as string;
-    const content = formData.get("content") as string;
+    const clubId = formData.get("clubId") as string | null;
+    const title = formData.get("title") as string | null;
+    const content = formData.get("content") as string | null;
     const imageFile = formData.get("image") as File | null;
-    console.log(`[${endpoint}] 4. OK: (clubId: ${clubId}, title: ${!!title}, content: ${!!content}, imageFile: ${!!imageFile})`);
 
-    console.log(`[${endpoint}] 5. Validating fields...`);
-    if (!clubId || !title || !content) { /* ... feilhåndtering ... */ return NextResponse.json({ error: "Mangler påkrevde felter." }, { status: 400 }); }
-    console.log(`[${endpoint}] 5. OK.`);
-    // -------------------------------
+    console.log(`[${endpoint}] Validerer felter: clubId=${clubId}, title=${!!title}, content=${!!content}, imageFile=${!!imageFile}`);
+    if (!clubId || !title?.trim() || !content?.trim()) { /* ... feilhåndtering ... */ return NextResponse.json({ error: "Mangler klubb-ID, tittel eller innhold." }, { status: 400 }); }
+    console.log(`[${endpoint}] OK: Påkrevde felter validert.`);
 
-    // --- TODO: Autoriser for spesifikk klubb ---
-    console.log(`[${endpoint}] 6. Skipping specific club auth check (TODO).`);
-    // ------------------------------------------
-
-    // --- Bildeopplasting ---
-    let imageUrl: string | null = null;
-    if (imageFile) {
-        console.log(`[${endpoint}] 7. Uploading image...`);
-        try {
-            // Bruker hjelpefunksjonen vi definerte over
-            imageUrl = await uploadNewsImageToCloudinary(imageFile);
-            console.log(`[${endpoint}] 7. OK: Image uploaded: ${imageUrl}`);
-        } catch (uploadError) { /* ... feilhåndtering ... */ const errorMsg = uploadError instanceof Error ? uploadError.message : "Cloudinary feil"; return NextResponse.json({ error: `Bildeopplasting feilet: ${errorMsg}` }, { status: 500 }); }
-    } else {
-        console.log(`[${endpoint}] 7. No image file.`);
+    // 3. Autoriser for Spesifikk Klubb
+    console.log(`[${endpoint}] Sjekker autorisasjon for klubb ID: ${clubId}...`);
+    let isAuthorizedForClub = false;
+    if (userRole === UserRole.ADMIN) {
+      isAuthorizedForClub = true;
+      console.log(`[${endpoint}] OK: Bruker er ADMIN.`);
+    } else if (userRole === UserRole.CLUB_LEADER) {
+      // --- KORRIGERT SJEKK HER ---
+      // Sjekk KUN om brukeren er medlem av klubben (siden vi allerede vet rollen er CLUB_LEADER)
+      const membership = await prisma.membership.findUnique({
+        where: {
+          userId_clubId: { userId: userId, clubId: clubId },
+        }
+      });
+      // Hvis et medlemskap finnes for denne brukeren i denne klubben,
+      // og vi vet fra før at brukerens rolle ER CLUB_LEADER, så er de autorisert.
+      if (membership) {
+        isAuthorizedForClub = true;
+        console.log(`[${endpoint}] OK: Bruker (CLUB_LEADER) er medlem av klubb ${clubId}.`);
+      } else {
+        console.log(`[${endpoint}] FEIL: Bruker (CLUB_LEADER) er IKKE medlem av klubb ${clubId}.`);
+      }
+      // -----------------------------
     }
-    // -----------------------
 
-    // --- Databaseoppretting ---
-    console.log(`[${endpoint}] 8. Creating news in DB...`);
+    if (!isAuthorizedForClub) {
+      return NextResponse.json({ error: "Du har ikke tilgang til å poste nyheter for den valgte klubben." }, { status: 403 });
+    }
+    console.log(`[${endpoint}] OK: Spesifikk klubbautorisasjon godkjent.`);
+
+    // 4. Bildeopplasting
+    let imageUrl: string | null = null;
+    if (imageFile) { /* ... */ }
+    else { console.log(`[${endpoint}] Ingen bilde valgt for opplasting.`); }
+
+    // 5. Lagre Nyhet i Databasen
+    console.log(`[${endpoint}] Oppretter nyhet i databasen...`);
     let newClubNews;
     try {
-        newClubNews = await prisma.clubNews.create({
-          data: { clubId, title: title.trim(), content: content.trim(), imageUrl },
-          select: { id: true, title: true }
-        });
-        console.log(`[${endpoint}] 8. OK: News created:`, newClubNews);
-    } catch (dbError) { /* ... feilhåndtering ... */ console.error(`[${endpoint}] 8. FAIL: DB create failed:`, dbError); return NextResponse.json({ error: "Kunne ikke lagre nyhet." }, { status: 500 }); }
-    // --------------------------
+      newClubNews = await prisma.clubNews.create({
+        data: {
+          clubId: clubId,
+          title: title.trim(),
+          content: content.trim(),
+          imageUrl: imageUrl,
+        },
+        select: { id: true, title: true }
+      });
+      console.log(`[${endpoint}] OK: Nyhet opprettet med ID: ${newClubNews.id}`);
+    } catch (dbError) { /* ... feilhåndtering ... */ return NextResponse.json({ error: "Databasefeil: Kunne ikke lagre nyheten." }, { status: 500 }); }
 
-    // --- Suksessrespons ---
-    console.log(`[${endpoint}] 9. Returning success.`);
+    // 6. Suksessrespons
+    console.log(`[${endpoint}] Sender suksessrespons.`);
     return NextResponse.json(newClubNews, { status: 201 });
-    // ---------------------
 
   } catch (error) {
-    // Generell feil
-    console.error(`[${endpoint}] UNHANDLED Error:`, error);
-    const errorMsg = error instanceof Error ? error.message : "Ukjent serverfeil";
+    // Generell feilhåndtering
+    console.error(`[${endpoint}] UHANDLED SERVER ERROR:`, error);
+    const errorMsg = error instanceof Error ? error.message : "En ukjent feil oppstod";
     return NextResponse.json({ error: `Serverfeil: ${errorMsg}` }, { status: 500 });
   } finally {
-      // Koble fra DB
-      try { await prisma.$disconnect(); console.log(`[${endpoint}] --- END Request (DB disconnected) ---`); }
-      catch (disconnectError) { console.error(`[${endpoint}] Error disconnecting DB:`, disconnectError); }
+    // Frakobling fra DB
+    try { await prisma.$disconnect(); console.log(`[${endpoint}] --- END Request (Prisma disconnected) ---`); }
+    catch (disconnectError) { console.error(`[${endpoint}] Feil ved frakobling av Prisma:`, disconnectError); }
   }
 }

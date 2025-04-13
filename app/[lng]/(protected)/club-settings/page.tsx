@@ -24,7 +24,7 @@ import { UserRole } from "@prisma/client"; // Bruk Enum for rollesammenligning
  */
 interface ManagedClubData {
     id: string;
-    name: string; // Merk: I databasen er name påkrevd, men vi håndterer null/undefined fra form
+    name: string;
     location?: string | null;
     isPrimary?: boolean;
     description?: string | null;
@@ -40,7 +40,6 @@ interface ManagedClubData {
 
 /**
  * Type for datastrukturen som forventes av onSaveChanges-propen i ClubSettingsForm.
- * Dette definerer nøyaktig hva skjemaet sender opp.
  */
 type ClubSettingsFormValues = {
     name?: string | null;
@@ -54,258 +53,324 @@ type ClubSettingsFormValues = {
     membershipPrice: number | null; // Pris i øre, kan være null
 };
 
+/**
+ * Type for klubbene som sendes til nyhetsskjemaet (kun ID og navn trengs der).
+ */
+interface NewsClubOption {
+    id: string;
+    name: string;
+}
 
 /**
  * Klubbinnstillinger-side: Lar brukere (ADMIN/CLUB_LEADER) administrere klubbinnstillinger,
  * se medlemmer, opprette klubber, og publisere nyheter.
  */
 const ClubSettingsPage = () => {
-  const { data: session, status: sessionStatus } = useSession();
-  const [selectedTab, setSelectedTab] = useState("minKlubb"); // Standard fane
-  const [managedClubs, setManagedClubs] = useState<ManagedClubData[]>([]); // Liste over klubber brukeren kan administrere
-  const [selectedClubId, setSelectedClubId] = useState<string | null>(null); // ID-en til klubben som er valgt for visning/redigering
-  const [clubSettings, setClubSettings] = useState<ManagedClubData | null>(null); // Data for den valgte klubben
-  const [isLoadingClubs, setIsLoadingClubs] = useState(true); // Lastestatus for henting av klubber
-  const [isSaving, setIsSaving] = useState(false); // Lagringsstatus for innstillingsskjemaet
+    const { data: session, status: sessionStatus } = useSession();
+    const [selectedTab, setSelectedTab] = useState("minKlubb"); // Standard fane
+    const [managedClubs, setManagedClubs] = useState<ManagedClubData[]>([]); // Liste for "Mine Klubber" og "Innstillinger" fanene
+    const [selectedClubId, setSelectedClubId] = useState<string | null>(null); // ID-en til klubben som er valgt for visning/redigering
+    const [clubSettings, setClubSettings] = useState<ManagedClubData | null>(null); // Data for den valgte klubben (for innstillingsskjema)
+    const [isLoadingClubs, setIsLoadingClubs] = useState(true); // Laster for innstillinger/medlemmer
+    const [isSaving, setIsSaving] = useState(false); // Lagringsstatus for innstillingsskjemaet
 
-  // Hent brukerrolle fra session, default til 'guest' hvis uautentisert eller rolle mangler
-  const userRole = session?.user?.role as UserRole | "guest" || "guest";
+    // --- STATE FOR NYHETSSKJEMA ---
+    const [newsClubList, setNewsClubList] = useState<NewsClubOption[]>([]); // Liste for nyhetsskjema-dropdown
+    const [isLoadingNewsClubs, setIsLoadingNewsClubs] = useState(true); // Egen lastestatus for nyhetslisten
+    // -----------------------------
 
-  /**
-   * Hent klubber som den nåværende brukeren er autorisert til å administrere (ADMIN eller CLUB_LEADER).
-   * Antar at API-endepunktet `/api/user-clubs` kun returnerer disse klubbene.
-   */
-  const fetchManagedClubs = useCallback(async (userId: string) => {
-    setIsLoadingClubs(true);
-    try {
-      const response = await axios.get(`/api/user-clubs?userId=${userId}`);
-      const fetchedClubs = response.data?.clubs;
+    // Hent brukerrolle og ID fra session
+    const userRole = session?.user?.role as UserRole | "guest" || "guest";
+    const userId = session?.user?.id;
 
-      if (Array.isArray(fetchedClubs)) {
-        setManagedClubs(fetchedClubs);
-        // Autovelg den første klubben eller primærklubben hvis ingen er valgt
-        if (!selectedClubId && fetchedClubs.length > 0) {
-          const primaryClub = fetchedClubs.find(c => c.isPrimary) || fetchedClubs[0];
-          if (primaryClub) {
-            setSelectedClubId(primaryClub.id);
-            setClubSettings(primaryClub); // Forhåndsutfyll data i innstillingsskjemaet
-            console.log("Autovelger klubb:", primaryClub.name);
-          }
+    /**
+     * Hent klubber som den nåværende brukeren er autorisert til å administrere (via /api/user-clubs).
+     * Denne brukes for "Mine Klubber", "Innstillinger" og "Medlemmer".
+     */
+    const fetchManagedClubs = useCallback(async (id: string) => {
+        setIsLoadingClubs(true);
+        try {
+            const response = await axios.get(`/api/user-clubs?userId=${id}`);
+            const fetchedClubs = response.data?.clubs;
+
+            if (Array.isArray(fetchedClubs)) {
+                const sortedClubs = [...fetchedClubs].sort((a, b) => a.name.localeCompare(b.name));
+                setManagedClubs(sortedClubs);
+                // Autovelg primær eller første klubb HVIS ingen er valgt ennå
+                if (!selectedClubId && sortedClubs.length > 0) {
+                    const primaryClub = sortedClubs.find(c => c.isPrimary) || sortedClubs[0];
+                    if (primaryClub) {
+                        setSelectedClubId(primaryClub.id);
+                        setClubSettings(primaryClub);
+                    }
+                } else if (selectedClubId && !sortedClubs.some(c => c.id === selectedClubId)) {
+                    // Hvis valgt klubb ikke lenger er i listen, nullstill
+                    setSelectedClubId(null);
+                    setClubSettings(null);
+                } else if (fetchedClubs.length === 0) {
+                    setSelectedClubId(null);
+                    setClubSettings(null);
+                }
+            } else {
+                setManagedClubs([]);
+                setSelectedClubId(null);
+                setClubSettings(null);
+                if (response.data?.error) {
+                    toast.error(response.data.error);
+                }
+            }
+        } catch (error) {
+            console.error("[fetchManagedClubs] Feil ved henting av administrerte klubber:", error);
+            toast.error("Kunne ikke hente dine administrerte klubber.");
+            setManagedClubs([]);
+            setSelectedClubId(null);
+            setClubSettings(null);
+        } finally {
+            setIsLoadingClubs(false);
         }
-      } else {
-        setManagedClubs([]);
-        if (response.data?.error) {
-            toast.error(response.data.error);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [selectedClubId]); // Kjør på nytt hvis selectedClubId endres
+
+    /**
+     * Hent klubber som brukeren kan poste nyheter for.
+     * ADMIN: Henter alle klubber fra /api/clubs.
+     * CLUB_LEADER: Henter klubber de administrerer fra /api/user-clubs.
+     */
+    const fetchClubsForNews = useCallback(async () => {
+        if (!userId) {
+            setIsLoadingNewsClubs(false);
+            return;
         }
-      }
-    } catch (error) {
-      console.error("Feil ved henting av administrerte klubber:", error);
-      toast.error("Kunne ikke hente dine klubber.");
-      setManagedClubs([]);
-    } finally {
-      setIsLoadingClubs(false);
+
+        setIsLoadingNewsClubs(true);
+        setNewsClubList([]);
+        let apiUrl = '';
+        let errorMessage = '';
+
+        if (userRole === UserRole.ADMIN) {
+            apiUrl = `/api/clubs?limit=1000`;
+            errorMessage = "Kunne ikke hente listen over alle klubber for nyheter.";
+        } else if (userRole === UserRole.CLUB_LEADER) {
+            apiUrl = `/api/user-clubs?userId=${userId}`;
+            errorMessage = "Kunne ikke hente dine administrerte klubber for nyheter.";
+        } else {
+            setIsLoadingNewsClubs(false);
+            return;
+        }
+
+        try {
+            const response = await axios.get(apiUrl);
+            const fetchedClubs = response.data?.clubs;
+
+            if (Array.isArray(fetchedClubs) && fetchedClubs.length > 0) {
+                const sortedAndMappedClubs: NewsClubOption[] = [...fetchedClubs]
+                    .sort((a, b) => a.name.localeCompare(b.name))
+                    .map(club => ({ id: club.id, name: club.name }));
+
+                setNewsClubList(sortedAndMappedClubs);
+            } else {
+                setNewsClubList([]);
+                if (response.data?.error && typeof response.data.error === 'string') {
+                    toast.error(response.data.error);
+                } else if (!Array.isArray(fetchedClubs) && fetchedClubs?.length !== 0) {
+                    // Vis generell feil hvis ikke tom array og ingen error-melding fra API
+                    toast.error(errorMessage);
+                }
+            }
+        } catch (error) {
+            console.error(`[fetchClubsForNews] Feil ved henting fra ${apiUrl}:`, error);
+            toast.error(errorMessage);
+            setNewsClubList([]);
+        } finally {
+            setIsLoadingNewsClubs(false);
+        }
+    }, [userId, userRole]);
+
+    // Effekt for å hente ADMINISTRERTE klubber
+    useEffect(() => {
+        if (sessionStatus === 'authenticated' && userId) {
+            fetchManagedClubs(userId);
+        } else if (sessionStatus !== 'loading') {
+            setIsLoadingClubs(false);
+            setManagedClubs([]);
+            setSelectedClubId(null);
+            setClubSettings(null);
+        }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [sessionStatus, userId]); // Lytter kun på sessionStatus og userId
+
+    // Effekt for å hente klubber for NYHETER
+    useEffect(() => {
+        if (sessionStatus === 'authenticated' && userId && (userRole === UserRole.ADMIN || userRole === UserRole.CLUB_LEADER)) {
+            fetchClubsForNews();
+        } else if (sessionStatus !== 'loading') {
+            setIsLoadingNewsClubs(false);
+            setNewsClubList([]);
+        }
+     // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [sessionStatus, userId, userRole]); // Lytter kun på sessionStatus, userId og userRole
+
+    /**
+     * Handler for å velge en klubb fra UserClubsList.
+     */
+    const handleSelectClub = (club: ManagedClubData) => {
+        setSelectedClubId(club.id);
+        setClubSettings(club);
+    };
+
+    /**
+     * Handler for å klikke "Rediger"-knappen i UserClubsList.
+     */
+    const handleGoToEditClub = (club: ManagedClubData) => {
+        handleSelectClub(club);
+        setSelectedTab("klubbInnstillinger");
+    };
+
+    /**
+     * Handler for å lagre endringer gjort i ClubSettingsForm.
+     */
+    const handleSaveChanges = async (
+        clubId: string,
+        values: ClubSettingsFormValues,
+        logoFile: File | null,
+        imageFile: File | null
+    ) => {
+        if (!clubId) {
+            toast.error("Kan ikke lagre endringer: Klubb-ID mangler.");
+            return;
+        }
+        setIsSaving(true);
+        const toastId = toast.loading("Lagrer klubbinnstillinger...");
+
+        try {
+            const result = await updateClubSettings({ clubId, ...values, logoFile, imageFile });
+
+            if (result.success) {
+                toast.success(result.success || "Innstillinger lagret!", { id: toastId });
+
+                // Optimistisk oppdatering av lokal state
+                const updatedClubData: ManagedClubData = {
+                    ...(clubSettings || { id: clubId, name: 'Ukjent Klubb' }),
+                    ...values,
+                    name: values.name || clubSettings?.name || 'Ukjent Klubb',
+                    logoUrl: result.logoUrl !== undefined ? result.logoUrl : clubSettings?.logoUrl,
+                    imageUrl: result.imageUrl !== undefined ? result.imageUrl : clubSettings?.imageUrl,
+                };
+
+                setClubSettings(updatedClubData); // Oppdater innstillingsskjemaet
+                setManagedClubs(prevClubs => // Oppdater listen over administrerte klubber
+                    prevClubs.map(club =>
+                        club.id === clubId ? updatedClubData : club
+                    )
+                );
+                // Oppdater også nyhetslisten hvis navnet endret seg
+                setNewsClubList(prevNewsClubs =>
+                    prevNewsClubs.map(club =>
+                        club.id === clubId ? { ...club, name: updatedClubData.name } : club
+                     )
+                );
+
+            } else {
+                toast.error(result.error || "Kunne ikke lagre innstillingene.", { id: toastId });
+            }
+        } catch (error) {
+            console.error("Feil ved lagring av klubbinnstillinger:", error);
+            toast.error("En uventet feil oppstod under lagring.", { id: toastId });
+        } finally {
+            setIsSaving(false);
+        }
+    };
+
+    /**
+     * Bestem om den nåværende brukeren er autorisert til å redigere den *valgte* klubben.
+     */
+    const isAuthorizedToEditSelectedClub =
+        userRole === UserRole.ADMIN ||
+        (userRole === UserRole.CLUB_LEADER && !!clubSettings && managedClubs.some(c => c.id === clubSettings.id));
+
+    // --- Renderingslogikk ---
+
+    if (sessionStatus === "loading") {
+        return <div className="flex justify-center items-center min-h-[calc(100vh-150px)]"><LoadingSpinner /></div>;
     }
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [selectedClubId]); // Kjør på nytt hvis selectedClubId endres (men neppe nødvendig her)
 
-  // Effekt for å hente klubber når session er autentisert
-  useEffect(() => {
-    if (sessionStatus === 'authenticated' && session?.user?.id) {
-      fetchManagedClubs(session.user.id);
-    } else if (sessionStatus !== 'loading') {
-      // Hvis ikke laster og ikke autentisert, nullstill state
-      setIsLoadingClubs(false);
-      setManagedClubs([]);
-      setSelectedClubId(null);
-      setClubSettings(null);
+    if (sessionStatus !== "authenticated") {
+        return <div className="flex justify-center items-center min-h-[calc(100vh-150px)]"><p>Vennligst logg inn for å administrere klubbinnstillinger.</p></div>;
     }
-  }, [sessionStatus, session?.user?.id, fetchManagedClubs]);
 
-  /**
-   * Handler for å velge en klubb fra en liste eller nedtrekksmeny.
-   * Oppdaterer både valgt ID og dataen som brukes av innstillingsskjemaet.
-   * @param club - Den valgte klubbens data.
-   */
-  const handleSelectClub = (club: ManagedClubData) => {
-    setSelectedClubId(club.id);
-    setClubSettings(club); // Oppdater data for skjemaet
-    console.log(`Klubb valgt for redigering/visning: ${club.name}`);
-  };
+    return (
+        <div className="flex flex-col items-center w-full px-4 py-6">
+            {/* Fane-navigasjon */}
+            <TabNavigation selectedTab={selectedTab} setSelectedTab={setSelectedTab} userRole={userRole} />
 
-  /**
-   * Handler for å klikke "Rediger"-knappen i UserClubsList.
-   * Velger klubben og bytter til innstillingsfanen.
-   * @param club - Klubben som skal redigeres.
-   */
-  const handleGoToEditClub = (club: ManagedClubData) => {
-       handleSelectClub(club); // Sett aktiv klubb
-       setSelectedTab("klubbInnstillinger"); // Naviger til innstillingsfanen
-   };
+            {/* Fane-innhold */}
+            <div className="mt-6 w-full max-w-4xl">
 
-  /**
-   * Handler for å lagre endringer gjort i ClubSettingsForm.
-   * Kaller `updateClubSettings` server action.
-   * !!! VIKTIG: Typen for 'values' MÅ matche den definert i ClubSettingsFormProps !!!
-   * @param clubId - ID-en til klubben som oppdateres.
-   * @param values - Skjemaverdiene (matcher ClubSettingsFormValues type).
-   * @param logoFile - Den nye logofilen, hvis noen.
-   * @param imageFile - Den nye bildefilen, hvis noen.
-   */
-  const handleSaveChanges = async (
-      clubId: string,
-      values: ClubSettingsFormValues, // Bruk den eksplisitte typen her
-      logoFile: File | null,
-      imageFile: File | null
-  ) => {
-       if (!clubId) {
-           toast.error("Kan ikke lagre endringer: Klubb-ID mangler.");
-           return;
-       }
-       setIsSaving(true);
-       const toastId = toast.loading("Lagrer klubbinnstillinger...");
+                {/* Fane: Mine Klubber */}
+                {selectedTab === "minKlubb" && (
+                    <UserClubsList
+                        clubs={managedClubs}
+                        isLoading={isLoadingClubs}
+                        onEditClub={handleGoToEditClub}
+                    />
+                )}
 
-       try {
-           // Kall server action (autorisasjon skjer server-side)
-           // Server action håndterer undefined felter korrekt
-           const result = await updateClubSettings({
-               clubId,
-               ...values, // Spread skjemaverdiene direkte
-               logoFile,
-               imageFile
-           });
+                {/* Fane: Klubbinnstillinger */}
+                {selectedTab === "klubbInnstillinger" && (
+                    clubSettings ? (
+                        <ClubSettingsForm
+                            clubData={clubSettings}
+                            onSaveChanges={handleSaveChanges}
+                            isSaving={isSaving}
+                            isAuthorizedToEdit={isAuthorizedToEditSelectedClub}
+                        />
+                    ) : (
+                        <p className="text-center text-gray-500 py-10">
+                            {isLoadingClubs ? "Laster klubbdata..." : "Velg en klubb fra 'Mine Klubber'-fanen for å redigere."}
+                        </p>
+                    )
+                )}
 
-           if (result.success) {
-               toast.success(result.success || "Innstillinger lagret!", { id: toastId }); // Lagt til standard suksessmelding
+                {/* Fane: Klubbmedlemmer */}
+                {selectedTab === "klubbMedlemmer" && (
+                    isLoadingClubs ? (
+                        <div className="flex justify-center py-10"><LoadingSpinner text="Laster dine klubber..." /></div>
+                    ) : managedClubs.length > 0 ? (
+                        <ClubMembers
+                            managedClubs={managedClubs.map(c => ({ id: c.id, name: c.name }))}
+                            initialClubId={selectedClubId}
+                        />
+                    ) : (
+                        <p className="text-center text-gray-500 py-10">Du administrerer ingen klubber.</p>
+                    )
+                )}
 
-               // Optimistisk oppdater lokal state for skjemaet og listen
-               // Viktig: Håndter potensiell null/undefined fra 'values' ved oppdatering av state
-               const updatedClubData: ManagedClubData = {
-                   // Start med eksisterende data eller en basisstruktur hvis ingen finnes
-                   ...(clubSettings || { id: clubId, name: values.name || 'Navnløs Klubb' }), // Gi et fallback-navn om nødvendig
-                   ...values, // Bruk endringer fra skjemaet
-                   name: values.name || clubSettings?.name || 'Navnløs Klubb', // Sikre at name aldri er undefined i ManagedClubData
-                   // Bruk oppdaterte URLer fra action-resultat hvis de finnes, ellers behold eksisterende
-                   logoUrl: result.logoUrl !== undefined ? result.logoUrl : clubSettings?.logoUrl,
-                   imageUrl: result.imageUrl !== undefined ? result.imageUrl : clubSettings?.imageUrl,
-                   // Sikre at påkrevde felter som 'name' har en verdi i state-objektet
-               };
+                {/* Fane: Opprett Klubb */}
+                {selectedTab === "opprettKlubb" && ( <CreateClubForm /> )}
 
+                {/* Fane: Klubbnyheter */}
+                {selectedTab === "klubbNyheter" && (userRole === UserRole.ADMIN || userRole === UserRole.CLUB_LEADER) && (
+                    isLoadingNewsClubs ? (
+                        <div className="flex justify-center py-10"><LoadingSpinner text="Laster klubbliste for nyheter..." /></div>
+                    ) : newsClubList.length > 0 ? (
+                        <CreateClubNewsForm
+                            managedClubs={newsClubList}
+                            initialClubId={newsClubList.some(c => c.id === selectedClubId) ? selectedClubId : null}
+                        />
+                    ) : (
+                        <p className="text-center text-gray-500 py-10">
+                            {userRole === UserRole.ADMIN
+                                ? "Fant ingen klubber i systemet å poste nyheter for."
+                                : "Du administrerer ingen klubber og kan derfor ikke legge ut nyheter."
+                            }
+                        </p>
+                    )
+                )}
+                {/* Fanen skjules hvis betingelsen over ikke er sann */}
 
-               // Oppdater dataen som vises i skjemaet
-               setClubSettings(updatedClubData);
-               // Oppdater dataen i listen over administrerte klubber
-               setManagedClubs(prevClubs =>
-                   prevClubs.map(club =>
-                       club.id === clubId ? updatedClubData : club
-                   )
-               );
-
-           } else {
-               // Vis feilmelding fra server action
-               toast.error(result.error || "Kunne ikke lagre innstillingene.", { id: toastId });
-           }
-       } catch (error) {
-           console.error("Feil ved lagring av klubbinnstillinger:", error);
-           toast.error("En uventet feil oppstod under lagring.", { id: toastId });
-       } finally {
-           setIsSaving(false);
-       }
-   };
-
-   /**
-    * Bestem om den nåværende brukeren er autorisert til å redigere den *valgte* klubben.
-    * - ADMIN-brukere kan alltid redigere.
-    * - CLUB_LEADERs kan redigere hvis en klubb er valgt (antar at `managedClubs` kun inneholder klubber de leder).
-    */
-   const isAuthorizedToEditSelectedClub =
-       userRole === UserRole.ADMIN ||
-       (userRole === UserRole.CLUB_LEADER && !!clubSettings);
-
-  // --- Renderingslogikk ---
-
-  // Vis lastespinner mens session laster
-  if (sessionStatus === "loading") {
-      return <div className="flex justify-center items-center min-h-[calc(100vh-150px)]"><LoadingSpinner /></div>;
-  }
-
-  // Be bruker logge inn hvis ikke autentisert
-  if (sessionStatus !== "authenticated") {
-      return <div className="flex justify-center items-center min-h-[calc(100vh-150px)]"><p>Vennligst logg inn for å administrere klubbinnstillinger.</p></div>;
-  }
-
-  // Hovedsidens layout
-  return (
-    <div className="flex flex-col items-center w-full px-4 py-6">
-      {/* Fane-navigasjon */}
-      <TabNavigation selectedTab={selectedTab} setSelectedTab={setSelectedTab} userRole={userRole} />
-
-      {/* Fane-innhold */}
-      <div className="mt-6 w-full max-w-4xl">
-          {/* Fane: Mine Klubber */}
-          {selectedTab === "minKlubb" && (
-              <UserClubsList
-                  clubs={managedClubs}
-                  isLoading={isLoadingClubs}
-                  onEditClub={handleGoToEditClub} // Callback for å bytte fane og velge klubb
-              />
-          )}
-
-          {/* Fane: Klubbinnstillinger */}
-          {selectedTab === "klubbInnstillinger" && (
-               // Render skjema kun hvis en klubb er valgt
-              clubSettings ? (
-                  <ClubSettingsForm
-                      clubData={clubSettings}        // Send data for den valgte klubben
-                      onSaveChanges={handleSaveChanges} // Send den korrekt typede lagringshandleren
-                      isSaving={isSaving}             // Send lagringsstatus
-                      isAuthorizedToEdit={isAuthorizedToEditSelectedClub} // Send autorisasjonsstatus
-                  />
-              ) : (
-                  // Vis placeholder hvis ingen klubb er valgt ennå
-                  <p className="text-center text-gray-500 py-10">
-                      {isLoadingClubs ? "Laster klubber..." : "Velg en klubb fra 'Mine Klubber'-fanen for å redigere innstillingene."}
-                  </p>
-              )
-          )}
-
-          {/* Fane: Klubbmedlemmer */}
-          {selectedTab === "klubbMedlemmer" && (
-              isLoadingClubs ? (
-                   <div className="flex justify-center py-10"><LoadingSpinner text="Laster klubber..." /></div>
-              ) : managedClubs.length > 0 ? (
-                  <ClubMembers
-                      // Gi liste over administrerte klubber for nedtrekksmeny
-                      managedClubs={managedClubs.map(c => ({ id: c.id, name: c.name }))}
-                      // Sett den initielt valgte klubben i nedtrekksmenyen
-                      initialClubId={selectedClubId}
-                  />
-              ) : (
-                   // Vis melding hvis brukeren ikke administrerer noen klubber
-                   <p className="text-center text-gray-500 py-10">Du administrerer ingen klubber.</p>
-              )
-          )}
-
-          {/* Fane: Opprett Klubb */}
-          {selectedTab === "opprettKlubb" && ( <CreateClubForm /> )}
-
-          {/* Fane: Klubbnyheter (betinget basert på rolle og administrerte klubber) */}
-          {/* Antar at fanen heter "klubbNyheter" */}
-          {selectedTab === "klubbNyheter" && (userRole === UserRole.ADMIN || userRole === UserRole.CLUB_LEADER) && (
-               isLoadingClubs ? (
-                  <div className="flex justify-center py-10"><LoadingSpinner text="Laster klubber..." /></div>
-              ) : managedClubs.length > 0 ? (
-                  <CreateClubNewsForm
-                      managedClubs={managedClubs} // Send full klubbdata for nedtrekksmeny
-                      initialClubId={selectedClubId} // Forhåndsvelg nåværende klubb hvis mulig
-                  />
-              ) : (
-                   <p className="text-center text-gray-500 py-10">Du må administrere en klubb for å legge ut nyheter.</p>
-              )
-          )}
-          {/* Fanen skjules for brukere uten passende rolle */}
-      </div>
-    </div>
-  );
+            </div>
+        </div>
+    );
 };
 
 export default ClubSettingsPage;
