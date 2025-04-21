@@ -5,6 +5,16 @@
 // Utvikler: Martin Pettersen
 // AI-støtte: Benyttet under utvikling for kodekvalitet, oppdateringer og feilsøking.
 
+
+
+generator dbml {
+  provider   = "prisma-dbml-generator"
+  output     = "prisma/dbml"        
+  outputName = "schema.dbml"        
+  projectName = "DiskGolfApp"       
+  projectDatabaseType = "PostgreSQL" 
+}
+
 generator client {
   provider = "prisma-client-js"
 }

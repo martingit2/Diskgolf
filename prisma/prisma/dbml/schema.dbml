@@ -1,0 +1,588 @@
+//// ------------------------------------------------------
+//// THIS FILE WAS AUTOMATICALLY GENERATED (DO NOT MODIFY)
+//// ------------------------------------------------------
+
+Project "DiskGolfApp" {
+  database_type: 'PostgreSQL'
+  Note: ''
+}
+
+Table User {
+  id String [pk]
+  name String
+  email String [unique]
+  emailVerified DateTime
+  image String
+  hashedPassword String
+  createdAt DateTime [default: `now()`, not null]
+  updatedAt DateTime [not null]
+  favoriteCourses String[] [not null]
+  role UserRole [not null, default: 'USER']
+  clubs Club [not null]
+  accounts Account [not null]
+  rounds Round [not null]
+  reviews Review [not null]
+  memberships Membership [not null]
+  isTwoFactorEnable Boolean [not null, default: false]
+  twoFactorConfirmation TwoFactorConfirmation
+  tournaments Tournament [not null]
+  games Game [not null]
+  gameParticipations GameParticipation [not null]
+  gameScores GameScore [not null]
+  rooms Room [not null]
+  completedGameScores CompletedGameScore [not null]
+  organizedTournaments Tournament [not null]
+  tournamentScores TournamentScore [not null]
+  tournamentGameParticipations TournamentGameParticipation [not null]
+  tournamentGameScores TournamentGameScore [not null]
+  authoredNews NewsArticle [not null]
+  submittedErrorReports ErrorReport [not null]
+}
+
+Table Club {
+  id String [pk]
+  name String [unique, not null]
+  location String [not null]
+  description String
+  email String
+  logoUrl String
+  imageUrl String
+  isActive Boolean [not null, default: true]
+  established DateTime [default: `now()`, not null]
+  address String
+  phone String
+  website String
+  postalCode String
+  membershipPrice Int
+  stripeProductId String [unique]
+  stripePriceId String [unique]
+  admins User [not null]
+  courses Course [not null]
+  memberships Membership [not null]
+  clubNews ClubNews [not null]
+  meetings Meeting [not null]
+  tournaments Tournament [not null]
+  createdAt DateTime [default: `now()`, not null]
+  updatedAt DateTime [not null]
+}
+
+Table ClubNews {
+  id String [pk]
+  clubId String [not null]
+  title String [not null]
+  content String [not null]
+  createdAt DateTime [default: `now()`, not null]
+  imageUrl String
+  club Club [not null]
+}
+
+Table Course {
+  id String [pk]
+  name String [not null]
+  location String
+  latitude Float [not null]
+  longitude Float [not null]
+  startLatitude Float
+  startLongitude Float
+  goalLatitude Float
+  goalLongitude Float
+  description String
+  par Int [not null]
+  image String
+  difficulty String
+  numHoles Int
+  createdAt DateTime [default: `now()`, not null]
+  updatedAt DateTime [not null]
+  holes Hole [not null]
+  reviews Review [not null]
+  rounds Round [not null]
+  start Start [not null]
+  goal Goal
+  baskets Basket [not null]
+  obZones OB [not null]
+  games Game [not null]
+  rooms Room [not null]
+  completedGameScores CompletedGameScore [not null]
+  clubId String
+  club Club
+  tournaments Tournament [not null]
+  errorReports ErrorReport [not null]
+}
+
+Table Hole {
+  id String [pk]
+  courseId String [not null]
+  number Int [not null]
+  par Int [not null]
+  distance Int
+  latitude Float [not null]
+  longitude Float [not null]
+  course Course [not null]
+}
+
+Table Account {
+  id String [pk]
+  userId String [not null]
+  type String [not null]
+  provider String [not null]
+  providerAccountId String [not null]
+  refresh_token String
+  access_token String
+  expires_at Int
+  token_type String
+  scope String
+  id_token String
+  session_state String
+  user User [not null]
+
+  indexes {
+    (provider, providerAccountId) [unique]
+  }
+}
+
+Table Round {
+  id String [pk]
+  userId String [not null]
+  courseId String [not null]
+  score Int [not null]
+  createdAt DateTime [default: `now()`, not null]
+  user User [not null]
+  course Course [not null]
+}
+
+Table Review {
+  id String [pk]
+  userId String [not null]
+  courseId String [not null]
+  rating Int [not null]
+  comment String
+  createdAt DateTime [default: `now()`, not null]
+  user User [not null]
+  course Course [not null]
+}
+
+Table VerificationToken {
+  id String [pk]
+  email String [not null]
+  token String [unique, not null]
+  expires DateTime [not null]
+
+  indexes {
+    (email, token) [unique]
+  }
+}
+
+Table PasswordResetToken {
+  id String [pk]
+  email String [not null]
+  token String [unique, not null]
+  expires DateTime [not null]
+
+  indexes {
+    (email, token) [unique]
+  }
+}
+
+Table TwoFactorToken {
+  id String [pk]
+  email String [not null]
+  token String [unique, not null]
+  expires DateTime [not null]
+
+  indexes {
+    (email, token) [unique]
+  }
+}
+
+Table TwoFactorConfirmation {
+  id String [pk]
+  userId String [unique, not null]
+  user User [not null]
+}
+
+Table Membership {
+  userId String [not null]
+  clubId String [not null]
+  user User [not null]
+  club Club [not null]
+  isPrimary Boolean [not null, default: false]
+  stripeSubscriptionId String [unique]
+  stripeCustomerId String
+  status String [not null, default: 'inactive']
+
+  indexes {
+    (userId, clubId) [pk]
+  }
+}
+
+Table Start {
+  id String [pk]
+  courseId String [not null]
+  latitude Float [not null]
+  longitude Float [not null]
+  course Course [not null]
+}
+
+Table Goal {
+  id String [pk]
+  courseId String [unique, not null]
+  latitude Float [not null]
+  longitude Float [not null]
+  course Course [not null]
+}
+
+Table Basket {
+  id String [pk]
+  courseId String [not null]
+  latitude Float [not null]
+  longitude Float [not null]
+  course Course [not null]
+}
+
+Table OB {
+  id String [pk]
+  courseId String [not null]
+  latitude Float
+  longitude Float
+  points Json
+  course Course [not null]
+}
+
+Table Meeting {
+  id String [pk]
+  clubId String [not null]
+  title String [not null]
+  description String [not null]
+  pdfUrl String
+  createdAt DateTime [default: `now()`, not null]
+  cloudinaryPublicId String
+  club Club [not null]
+}
+
+Table Game {
+  id String [pk]
+  courseId String [not null]
+  password String
+  course Course [not null]
+  gameMode String [not null]
+  ownerId String
+  owner User
+  ownerName String
+  expiresAt DateTime [not null]
+  isActive Boolean [not null, default: true]
+  createdAt DateTime [default: `now()`, not null]
+  maxPlayers Int
+  participants GameParticipation [not null]
+  scores GameScore [not null]
+  room Room
+  roomId String [unique]
+}
+
+Table GameParticipation {
+  id String [pk]
+  gameId String
+  game Game
+  roomId String
+  room Room
+  userId String
+  user User
+  playerName String [not null]
+  createdAt DateTime [default: `now()`, not null]
+  isReady Boolean [not null, default: false]
+}
+
+Table GameScore {
+  id String [pk]
+  gameId String [not null]
+  game Game [not null]
+  userId String
+  user User
+  holeNumber Int [not null]
+  strokes Int [not null]
+  obCount Int [not null]
+  playerName String [not null]
+  createdAt DateTime [default: `now()`, not null]
+
+  indexes {
+    (gameId, holeNumber, userId, playerName) [unique]
+  }
+}
+
+Table Room {
+  id String [pk]
+  name String [not null]
+  passwordHash String
+  courseId String [not null]
+  course Course [not null]
+  ownerId String
+  owner User
+  ownerName String [not null]
+  maxPlayers Int [not null]
+  isActive Boolean [not null, default: true]
+  status String [not null, default: 'waiting']
+  expiresAt DateTime [not null]
+  createdAt DateTime [default: `now()`, not null]
+  participants GameParticipation [not null]
+  game Game
+  gameId String [unique]
+}
+
+Table CompletedGameScore {
+  id String [pk]
+  courseId String [not null]
+  course Course [not null]
+  userId String
+  user User
+  playerName String [not null]
+  holeNumber Int [not null]
+  strokes Int [not null]
+  obCount Int [not null]
+  createdAt DateTime [default: `now()`, not null]
+}
+
+Table Tournament {
+  id String [pk]
+  name String [not null]
+  description String [not null]
+  location String [not null]
+  startDate DateTime [not null]
+  endDate DateTime
+  status TournamentStatus [not null, default: 'PLANNING']
+  maxParticipants Int
+  image String
+  courseId String [not null]
+  course Course [not null]
+  organizerId String [not null]
+  organizer User [not null]
+  clubId String
+  club Club
+  participants User [not null]
+  gameSessions TournamentGameSession [not null]
+  scores TournamentScore [not null]
+  createdAt DateTime [default: `now()`, not null]
+  updatedAt DateTime [not null]
+}
+
+Table TournamentScore {
+  id String [pk]
+  tournamentId String [not null]
+  tournament Tournament [not null]
+  playerId String [not null]
+  player User [not null]
+  totalScore Int [not null]
+  totalOb Int [not null]
+  strokes Json [not null]
+  submittedAt DateTime [default: `now()`, not null]
+  isVerified Boolean [not null, default: false]
+
+  indexes {
+    (tournamentId, playerId) [unique]
+  }
+}
+
+Table TournamentGameSession {
+  id String [pk]
+  tournamentId String [not null]
+  tournament Tournament [not null]
+  roundNumber Int [not null]
+  status String [not null, default: 'waiting']
+  createdAt DateTime [default: `now()`, not null]
+  expiresAt DateTime [not null]
+  participants TournamentGameParticipation [not null]
+  scores TournamentGameScore [not null]
+
+  indexes {
+    (tournamentId, roundNumber) [unique]
+  }
+}
+
+Table TournamentGameParticipation {
+  id String [pk]
+  gameSessionId String [not null]
+  gameSession TournamentGameSession [not null]
+  playerId String [not null]
+  player User [not null]
+  isReady Boolean [not null, default: false]
+
+  indexes {
+    (gameSessionId, playerId) [unique]
+  }
+}
+
+Table TournamentGameScore {
+  id String [pk]
+  gameSessionId String [not null]
+  gameSession TournamentGameSession [not null]
+  playerId String [not null]
+  player User [not null]
+  holeNumber Int [not null]
+  strokes Int [not null]
+  obCount Int [not null]
+  createdAt DateTime [default: `now()`, not null]
+
+  indexes {
+    (gameSessionId, playerId, holeNumber) [unique]
+  }
+}
+
+Table Category {
+  id String [pk]
+  name String [unique, not null]
+  slug String [unique, not null]
+  description String
+  articles NewsArticle [not null]
+  createdAt DateTime [default: `now()`, not null]
+  updatedAt DateTime [not null]
+}
+
+Table NewsArticle {
+  id String [pk]
+  title String [not null]
+  content String [not null]
+  imageUrl String
+  authorId String [not null]
+  author User [not null]
+  isPublished Boolean [not null, default: false]
+  publishedAt DateTime
+  createdAt DateTime [default: `now()`, not null]
+  updatedAt DateTime [not null]
+  excerpt String
+  categories Category [not null]
+}
+
+Table ErrorReport {
+  id String [pk]
+  courseId String [not null]
+  course Course [not null]
+  userId String [not null]
+  user User [not null]
+  description String [not null]
+  status ErrorReportStatus [not null, default: 'OPEN']
+  createdAt DateTime [default: `now()`, not null]
+  updatedAt DateTime [not null]
+}
+
+Table EditablePageContent {
+  id String [pk]
+  pageKey String [unique, not null]
+  content Json [not null]
+  useCustom Boolean [not null, default: false]
+  updatedAt DateTime [not null]
+}
+
+Table ClubAdmins {
+  clubsId String [ref: > Club.id]
+  adminsId String [ref: > User.id]
+}
+
+Table TournamentParticipants {
+  tournamentsId String [ref: > Tournament.id]
+  participantsId String [ref: > User.id]
+}
+
+Table CategoryToNewsArticle {
+  articlesId String [ref: > NewsArticle.id]
+  categoriesId String [ref: > Category.id]
+}
+
+Enum UserRole {
+  ADMIN
+  USER
+  CLUB_LEADER
+}
+
+Enum ErrorReportStatus {
+  OPEN
+  IN_PROGRESS
+  RESOLVED
+  IGNORED
+}
+
+Enum TournamentStatus {
+  PLANNING
+  REGISTRATION_OPEN
+  IN_PROGRESS
+  COMPLETED
+}
+
+Ref: ClubNews.clubId > Club.id
+
+Ref: Course.clubId > Club.id
+
+Ref: Hole.courseId > Course.id [delete: Cascade]
+
+Ref: Account.userId > User.id [delete: Cascade]
+
+Ref: Round.userId > User.id [delete: Cascade]
+
+Ref: Round.courseId > Course.id [delete: Cascade]
+
+Ref: Review.userId > User.id [delete: Cascade]
+
+Ref: Review.courseId > Course.id [delete: Cascade]
+
+Ref: TwoFactorConfirmation.userId - User.id [delete: Cascade]
+
+Ref: Membership.userId > User.id [delete: Cascade]
+
+Ref: Membership.clubId > Club.id
+
+Ref: Start.courseId > Course.id [delete: Cascade]
+
+Ref: Goal.courseId - Course.id [delete: Cascade]
+
+Ref: Basket.courseId > Course.id [delete: Cascade]
+
+Ref: OB.courseId > Course.id [delete: Cascade]
+
+Ref: Meeting.clubId > Club.id [delete: Cascade]
+
+Ref: Game.courseId > Course.id
+
+Ref: Game.ownerId > User.id [delete: Set Null]
+
+Ref: Game.roomId - Room.id
+
+Ref: GameParticipation.gameId > Game.id [delete: Cascade]
+
+Ref: GameParticipation.roomId > Room.id [delete: Cascade]
+
+Ref: GameParticipation.userId > User.id [delete: Set Null]
+
+Ref: GameScore.gameId > Game.id [delete: Cascade]
+
+Ref: GameScore.userId > User.id [delete: Set Null]
+
+Ref: Room.courseId > Course.id
+
+Ref: Room.ownerId > User.id [delete: Set Null]
+
+Ref: CompletedGameScore.courseId > Course.id
+
+Ref: CompletedGameScore.userId > User.id [delete: Cascade]
+
+Ref: Tournament.courseId > Course.id
+
+Ref: Tournament.organizerId > User.id [delete: Restrict]
+
+Ref: Tournament.clubId > Club.id
+
+Ref: TournamentScore.tournamentId > Tournament.id
+
+Ref: TournamentScore.playerId > User.id [delete: Cascade]
+
+Ref: TournamentGameSession.tournamentId > Tournament.id
+
+Ref: TournamentGameParticipation.gameSessionId > TournamentGameSession.id [delete: Cascade]
+
+Ref: TournamentGameParticipation.playerId > User.id [delete: Cascade]
+
+Ref: TournamentGameScore.gameSessionId > TournamentGameSession.id [delete: Cascade]
+
+Ref: TournamentGameScore.playerId > User.id [delete: Cascade]
+
+Ref: NewsArticle.authorId > User.id [delete: Restrict]
+
+Ref: ErrorReport.courseId > Course.id [delete: Cascade]
+
+Ref: ErrorReport.userId > User.id [delete: Cascade]
