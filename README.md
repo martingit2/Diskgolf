@@ -30,8 +30,7 @@ Applikasjonen er under utvikling og er tilgjengelig på: [https://diskgolf.app](
 - [**Axios**](https://axios-http.com): For håndtering av HTTP-forespørsler.
 
 ## Backend
-- [**Express**](https://expressjs.com): Brukes som backend-server for å håndtere spill og logikk, samt for WebSocket-tilkoblinger. // Ikke brukt lenger
-- [**WebSockets (ws)**](https://www.npmjs.com/package/ws): Brukes til sanntids kommunikasjon for spillet, inkludert poengoppdatering og turbytte. // Ikke brukt lenger
+
 - [**Supabase**](https://supabase.io): PostgreSQL database og autentisering.
 - [**Prisma**](https://www.prisma.io): ORM (Object-Relational Mapper) for databasen.
 - [**NextAuth.js**](https://next-auth.js.org): For brukerautentisering og håndtering av OAuth.
