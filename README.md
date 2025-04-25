@@ -30,8 +30,8 @@ Applikasjonen er under utvikling og er tilgjengelig på: [https://diskgolf.app](
 - [**Axios**](https://axios-http.com): For håndtering av HTTP-forespørsler.
 
 ## Backend
-- [**Express**](https://expressjs.com): Brukes som backend-server for å håndtere spill og logikk, samt for WebSocket-tilkoblinger.
-- [**WebSockets (ws)**](https://www.npmjs.com/package/ws): Brukes til sanntids kommunikasjon for spillet, inkludert poengoppdatering og turbytte.
+- [**Express**](https://expressjs.com): Brukes som backend-server for å håndtere spill og logikk, samt for WebSocket-tilkoblinger. // Ikke brukt lenger
+- [**WebSockets (ws)**](https://www.npmjs.com/package/ws): Brukes til sanntids kommunikasjon for spillet, inkludert poengoppdatering og turbytte. // Ikke brukt lenger
 - [**Supabase**](https://supabase.io): PostgreSQL database og autentisering.
 - [**Prisma**](https://www.prisma.io): ORM (Object-Relational Mapper) for databasen.
 - [**NextAuth.js**](https://next-auth.js.org): For brukerautentisering og håndtering av OAuth.
@@ -56,14 +56,11 @@ Applikasjonen er under utvikling og er tilgjengelig på: [https://diskgolf.app](
 
 ## Arkitektur
 
-Applikasjonen benytter en hybrid løsning med både Server Actions, API-ruter, og WebSockets:
-
-- **Express** serverer statiske filer og håndterer WebSocket-tilkoblinger for sanntidsspillet.
-- **WebSockets (ws)** brukes til sanntidskommunikasjon mellom serveren og spillerne, som gjør det mulig å oppdatere spillstatus, poeng og turer uten å laste siden på nytt.
+Applikasjonen benytter en hybrid løsning med både Server Actions og API-ruter
 - **Server Actions**: Brukes for å håndtere intern logikk uten å gjøre unødvendige nettverkskall, som å slette brukere eller opprette vurderinger.
 - **API-ruter**: Gir eksterne applikasjoner tilgang til spesifik data, for eksempel gjennom RESTful API-ruter i `/pages/api`.
 
-I tillegg til standard REST API, bruker vi **WebSockets** for sanntidskommunikasjon, som muliggjør live oppdateringer og sanntidsinteraksjon mellom frontend og backend. Dette er spesielt nyttig for funksjoner som live resultater, poengsummer og kartinteraksjon.
+
 
 ### Eksempler på bruk
 
@@ -74,8 +71,7 @@ I tillegg til standard REST API, bruker vi **WebSockets** for sanntidskommunikas
 - **API-ruter**:
   - **Hent baner**: RESTful endepunkt `/api/courses` gir eksterne klienter tilgang til informasjon om discgolfbaner.
 
-- **WebSockets**:
-  - **Live poengoppdatering**: Bruker WebSockets for å sende og motta oppdateringer om poengsummer i sanntid, turbytte og andre hendelser i spillet.
+
 
 
 ---
