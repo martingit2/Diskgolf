@@ -16,7 +16,6 @@ import useReviewsStore from "@/app/stores/useAppReviewStore"; // Zustand store f
 import { useTranslation } from 'react-i18next'; // Hook for oversettelser.
 
 // Statisk mapping av brukernavn til avatar-URLer.
-
 const avatarMap: { [key: string]: string } = {
   "Sofie A.": "https://randomuser.me/api/portraits/women/44.jpg",
   "Camilla E.": "https://randomuser.me/api/portraits/women/62.jpg",
@@ -58,55 +57,40 @@ const AppReviews = () => {
       </h1>
 
       {loading ? (
-        <p className="text-center text-gray-500 mt-8">{t(translationKeys.loading)}</p> // Bruker mt-8 fra original
+        <p className="text-center text-gray-500 mt-8">{t(translationKeys.loading)}</p>
       ) : error ? (
-        // Viser spesifikk feil hvis tilgjengelig, ellers generisk oversatt feil.
         <p className="text-center text-red-500 mt-8">{error || t(translationKeys.error_generic)}</p>
       ) : reviews.length === 0 ? (
         <p className="text-center text-gray-500 mt-8">{t(translationKeys.empty)}</p>
       ) : (
-        // Beholder original grid-struktur
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mt-8">
           {reviews.map((review) => (
             <div
               key={review.id}
-              // Beholder originale klasser for kortet
               className="bg-white p-6 rounded-lg shadow-lg border border-gray-200 transform transition-all duration-300 hover:scale-105 hover:shadow-2xl flex flex-col items-center text-center"
             >
-              {/* Avatar */}
               <Image
-                // Bruker avatar fra kartet hvis brukernavn finnes, ellers en standard fallback.
                 src={review.username in avatarMap ? avatarMap[review.username] : "https://randomuser.me/api/portraits/lego/5.jpg"}
-                 // Genererer alt-tekst basert på brukernavn eller fallback.
-                 alt={`${t(translationKeys.avatar_alt_prefix)} ${review.username || t(translationKeys.avatar_alt_fallback)}`}
+                alt={`${t(translationKeys.avatar_alt_prefix)} ${review.username || t(translationKeys.avatar_alt_fallback)}`}
                 width={60}
                 height={60}
-                // Beholder originale klasser for bildet
                 className="rounded-full border-2 border-gray-300 shadow-md"
+                unoptimized={true} // <--- NÅ ER DETTE EN FORNUFTIG ENDRING
               />
 
-              {/* Brukernavn & rolle */}
-               {/* Bruker fallback for anonym om nødvendig */}
               <p className="text-lg font-semibold text-gray-800 mt-3">{review.username || t('common.anonymous_user', 'Anonym')}</p>
-              {/* Viser rolle kun hvis den finnes */}
               {review.role && <p className="text-sm text-green-700">{review.role}</p>}
 
-              {/* Stjerner */}
-              {/* Beholder original struktur for stjerner */}
               <div className="flex justify-center mt-2">
                 {Array.from({ length: 5 }).map((_, starIndex) => (
                   <FaStar
                     key={starIndex}
-                    // Beholder original logikk for stjernefarge
                     className={`text-lg ${starIndex < review.rating ? "text-yellow-400" : "text-gray-300"}`}
                     aria-hidden="true"
                   />
                 ))}
-                 {/* TODO: Vurder aria-label for rating-container for skjermlesere */}
               </div>
 
-              {/* Kommentar */}
-              {/* Beholder original styling for kommentar */}
               <p className="text-gray-700 italic mt-4 px-4">{`"${review.comment}"`}</p>
             </div>
           ))}
