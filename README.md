@@ -7,10 +7,10 @@ Dette er prosjektet til gruppe 11 i emnet **APP-2000 Programvareutvikling i Team
 Applikasjonen er deployet og tilgjengelig på: [https://diskgolf.app](https://diskgolf.app). Vær oppmerksom på at siden er et resultat av et studentprosjekt og kan inneholde uferdige deler eller feil. Den reflekterer status ved prosjektinnlevering.
 
 ### Gruppemedlemmer
-- **Maria Sofie Ulvheim** (studentnr. 219488)
-- **Martin Andreas Pettersen** (studentnr. 256031)
-- **Mina Vamnes Nyhagen** (studentnr. 256065)
-- **Said Hussain Khawajazada** (studentnr. 263526)
+- **Maria Sofie Ulvheim** 
+- **Martin Andreas Pettersen** 
+- **Mina Vamnes Nyhagen** 
+- **Said Hussain Khawajazada** 
 
 ---
 
@@ -114,21 +114,16 @@ DiskGolf.app benytter en moderne fullstack-arkitektur bygget på Next.js App Rou
     ```bash
     npm install
     ```
-3.  Kopier `.env.example` til `.env.local` og fyll inn dine egne API-nøkler og database-URL:
-    ```bash
-    cp .env.example .env.local
-    # Åpne .env.local og legg inn dine verdier
-    ```
-4.  Sett opp databasen med Prisma:
+3.  Sett opp databasen med Prisma:
     ```bash
     npx prisma migrate dev --name init 
     # Eller 'npx prisma db push' hvis du ikke bruker migreringer strengt
     ```
-5.  Generer Prisma Client:
+4.  Generer Prisma Client:
     ```bash
     npx prisma generate
     ```
-6.  Kjør utviklingsserveren:
+5.  Kjør utviklingsserveren:
     ```bash
     npm run dev
     ```
